@@ -1,0 +1,89 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- Invented test sitting. It copies the STRUCTURE of real House of Commons Hansard XML
+     (confirmed on sittings 44-1 #1, 44-1 #50 and 45-1 #10) but every name, riding and
+     sentence is made up. Real Hansard text is never committed to this repository. -->
+<Hansard xml:lang="EN" id="900001">
+  <StartPageNumber>1</StartPageNumber>
+  <ExtractedInformation>
+    <ExtractedItem Name="Date">Thursday, March 31, 2022</ExtractedItem>
+    <ExtractedItem Name="SpeakerName">Speaker: The Honourable Pat Example</ExtractedItem>
+    <ExtractedItem Name="MetaVolumeNumber">Volume 151</ExtractedItem>
+    <ExtractedItem Name="MetaNumberNumber">050</ExtractedItem>
+    <ExtractedItem Name="MetaDateNumDay">31</ExtractedItem>
+    <ExtractedItem Name="MetaDateNumMonth">03</ExtractedItem>
+    <ExtractedItem Name="MetaDateNumYear">2022</ExtractedItem>
+    <ExtractedItem Name="SessionNumber">1</ExtractedItem>
+    <ExtractedItem Name="ParliamentNumber">44</ExtractedItem>
+  </ExtractedInformation>
+  <HansardBody>
+    <Intro><ParaText id="1">The House met at 10 a.m.</ParaText></Intro>
+    <OrderOfBusiness id="910" Rubric="StatementsByMembers">
+      <OrderOfBusinessTitle>Statements by Members</OrderOfBusinessTitle>
+      <CatchLine>Statements by Members</CatchLine>
+      <SubjectOfBusiness id="911">
+        <FloorLanguage language="EN">[<I>English</I>]</FloorLanguage>
+        <SubjectOfBusinessTitle>Harbour Bridges</SubjectOfBusinessTitle>
+        <SubjectOfBusinessContent>
+          <Timestamp Hr="10" Mn="05">(1005)</Timestamp>
+          <Intervention Type="Debate" ToC="Yes" ToCText="Ms. Alder" id="1001">
+            <PersonSpeaking><Affiliation DbId="501" Type="2">Ms. Jane Alder (Riverbend—North Shore, CPC)</Affiliation>: </PersonSpeaking>
+            <Content>
+              <ParaText id="2001">Mr. Speaker, the bridge in my riding opened last week.</ParaText>
+              <FloorLanguage language="FR">[<I>Translation</I>]</FloorLanguage>
+              <ParaText id="2002">It connects <Affiliation DbId="502" Type="2">Luc Martel</Affiliation>'s riding to mine.</ParaText>
+            </Content>
+          </Intervention>
+        </SubjectOfBusinessContent>
+      </SubjectOfBusiness>
+    </OrderOfBusiness>
+    <OrderOfBusiness id="920" Rubric="OralQuestionPeriod">
+      <OrderOfBusinessTitle>Oral Questions</OrderOfBusinessTitle>
+      <SubjectOfBusiness id="921">
+        <SubjectOfBusinessTitle>Housing</SubjectOfBusinessTitle>
+        <SubjectOfBusinessContent>
+          <Intervention Type="Question" ToC="Yes" ToCText="Mr. Martel" id="1002">
+            <PersonSpeaking><Affiliation DbId="502" Type="2">Mr. Luc Martel (Lac-Bleu, BQ)</Affiliation>: </PersonSpeaking>
+            <Content>
+              <ParaText id="2003">Mr. Speaker, rents keep rising.</ParaText>
+            </Content>
+          </Intervention>
+          <Intervention Type="Answer" ToC="Yes" ToCText="Mr. Okafor" id="1003">
+            <PersonSpeaking><Affiliation DbId="503" Type="5">Hon. Sam Okafor (Secretary of State (Housing), Lib.)</Affiliation>: </PersonSpeaking>
+            <Content>
+              <Timestamp Hr="14" Mn="20">(1420)</Timestamp>
+              <FloorLanguage language="EN">[<I>English</I>]</FloorLanguage>
+              <ParaText id="2004">Mr. Speaker, we are building more homes.</ParaText>
+            </Content>
+          </Intervention>
+          <Intervention Type="Interjection" ToC="No" ToCText="The Speaker" id="1004">
+            <PersonSpeaking><Affiliation DbId="504" Type="96">The Speaker</Affiliation>: </PersonSpeaking>
+            <Content><ParaText id="2005">Order, please.</ParaText></Content>
+          </Intervention>
+          <Intervention Type="Question" ToC="Yes" ToCText="Mr. Martel" id="1005">
+            <PersonSpeaking><Affiliation DbId="502" Type="2">Mr. Luc Martel</Affiliation>: </PersonSpeaking>
+            <Content><ParaText id="2006">When will rents fall?</ParaText></Content>
+          </Intervention>
+          <Intervention Type="Interjection" ToC="No" ToCText="The Assistant Deputy Speaker" id="1006">
+            <PersonSpeaking><Affiliation DbId="505" Type="92">The Assistant Deputy Speaker (Mrs. Rosa Lind)</Affiliation>: </PersonSpeaking>
+            <Content><ProceduralText id="3">(The sitting was suspended at 2:30 p.m.)</ProceduralText></Content>
+          </Intervention>
+        </SubjectOfBusinessContent>
+      </SubjectOfBusiness>
+    </OrderOfBusiness>
+    <OrderOfBusiness id="930" Rubric="Divisions">
+      <OrderOfBusinessTitle>Government Orders</OrderOfBusinessTitle>
+      <SubjectOfBusiness id="931">
+        <SubjectOfBusinessTitle>Example Act</SubjectOfBusinessTitle>
+        <SubjectOfBusinessContent>
+          <ParaText id="2007">The House resumed consideration of the motion.</ParaText>
+          <ProceduralText id="4">(The House divided on the motion, which was agreed to on the following division:)</ProceduralText>
+          <Division id="940" DivisionNumber="53">
+            <DivisionNumber>(Division No. 53)</DivisionNumber>
+            <DivisionType vote-type="Yeas"><Type>YEAS</Type><Title>Members</Title>
+              <Affiliation DbId="501">Alder</Affiliation><Total> -- 1</Total></DivisionType>
+          </Division>
+        </SubjectOfBusinessContent>
+      </SubjectOfBusiness>
+    </OrderOfBusiness>
+  </HansardBody>
+</Hansard>

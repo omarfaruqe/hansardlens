@@ -1,0 +1,23 @@
+{% extends "base.html" %}{% load i18n humanize hansard %}
+{% block title %}{% translate "Topics" %} – HansardLens{% endblock %}
+{% block content %}
+<h1>{% translate "What members talk about" %}</h1>
+{% if model %}
+  <p class="lede">{% blocktranslate with n=model.n_documents|intcomma k=model.n_topics first=model.first_date|ldate:"month" last=model.last_date|ldate:"month" %}{{ k }} topics found in {{ n }} speeches from {{ first }} to {{ last }}. Each speech is counted under its main topic.{% endblocktranslate %}</p>
+  {% if model.lang != lang %}<p class="small muted">{% if model.lang == "en" %}{% translate "Topics are computed from the English text." %}{% else %}{% translate "Topics are computed from the French text." %}{% endif %}</p>{% endif %}
+  <ol class="topic-list">
+    {% for t in topics %}
+      <li>
+        <a class="topic-name" href="{% url 'topic_detail' t.number %}" lang="{{ model.lang }}">{{ t.label }}</a>
+        <span class="track" aria-hidden="true"><span class="fill" style="width: {{ t.bar }}%"></span></span>
+        <span class="val">{{ t.percent }}%</span>
+        <span class="topic-words" lang="{{ model.lang }}">{% for term, w in t.terms|slice:"4:10" %}{{ term }}{% if not forloop.last %}, {% endif %}{% endfor %}</span>
+      </li>
+    {% endfor %}
+  </ol>
+{% else %}
+  <div class="notice"><p>{% translate "No topic model has been built yet. Run the build_topics command after loading debates." %}</p></div>
+{% endif %}
+<h2>{% translate "How topics are found" %}</h2>
+<p class="method">{% translate "Speeches are turned into word weights (TF-IDF: words frequent in a speech but rare overall weigh more), then split into topics with non-negative matrix factorization (NMF). A topic is a set of words that tend to appear together; the name shown is its strongest words unless an editor has given it a title. Procedural phrases and party names are left out so that topics group speeches by subject. Topics are found by the method, not chosen in advance, and one speech can touch several; only its main topic is counted here." %}</p>
+{% endblock %}

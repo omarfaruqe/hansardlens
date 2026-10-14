@@ -1,0 +1,75 @@
+{% extends "base.html" %}{% load i18n static humanize hansard %}
+{% block title %}{% translate "Trends" %} – HansardLens{% endblock %}
+{% block content %}
+<h1>{% translate "How often a subject comes up" %}</h1>
+<p class="lede">{% translate "Compare up to four words or phrases month by month. Each line shows the share of speech paragraphs that mention the term, so busy and quiet months compare fairly." %}</p>
+
+<form method="get" action="{% url 'trends' %}">
+  <div class="term-inputs">
+    {% for t in terms %}
+      <label>
+        <span><span class="key" style="background: var(--series-{{ forloop.counter }})"></span>{% blocktranslate with n=forloop.counter %}Term {{ n }}{% endblocktranslate %}</span>
+        <input type="search" name="t{{ forloop.counter }}" value="{{ t }}" maxlength="120">
+      </label>
+    {% endfor %}
+  </div>
+  <div class="filter-row">
+    <label>{% translate "Search in" %}
+      <select name="text">
+        <option value="en" {% if lang == "en" %}selected{% endif %}>{% translate "English text" %}</option>
+        <option value="fr" {% if lang == "fr" %}selected{% endif %}>{% translate "French text" %}</option>
+      </select>
+    </label>
+    <label>{% translate "Party" %}
+      <select name="party">
+        <option value="">{% translate "All parties" %}</option>
+        {% for p in parties %}<option value="{{ p }}" {% if party == p %}selected{% endif %}>{{ p|party }}</option>{% endfor %}
+      </select>
+    </label>
+    <label>{% translate "Parliament" %}
+      <select name="parliament">
+        <option value="">{% translate "All" %}</option>
+        {% for p in parliaments %}<option value="{{ p }}" {% if parliament == p %}selected{% endif %}>{{ p|ordinal_parliament }}</option>{% endfor %}
+      </select>
+    </label>
+    <button class="button" type="submit">{% translate "Show trends" %}</button>
+  </div>
+</form>
+
+{% if data.series %}
+  {% if has_data %}
+    <figure class="chart" data-source="trend-data" data-unit-short="" data-denominator-label="{% translate 'paragraphs' %}" data-no-sittings="{% translate 'No sittings this month' %}" data-thin="{% translate 'Too little debate this month to compare' %}" data-label="{% translate 'Mentions per 1,000 paragraphs by month' %}">
+      <figcaption>{% translate "Paragraphs mentioning each term, per 1,000 speech paragraphs" %}</figcaption>
+      <p class="chart-sub">{% if party %}{% blocktranslate with p=party|party %}Speeches by {{ p }} members only.{% endblocktranslate %} {% endif %}{% translate "Gaps are months without sittings or with too little debate to compare. Hover or use the arrow keys for exact values." %}</p>
+      <ul class="legend-row">
+        {% for s in data.series %}<li><span class="key" style="background: var(--series-{{ forloop.counter }})"></span>{{ s.name }} <span class="muted">({{ s.total_hits|intcomma }})</span></li>{% endfor %}
+      </ul>
+      <div class="chart-plot"></div>
+      <details class="table-view">
+        <summary>{% translate "Show the numbers as a table" %}</summary>
+        <div class="table-scroll">
+          <table class="data-table">
+            <thead><tr><th>{% translate "Month" %}</th>{% for s in data.series %}<th>{{ s.name }}</th>{% endfor %}<th>{% translate "Paragraphs" %}</th></tr></thead>
+            <tbody>
+              {% for row in table %}
+                <tr><td>{{ row.month }}</td>{% for v in row.values %}<td>{% if v.value is not None %}{{ v.value }} <span class="muted">({{ v.count }})</span>{% else %}–{% endif %}</td>{% endfor %}<td>{{ row.total|default:"–"|intcomma }}</td></tr>
+              {% endfor %}
+            </tbody>
+          </table>
+        </div>
+      </details>
+    </figure>
+    {{ data|json_script:"trend-data" }}
+  {% else %}
+    <div class="notice"><p>{% translate "None of these terms appear in the selected debates. Check the spelling, or switch the search language." %}</p></div>
+  {% endif %}
+{% else %}
+  <div class="notice">
+    <p>{% translate "Enter at least one term above. For example:" %}
+    <a href="?text={{ lang }}&amp;t1={{ examples.0|urlencode }}&amp;t2={{ examples.1|urlencode }}&amp;t3={{ examples.2|urlencode }}">{{ examples.0 }}, {{ examples.1 }}, {{ examples.2 }}</a></p>
+  </div>
+{% endif %}
+
+<p class="method">{% translate "Method: a paragraph counts once however many times it uses the term. Words are matched with stemming and without accents, the same way as in Search. Chair occupants and procedural text are left out. A rise means the subject took a larger share of debate, not that anyone's position changed." %}</p>
+{% endblock %}
+{% block scripts %}<script src="{% static 'js/linechart.js' %}" defer></script>{% endblock %}

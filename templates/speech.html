@@ -1,0 +1,37 @@
+{% extends "base.html" %}{% load i18n hansard %}
+{% block title %}{{ iv.speaker_display }}, {{ iv.sitting.date|ldate:"date" }} – HansardLens{% endblock %}
+{% block content %}
+<p class="small"><a href="{{ iv.sitting.get_absolute_url }}?text={{ lang }}#iv-{{ iv.sequence }}">{{ iv.sitting.date|ldate:"long" }}</a></p>
+{% field iv "order_title" lang as order %}{% field iv "subject_title" lang as subject %}
+<h1 lang="{{ lang }}">{{ subject|default:order|default:iv.kind }}</h1>
+<p class="speaker">{{ iv.speaker_display }}</p>
+<p class="speech-meta">
+  {% if iv.party %}{{ iv.party|party }}{% endif %}{% if iv.riding %}, {{ iv.riding }}{% endif %}{% if iv.speaker_role and not iv.is_chair %}{% if iv.party %}, {% endif %}<span lang="en">{{ iv.speaker_role }}</span>{% endif %}
+  {% if order and subject %}<br><span lang="{{ lang }}">{{ order }}</span>{% endif %}
+  {% if iv.time %}<br>{% blocktranslate with t=iv.time|time:"H:i" %}Around {{ t }}{% endblocktranslate %}{% endif %}
+</p>
+<p class="legend">{% translate "The marked text is what was actually said on the floor; the other column is the official translation." %}</p>
+<p class="small"><a href="{% with_text other_lang %}">{% if other_lang == "fr" %}{% translate "Show the French text first" %}{% else %}{% translate "Show the English text first" %}{% endif %}</a></p>
+
+<div class="parallel">
+  <div class="parallel-head" aria-hidden="true">
+    <span>{% if lang == "en" %}English{% else %}Français{% endif %}</span>
+    <span class="secondary">{% if lang == "en" %}Français{% else %}English{% endif %}</span>
+  </div>
+  {% for p in paragraphs %}
+    {% field p "text" lang as primary %}{% field p "text" other_lang as secondary %}
+    <div class="para-row" id="p-{{ p.sequence }}">
+      <p class="para {% if p.kind == 'procedural' %}procedural{% endif %} {% if p.floor_language == lang %}original{% endif %}" lang="{{ lang }}">
+        {% if p.floor_language == other_lang %}<span class="para-label">{% if other_lang == "fr" %}{% translate "Translated from French" %}{% else %}{% translate "Translated from English" %}{% endif %}</span>{% endif %}
+        {{ primary }}
+      </p>
+      <p class="para secondary {% if p.kind == 'procedural' %}procedural{% endif %} {% if p.floor_language == other_lang %}original{% endif %}" lang="{{ other_lang }}">{{ secondary }}</p>
+    </div>
+  {% endfor %}
+</div>
+
+<nav class="neighbours" aria-label="{% translate 'Nearby speeches' %}">
+  <span>{% if previous %}<a href="{{ previous.get_absolute_url }}?text={{ lang }}">{% translate "Previous" %}: {{ previous.speaker_display }}</a>{% endif %}</span>
+  <span>{% if next %}<a href="{{ next.get_absolute_url }}?text={{ lang }}">{% translate "Next" %}: {{ next.speaker_display }}</a>{% endif %}</span>
+</nav>
+{% endblock %}

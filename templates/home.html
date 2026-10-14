@@ -1,0 +1,31 @@
+{% extends "base.html" %}{% load i18n hansard humanize %}
+{% block content %}
+<h1>{% translate "What was said in the House of Commons" %}</h1>
+<p class="lede">
+  {% if stats.n %}
+    {% blocktranslate with first=stats.first|ldate:"month" last=stats.last|ldate:"date" n=stats.n|intcomma %}Search every debate from {{ first }} to {{ last }}, in English or French: {{ n }} sittings so far.{% endblocktranslate %}
+  {% else %}
+    {% translate "No debates are loaded yet. Run load_hansard to add sittings." %}
+  {% endif %}
+</p>
+<form class="search-form" action="{% url 'search' %}" method="get" role="search">
+  <div class="searchbar">
+    <input id="q" type="search" name="q" aria-label="{% translate 'Search debates' %}" placeholder="{% translate 'housing, “carbon tax”, souveraineté…' %}" autofocus>
+    <button class="button" type="submit">{% translate "Search" %}</button>
+  </div>
+  <div class="lang-choice" role="radiogroup" aria-label="{% translate 'Search in' %}">
+    <label><input type="radio" name="text" value="en" {% if lang == "en" %}checked{% endif %}> {% translate "English text" %}</label>
+    <label><input type="radio" name="text" value="fr" {% if lang == "fr" %}checked{% endif %}> {% translate "French text" %}</label>
+  </div>
+  <p class="hint">{% blocktranslate %}Use quotes for an exact phrase, <code>OR</code> for either word, and a minus sign to leave a word out: <code>"dental care" -provinces</code>. Accents are optional.{% endblocktranslate %}</p>
+</form>
+
+{% if latest %}
+<h2>{% translate "Latest sittings" %}</h2>
+<ul class="latest">
+  {% for s in latest %}
+    <li><a href="{{ s.get_absolute_url }}">{{ s.date|ldate:"long" }}</a><span class="muted">{% blocktranslate with n=s.number parl=s.parliament|ordinal_parliament %}Sitting {{ n }}, {{ parl }}{% endblocktranslate %}</span></li>
+  {% endfor %}
+</ul>
+{% endif %}
+{% endblock %}

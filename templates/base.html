@@ -1,0 +1,42 @@
+{% load i18n static hansard %}<!doctype html>
+<html lang="{{ LANGUAGE_CODE }}">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>{% block title %}HansardLens{% endblock %}</title>
+  <meta name="description" content="{% translate 'Search and analyse House of Commons of Canada debates in English and French.' %}">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Source+Serif+4:opsz,wght@8..60,400;8..60,600&family=Work+Sans:wght@400;500;600&display=swap">
+  <link rel="stylesheet" href="{% static 'css/site.css' %}">
+</head>
+<body>
+  <a class="skip" href="#main">{% translate "Skip to content" %}</a>
+  <header class="site-header">
+    <div class="wrap">
+      <a class="wordmark" href="{% url 'home' %}">HansardLens</a>
+      <nav class="site-nav" aria-label="{% translate 'Main' %}">
+        {% with name=request.resolver_match.url_name %}
+        <a href="{% url 'search' %}" {% if name == 'search' %}aria-current="page"{% endif %}>{% translate "Search" %}</a>
+        <a href="{% url 'trends' %}" {% if name == 'trends' %}aria-current="page"{% endif %}>{% translate "Trends" %}</a>
+        <a href="{% url 'topics' %}" {% if name == 'topics' or name == 'topic_detail' %}aria-current="page"{% endif %}>{% translate "Topics" %}</a>
+        <a href="{% url 'whats_new' %}" {% if name == 'whats_new' %}aria-current="page"{% endif %}>{% translate "What's new" %}</a>
+        <a href="{% url 'language' %}" {% if name == 'language' %}aria-current="page"{% endif %}>{% translate "Languages" %}</a>
+        <a href="{% url 'sitting_list' %}" {% if name == 'sitting_list' or name == 'sitting_detail' %}aria-current="page"{% endif %}>{% translate "Sittings" %}</a>
+        {% endwith %}
+        {% if LANGUAGE_CODE == "fr" %}<a href="{% switch_language_url %}" lang="en" hreflang="en">English</a>{% else %}<a href="{% switch_language_url %}" lang="fr" hreflang="fr">Français</a>{% endif %}
+      </nav>
+    </div>
+  </header>
+  <main id="main">
+    <div class="wrap">{% block content %}{% endblock %}</div>
+  </main>
+  <footer class="site-footer">
+    <div class="wrap">
+      <p>{% translate "Debate text: House of Commons of Canada, Hansard, reproduced under the Speaker's permission. This is not an official publication of the House of Commons and is not for commercial use." %}</p>
+      <p>{% translate "HansardLens describes what was said. It does not rate parties or members." %} <a href="{% url 'api_docs' %}">{% translate "Open data API" %}</a></p>
+    </div>
+  </footer>
+  {% block scripts %}{% endblock %}
+</body>
+</html>

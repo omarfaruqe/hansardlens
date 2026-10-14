@@ -1,0 +1,85 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- Invented French counterpart of sitting_en.xml (same ids, as in real Hansard).
+     Note intervention 1002 is typed "Debate" here but "Question" in English: real
+     files disagree like this too, and English is kept. -->
+<Hansard xml:lang="FR" id="900001">
+  <ExtractedInformation>
+    <ExtractedItem Name="Date">Le jeudi 31 mars 2022</ExtractedItem>
+    <ExtractedItem Name="SpeakerName">Présidence de l'honorable Pat Example</ExtractedItem>
+    <ExtractedItem Name="MetaVolumeNumber">Volume 151</ExtractedItem>
+    <ExtractedItem Name="MetaNumberNumber">050</ExtractedItem>
+    <ExtractedItem Name="MetaDateNumDay">31</ExtractedItem>
+    <ExtractedItem Name="MetaDateNumMonth">03</ExtractedItem>
+    <ExtractedItem Name="MetaDateNumYear">2022</ExtractedItem>
+    <ExtractedItem Name="SessionNumber">1</ExtractedItem>
+    <ExtractedItem Name="ParliamentNumber">44</ExtractedItem>
+  </ExtractedInformation>
+  <HansardBody>
+    <Intro><ParaText id="1">La séance est ouverte à 10 heures.</ParaText></Intro>
+    <OrderOfBusiness id="910" Rubric="StatementsByMembers">
+      <OrderOfBusinessTitle>Déclarations de députés</OrderOfBusinessTitle>
+      <SubjectOfBusiness id="911">
+        <FloorLanguage language="EN">[<I>Traduction</I>]</FloorLanguage>
+        <SubjectOfBusinessTitle>Les ponts du port</SubjectOfBusinessTitle>
+        <SubjectOfBusinessContent>
+          <Timestamp Hr="10" Mn="05">(1005)</Timestamp>
+          <Intervention Type="Debate" ToC="Yes" ToCText="Mme Alder" id="1001">
+            <PersonSpeaking><Affiliation DbId="501" Type="2">Mme Jane Alder (Riverbend—North Shore, PCC)</Affiliation>: </PersonSpeaking>
+            <Content>
+              <ParaText id="2001">Monsieur le Président, le pont de ma circonscription a ouvert la semaine dernière.</ParaText>
+              <FloorLanguage language="FR">[<I>Français</I>]</FloorLanguage>
+              <ParaText id="2002">Il relie la circonscription de <Affiliation DbId="502" Type="2">Luc Martel</Affiliation> à la mienne.</ParaText>
+            </Content>
+          </Intervention>
+        </SubjectOfBusinessContent>
+      </SubjectOfBusiness>
+    </OrderOfBusiness>
+    <OrderOfBusiness id="920" Rubric="OralQuestionPeriod">
+      <OrderOfBusinessTitle>Questions orales</OrderOfBusinessTitle>
+      <SubjectOfBusiness id="921">
+        <SubjectOfBusinessTitle>Le logement</SubjectOfBusinessTitle>
+        <SubjectOfBusinessContent>
+          <Intervention Type="Debate" ToC="Yes" ToCText="M. Martel" id="1002">
+            <PersonSpeaking><Affiliation DbId="502" Type="2">M. Luc Martel (Lac-Bleu, BQ)</Affiliation>: </PersonSpeaking>
+            <Content><ParaText id="2003">Monsieur le Président, les loyers augmentent toujours.</ParaText></Content>
+          </Intervention>
+          <Intervention Type="Answer" ToC="Yes" ToCText="M. Okafor" id="1003">
+            <PersonSpeaking><Affiliation DbId="503" Type="5">L'hon. Sam Okafor (secrétaire d'État (Logement), Lib.)</Affiliation>: </PersonSpeaking>
+            <Content>
+              <Timestamp Hr="14" Mn="20">(1420)</Timestamp>
+              <FloorLanguage language="EN">[<I>Traduction</I>]</FloorLanguage>
+              <ParaText id="2004">Monsieur le Président, nous construisons plus de logements.</ParaText>
+            </Content>
+          </Intervention>
+          <Intervention Type="Interjection" ToC="No" ToCText="Le Président" id="1004">
+            <PersonSpeaking><Affiliation DbId="504" Type="96">Le Président</Affiliation>: </PersonSpeaking>
+            <Content><ParaText id="2005">À l'ordre.</ParaText></Content>
+          </Intervention>
+          <Intervention Type="Question" ToC="Yes" ToCText="M. Martel" id="1005">
+            <PersonSpeaking><Affiliation DbId="502" Type="2">M. Luc Martel</Affiliation>: </PersonSpeaking>
+            <Content><ParaText id="2006">Quand les loyers baisseront-ils?</ParaText></Content>
+          </Intervention>
+          <Intervention Type="Interjection" ToC="No" ToCText="La vice-présidente adjointe" id="1006">
+            <PersonSpeaking><Affiliation DbId="505" Type="92">La vice-présidente adjointe (Mme Rosa Lind)</Affiliation>: </PersonSpeaking>
+            <Content><ProceduralText id="3">(La séance est suspendue à 14 h 30.)</ProceduralText></Content>
+          </Intervention>
+        </SubjectOfBusinessContent>
+      </SubjectOfBusiness>
+    </OrderOfBusiness>
+    <OrderOfBusiness id="930" Rubric="Divisions">
+      <OrderOfBusinessTitle>Ordres émanant du gouvernement</OrderOfBusinessTitle>
+      <SubjectOfBusiness id="931">
+        <SubjectOfBusinessTitle>Loi exemple</SubjectOfBusinessTitle>
+        <SubjectOfBusinessContent>
+          <ParaText id="2007">La Chambre reprend l'étude de la motion.</ParaText>
+          <ProceduralText id="4">(La motion, mise aux voix, est adoptée par le vote suivant :)</ProceduralText>
+          <Division id="940" DivisionNumber="53">
+            <DivisionNumber>(Vote no 53)</DivisionNumber>
+            <DivisionType vote-type="Yeas"><Type>POUR</Type><Title>Députés</Title>
+              <Affiliation DbId="501">Alder</Affiliation><Total> -- 1</Total></DivisionType>
+          </Division>
+        </SubjectOfBusinessContent>
+      </SubjectOfBusiness>
+    </OrderOfBusiness>
+  </HansardBody>
+</Hansard>

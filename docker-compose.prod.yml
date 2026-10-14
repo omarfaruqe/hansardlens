@@ -1,0 +1,48 @@
+# Production-style stack: gunicorn, DEBUG off, hashed static files, no source mount.
+#   cp .env.example .env   # then set DJANGO_SECRET_KEY, hosts and a strong DB password
+#   docker compose -f docker-compose.prod.yml up -d --build
+services:
+  db:
+    image: postgres:16
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: ${POSTGRES_DB:-hansardlens}
+      POSTGRES_USER: ${POSTGRES_USER:-hansardlens}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:?set POSTGRES_PASSWORD in .env}
+    volumes:
+      - pgdata_prod:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U $${POSTGRES_USER} -d $${POSTGRES_DB}"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
+  web:
+    build: .
+    restart: unless-stopped
+    env_file: .env
+    environment:
+      DJANGO_DEBUG: "0"
+      DJANGO_PRODUCTION: "1"
+      DJANGO_STATIC_MANIFEST: "1"
+      HANSARD_CACHE: file
+      POSTGRES_HOST: db
+    ports:
+      - "8000:8000"
+    volumes:
+      - ./data:/app/data
+    depends_on:
+      db:
+        condition: service_healthy
+    command: >
+      sh -c "python manage.py migrate --noinput &&
+             gunicorn config.wsgi --bind 0.0.0.0:8000 --workers 3 --timeout 60
+             --access-logfile -"
+    healthcheck:
+      test: ["CMD", "python", "-c", "import urllib.request; urllib.request.urlopen('http://localhost:8000/health/')"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+
+volumes:
+  pgdata_prod:

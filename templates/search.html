@@ -1,0 +1,108 @@
+{% extends "base.html" %}{% load i18n hansard humanize %}
+{% block title %}{% if params.q %}{{ params.q }} – {% endif %}{% translate "Search" %} – HansardLens{% endblock %}
+{% block content %}
+<form action="{% url 'search' %}" method="get" role="search">
+  <div class="searchbar">
+    <input type="search" name="q" value="{{ params.q }}" aria-label="{% translate 'Search debates' %}" placeholder="{% translate 'housing, “carbon tax”, souveraineté…' %}">
+    <button class="button" type="submit">{% translate "Search" %}</button>
+  </div>
+  <div class="lang-choice" role="radiogroup" aria-label="{% translate 'Search in' %}">
+    <label><input type="radio" name="text" value="en" {% if params.lang == "en" %}checked{% endif %}> {% translate "English text" %}</label>
+    <label><input type="radio" name="text" value="fr" {% if params.lang == "fr" %}checked{% endif %}> {% translate "French text" %}</label>
+  </div>
+
+  <div class="search-layout">
+    <aside class="filters" aria-label="{% translate 'Filters' %}">
+      <fieldset>
+        <label for="party">{% translate "Party" %}</label>
+        <select id="party" name="party">
+          <option value="">{% translate "All parties" %}</option>
+          {% for p in parties %}<option value="{{ p }}" {% if params.party == p %}selected{% endif %}>{{ p|party }}</option>{% endfor %}
+        </select>
+      </fieldset>
+      <fieldset>
+        <label for="person">{% translate "Member" %}</label>
+        <input id="person" name="person" list="people" value="{{ params.person }}" placeholder="{% translate 'Any member' %}">
+        <datalist id="people">{% for name in people %}<option value="{{ name }}">{% endfor %}</datalist>
+      </fieldset>
+      <fieldset>
+        <label for="rubric">{% translate "Part of the day" %}</label>
+        <select id="rubric" name="rubric">
+          <option value="">{% translate "Any" %}</option>
+          {% for value, label in rubrics.items %}<option value="{{ value }}" {% if params.rubric == value %}selected{% endif %}>{{ label }}</option>{% endfor %}
+        </select>
+      </fieldset>
+      <fieldset>
+        <label for="parliament">{% translate "Parliament" %}</label>
+        <select id="parliament" name="parliament">
+          <option value="">{% translate "All" %}</option>
+          {% for p in parliaments %}<option value="{{ p }}" {% if params.parliament == p %}selected{% endif %}>{{ p|ordinal_parliament }}</option>{% endfor %}
+        </select>
+      </fieldset>
+      <fieldset>
+        <span class="field-label">{% translate "Dates" %}</span>
+        <div class="dates">
+          <input type="date" name="date_from" value="{{ params.date_from|date:'Y-m-d' }}" aria-label="{% translate 'From' %}">
+          <input type="date" name="date_to" value="{{ params.date_to|date:'Y-m-d' }}" aria-label="{% translate 'To' %}">
+        </div>
+      </fieldset>
+      <fieldset>
+        <label for="sort">{% translate "Order" %}</label>
+        <select id="sort" name="sort">
+          {% for value, label in sorts.items %}<option value="{{ value }}" {% if params.sort == value %}selected{% endif %}>{{ label }}</option>{% endfor %}
+        </select>
+      </fieldset>
+      <button class="button" type="submit">{% translate "Apply filters" %}</button>
+
+      {% if party_counts %}
+        <h3>{% translate "Matching paragraphs by party" %}</h3>
+        <ul class="breakdown">
+          {% for p, n in party_counts %}
+            <li><span>{{ p|party }}</span><span class="bar"><span style="width: {{ n|pct_of:total }}%"></span></span><span class="n">{{ n|intcomma }}</span></li>
+          {% endfor %}
+        </ul>
+        <p class="small muted">{% translate "Raw counts. Parties with more seats speak more often, so compare with care." %}</p>
+      {% endif %}
+    </aside>
+
+    <section aria-live="polite">
+      {% if params.errors %}
+        <ul class="errorlist">{% for e in params.errors %}<li>{{ e }}</li>{% endfor %}</ul>
+      {% elif not params.q %}
+        <div class="notice">
+          <p>{% translate "Type a word or phrase to search what members said. Results are paragraphs, each linked to the full speech in both languages." %}</p>
+        </div>
+      {% elif total == 0 %}
+        <div class="notice">
+          <p>{% blocktranslate with q=params.q %}No paragraphs match “{{ q }}”.{% endblocktranslate %}</p>
+          <p class="small">{% if params.lang == "en" %}{% translate "Try fewer words, remove filters, or search the French text instead." %}{% else %}{% translate "Try fewer words, remove filters, or search the English text instead." %}{% endif %}</p>
+        </div>
+      {% else %}
+        <p class="result-count">{% blocktranslate count counter=total with n=total|intcomma %}{{ n }} matching paragraph{% plural %}{{ n }} matching paragraphs{% endblocktranslate %}</p>
+        <ol class="results">
+          {% for p in results %}{% with iv=p.intervention %}
+            <li class="result">
+              <div class="result-head">
+                <strong>{{ iv.speaker_display }}</strong>{% if iv.party %}, {{ iv.party|party }}{% endif %}{% if iv.riding %}, {{ iv.riding }}{% endif %}
+                <br><a href="{{ iv.sitting.get_absolute_url }}?text={{ params.lang }}">{{ iv.sitting.date|ldate:"date" }}</a>
+                {% if p.floor_language and p.floor_language != params.lang and p.floor_language != "text" %}
+                  <span class="tag">{% if p.floor_language == "fr" %}{% translate "spoken in French" %}{% else %}{% translate "spoken in English" %}{% endif %}</span>
+                {% endif %}
+              </div>
+              <p class="result-subject"><a href="{{ iv.get_absolute_url }}?text={{ params.lang }}#p-{{ p.sequence }}" lang="{{ params.lang }}">{% field iv "subject_title" params.lang as subject %}{{ subject|default:iv.kind }}</a></p>
+              <p class="snippet" lang="{{ params.lang }}">{{ p.snippet_html }}</p>
+            </li>
+          {% endwith %}{% endfor %}
+        </ol>
+        {% if page.has_other_pages %}
+          <nav class="pager" aria-label="{% translate 'Pages' %}">
+            {% if page.has_previous %}<a href="?{{ querystring }}&amp;page={{ page.previous_page_number }}">{% translate "Previous" %}</a>{% endif %}
+            <span class="muted">{% blocktranslate with n=page.number of=page.paginator.num_pages %}Page {{ n }} of {{ of }}{% endblocktranslate %}</span>
+            {% if page.has_next %}<a href="?{{ querystring }}&amp;page={{ page.next_page_number }}">{% translate "Next" %}</a>{% endif %}
+          </nav>
+        {% endif %}
+      {% endif %}
+    </section>
+  </div>
+</form>
+{% endblock %}

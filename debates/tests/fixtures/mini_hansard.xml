@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- Invented sample for tests only; NOT real Hansard structure or content. -->
+<Hansard Parliament="44" Session="1">
+  <Sitting Number="1" Date="2021-11-22">
+    <Intervention Type="Statement" Time="10:00">
+      <Speaker Affiliation="Party A">Member One</Speaker>
+      <Text>First paragraph.</Text>
+      <Text>Second paragraph.</Text>
+    </Intervention>
+    <Intervention Type="Question" Time="14:15">
+      <Speaker Affiliation="Party B">Member Two</Speaker>
+      <Text>A question.</Text>
+    </Intervention>
+  </Sitting>
+</Hansard>

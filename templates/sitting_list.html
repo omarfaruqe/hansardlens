@@ -1,0 +1,22 @@
+{% extends "base.html" %}{% load i18n hansard humanize %}
+{% block title %}{% translate "Sittings" %} – HansardLens{% endblock %}
+{% block content %}
+<h1>{% translate "Sittings" %}</h1>
+{% for key, rows in groups %}
+  <h2>{% blocktranslate with parl=key.0|ordinal_parliament s=key.1 %}{{ parl }}, session {{ s }}{% endblocktranslate %}</h2>
+  <table class="sitting-table">
+    <thead><tr><th>{% translate "Date" %}</th><th class="num">{% translate "Sitting" %}</th><th class="num">{% translate "Interventions" %}</th></tr></thead>
+    <tbody>
+      {% for s in rows %}
+        <tr>
+          <td><a href="{{ s.get_absolute_url }}">{{ s.date|ldate:"short" }}</a></td>
+          <td class="num">{{ s.number }}</td>
+          <td class="num">{{ s.n|intcomma }}</td>
+        </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+{% empty %}
+  <p class="notice">{% translate "No sittings are loaded yet." %}</p>
+{% endfor %}
+{% endblock %}

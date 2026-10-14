@@ -1,0 +1,33 @@
+{% extends "base.html" %}{% load i18n hansard %}
+{% block title %}{{ sitting.date|ldate:"date" }} – HansardLens{% endblock %}
+{% block content %}
+<h1>{{ sitting.date|ldate:"long" }}</h1>
+<p class="lede">{% blocktranslate with n=sitting.number parl=sitting.parliament|ordinal_parliament s=sitting.session %}Sitting {{ n }} of the {{ parl }}, session {{ s }}{% endblocktranslate %}{% if sitting.speaker_of_house %}. {% blocktranslate with name=sitting.speaker_of_house %}Speaker: {{ name }}{% endblocktranslate %}{% endif %}</p>
+<p class="small"><a href="{% with_text other_lang %}">{% if other_lang == "fr" %}{% translate "Show the French text" %}{% else %}{% translate "Show the English text" %}{% endif %}</a></p>
+
+{% for section in sections %}
+  {% ifchanged section.order %}{% if section.order %}<h2 class="agenda-order" lang="{{ lang }}">{{ section.order }}</h2>{% endif %}{% endifchanged %}
+  {% if section.subject %}<h3 class="agenda-subject" lang="{{ lang }}">{{ section.subject }}</h3>{% endif %}
+  <ol class="agenda">
+    {% for iv in section.interventions %}
+      <li id="iv-{{ iv.sequence }}">
+        <span class="time">{{ iv.time|time:"H:i"|default:"" }}</span>
+        <span>
+          {% field iv "text" lang as text %}
+          {% if iv.kind == "Procedural" %}
+            <span class="muted" lang="{{ lang }}">{{ text|truncatewords:30 }}</span>
+          {% else %}
+            <a class="who" href="{{ iv.get_absolute_url }}?text={{ lang }}">{{ iv.speaker_display }}</a>{% if iv.party %} <span class="muted">{{ iv.party|party }}</span>{% endif %}<br>
+            <span class="first-words" lang="{{ lang }}">{{ text|truncatewords:28 }}</span>
+          {% endif %}
+        </span>
+      </li>
+    {% endfor %}
+  </ol>
+{% endfor %}
+
+<nav class="neighbours" aria-label="{% translate 'Other sittings' %}">
+  <span>{% if previous %}<a href="{{ previous.get_absolute_url }}?text={{ lang }}">{% translate "Previous sitting" %}: {{ previous.date|ldate:"day" }}</a>{% endif %}</span>
+  <span>{% if next %}<a href="{{ next.get_absolute_url }}?text={{ lang }}">{% translate "Next sitting" %}: {{ next.date|ldate:"day" }}</a>{% endif %}</span>
+</nav>
+{% endblock %}

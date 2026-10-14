@@ -1,0 +1,69 @@
+{% extends "base.html" %}{% load i18n static humanize hansard %}
+{% block title %}{% translate "Languages" %} – HansardLens{% endblock %}
+{% block content %}
+<h1>{% translate "English and French on the floor" %}</h1>
+<p class="lede">{% translate "Hansard is published in both languages, but each speech is given in one. These figures use the language members actually spoke." %}</p>
+
+<form method="get" class="filter-row">
+  <label>{% translate "Parliament" %}
+    <select name="parliament" onchange="this.form.submit()">
+      <option value="">{% translate "All loaded debates" %}</option>
+      {% for p in parliaments %}<option value="{{ p }}" {% if parliament == p %}selected{% endif %}>{{ p|ordinal_parliament }}</option>{% endfor %}
+    </select>
+  </label>
+  <noscript><button class="button" type="submit">{% translate "Show" %}</button></noscript>
+</form>
+
+{% if overall.total %}
+  <p class="stat-line">{% blocktranslate with share=overall.share %}<strong>{{ share }}%</strong> of what members said was spoken in French.{% endblocktranslate %}</p>
+
+  <figure class="chart" data-source="lang-month" data-unit-short="%" data-y-max="{{ y_max }}" data-no-sittings="{% translate 'No sittings this month' %}" data-thin="{% translate 'Too little debate this month to compare' %}" data-label="{% translate 'Share of speech in French by month' %}">
+    <figcaption>{% translate "Share spoken in French, by month" %}</figcaption>
+    <p class="chart-sub">{% translate "Gaps are months without sittings or with too little debate to compare." %}</p>
+    <div class="chart-plot"></div>
+    <details class="table-view">
+      <summary>{% translate "Show the numbers as a table" %}</summary>
+      <div class="table-scroll">
+        <table class="data-table">
+          <thead><tr><th>{% translate "Month" %}</th><th>{% translate "French" %}</th><th>{% translate "Words measured" %}</th></tr></thead>
+          <tbody>{% for row in month_table %}<tr><td>{{ row.0 }}</td><td>{% if row.1 is not None %}{{ row.1 }}%{% else %}–{% endif %}</td><td>{{ row.2|default:"–"|intcomma }}</td></tr>{% endfor %}</tbody>
+        </table>
+      </div>
+    </details>
+  </figure>
+  {{ by_month|json_script:"lang-month" }}
+
+  <h2>{% translate "By party" %}</h2>
+  <ul class="hbars">
+    {% for row in by_party %}
+      <li><span>{{ row.party|party }}</span><span class="track" aria-hidden="true"><span class="fill" style="width: {{ row.share }}%"></span></span><span class="val">{{ row.share }}%</span></li>
+    {% endfor %}
+  </ul>
+  <p class="small muted">{% translate "Parties with at least 20,000 words of speech. A party's share reflects where its members were elected as much as anything else." %}</p>
+
+  <h2>{% translate "By member" %}</h2>
+  <p class="small muted">{% blocktranslate with n=min_member_words|intcomma %}Members with at least {{ n }} words of speech. Party is the most recent one recorded.{% endblocktranslate %}</p>
+  <div class="sort-links">
+    <span>{% translate "Sort by" %}</span>
+    {% for key, label in member_sorts %}
+      {% if sort == key %}<strong>{{ label }}</strong>{% else %}<a href="?sort={{ key }}{% if parliament %}&amp;parliament={{ parliament }}{% endif %}">{{ label }}</a>{% endif %}
+    {% endfor %}
+  </div>
+  <div class="table-scroll" style="max-height: 32rem">
+    <table class="data-table">
+      <thead><tr><th>{% translate "Member" %}</th><th class="text">{% translate "Party" %}</th><th>{% translate "Words measured" %}</th><th>{% translate "French" %}</th></tr></thead>
+      <tbody>
+        {% for row in members %}
+          <tr><td>{{ row.name }}</td><td class="text">{{ row.party|party|default:"–" }}</td><td>{{ row.total|intcomma }}</td><td>{{ row.share }}%</td></tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+{% else %}
+  <div class="notice"><p>{% translate "No debates are loaded yet." %}</p></div>
+{% endif %}
+
+<h2>{% translate "How this is measured" %}</h2>
+<p class="method">{% translate "Hansard marks each passage as spoken in English or French. Every paragraph is measured by the length of its English text, whichever language was spoken, so both languages are counted with the same yardstick (French usually takes more words to say the same thing). Chair occupants, procedural text and written answers are left out." %}</p>
+{% endblock %}
+{% block scripts %}<script src="{% static 'js/linechart.js' %}" defer></script>{% endblock %}

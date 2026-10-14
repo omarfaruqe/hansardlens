@@ -1,0 +1,56 @@
+{% extends "base.html" %}{% load i18n static humanize hansard %}
+{% block title %}{{ topic.label }} – HansardLens{% endblock %}
+{% block content %}
+<p class="small"><a href="{% url 'topics' %}">{% translate "All topics" %}</a></p>
+<h1 lang="{{ model.lang }}">{{ topic.label }}</h1>
+<p class="lede">{% blocktranslate with share=topic_percent n=model.n_documents|intcomma %}The main topic of {{ share }}% of the {{ n }} speeches analysed.{% endblocktranslate %}</p>
+
+<h2>{% translate "Words that define it" %}</h2>
+<ul class="hbars term-bars" lang="{{ model.lang }}">
+  {% for term, w in terms %}
+    <li><a href="{% url 'search' %}?text={{ model.lang }}&amp;q={% if ' ' in term %}%22{{ term|urlencode }}%22{% else %}{{ term|urlencode }}{% endif %}">{{ term }}</a><span class="track" aria-hidden="true"><span class="fill" style="width: {{ w }}%"></span></span><span class="val">{{ w }}</span></li>
+  {% endfor %}
+</ul>
+<p class="small muted">{% translate "Weight relative to the strongest word (100). Click a word to search for it." %}</p>
+
+<figure class="chart" data-source="topic-month" data-unit-short="%" data-denominator-label="{% translate 'speeches' %}" data-no-sittings="{% translate 'No sittings this month' %}" data-thin="{% translate 'Too little debate this month to compare' %}" data-label="{% translate 'Share of speeches on this topic by month' %}">
+  <figcaption>{% translate "Share of each month's speeches with this as the main topic" %}</figcaption>
+  <p class="chart-sub">{% translate "Gaps are months without sittings or with too few speeches to compare." %}</p>
+  <div class="chart-plot"></div>
+  <details class="table-view">
+    <summary>{% translate "Show the numbers as a table" %}</summary>
+    <div class="table-scroll">
+      <table class="data-table">
+        <thead><tr><th>{% translate "Month" %}</th><th>{% translate "Share" %}</th><th>{% translate "Speeches on topic" %}</th><th>{% translate "All speeches" %}</th></tr></thead>
+        <tbody>{% for m, v, c, t in month_table %}<tr><td>{{ m }}</td><td>{% if v is not None %}{{ v }}%{% else %}–{% endif %}</td><td>{{ c|default_if_none:"–" }}</td><td>{{ t|default_if_none:"–" }}</td></tr>{% endfor %}</tbody>
+      </table>
+    </div>
+  </details>
+</figure>
+{{ by_month|json_script:"topic-month" }}
+
+{% if by_party %}
+  <h2>{% translate "Share of each party's speeches" %}</h2>
+  <ul class="hbars">
+    {% for row in by_party %}
+      <li><span>{{ row.party|party }}</span><span class="track" aria-hidden="true"><span class="fill" style="width: {% widthratio row.share by_party.0.share 100 %}%"></span></span><span class="val">{{ row.share }}%</span></li>
+    {% endfor %}
+  </ul>
+  <p class="small muted">{% translate "Out of each party's own speeches, so large and small parties compare fairly. Parties with at least 200 speeches. Bars are scaled to the largest value." %}</p>
+{% endif %}
+
+{% if examples %}
+  <h2>{% translate "Speeches most clearly about this topic" %}</h2>
+  <ol class="results">
+    {% for a in examples %}{% with iv=a.intervention %}
+      <li class="result">
+        <div class="result-head"><strong>{{ iv.speaker_display }}</strong>{% if iv.party %}, {{ iv.party|party }}{% endif %}<br>{{ iv.sitting.date|ldate:"date" }}</div>
+        {% field iv "subject_title" lang as subject %}{% field iv "text" lang as text %}
+        <p class="result-subject"><a href="{{ iv.get_absolute_url }}?text={{ lang }}" lang="{{ lang }}">{{ subject|default:iv.kind }}</a></p>
+        <p class="snippet" lang="{{ lang }}">{{ text|truncatewords:45 }}</p>
+      </li>
+    {% endwith %}{% endfor %}
+  </ol>
+{% endif %}
+{% endblock %}
+{% block scripts %}<script src="{% static 'js/linechart.js' %}" defer></script>{% endblock %}

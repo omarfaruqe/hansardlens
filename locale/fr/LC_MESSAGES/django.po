@@ -1,0 +1,661 @@
+# French translation of the HansardLens interface.
+# Regenerate with: python manage.py makemessages -l fr && python manage.py compilemessages
+msgid ""
+msgstr ""
+"Project-Id-Version: HansardLens 1.0\n"
+"Language: fr\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=(n > 1);\n"
+
+#: templates/404.html
+msgid "Page not found"
+msgstr "Page introuvable"
+
+#: templates/404.html
+msgid "There is nothing at this address. The sitting or speech may not be loaded yet, or the link may be mistyped."
+msgstr "Il n'y a rien à cette adresse. La séance ou l'intervention n'est peut-être pas encore chargée, ou le lien contient une erreur."
+
+#: templates/404.html
+msgid "Search the debates"
+msgstr "Chercher dans les débats"
+
+#: templates/404.html
+msgid "Browse sittings"
+msgstr "Parcourir les séances"
+
+#: templates/base.html
+msgid "Search and analyse House of Commons of Canada debates in English and French."
+msgstr "Chercher et analyser les débats de la Chambre des communes du Canada en français et en anglais."
+
+#: templates/base.html
+msgid "Skip to content"
+msgstr "Aller au contenu"
+
+#: templates/base.html
+msgid "Main"
+msgstr "Navigation principale"
+
+#: templates/base.html templates/home.html templates/search.html
+msgid "Search"
+msgstr "Recherche"
+
+#: templates/base.html templates/trends.html
+msgid "Trends"
+msgstr "Tendances"
+
+#: templates/base.html templates/topics.html
+msgid "Topics"
+msgstr "Thèmes"
+
+#: templates/base.html templates/whats_new.html
+msgid "What's new"
+msgstr "Nouveautés"
+
+#: templates/base.html templates/language.html
+msgid "Languages"
+msgstr "Langues"
+
+#: templates/base.html templates/sitting_list.html
+msgid "Sittings"
+msgstr "Séances"
+
+#: templates/base.html
+msgid "Debate text: House of Commons of Canada, Hansard, reproduced under the Speaker's permission. This is not an official publication of the House of Commons and is not for commercial use."
+msgstr "Texte des débats : Chambre des communes du Canada, Hansard, reproduit avec la permission du Président. Ceci n'est pas une publication officielle de la Chambre des communes et n'est pas destiné à un usage commercial."
+
+#: templates/base.html
+msgid "HansardLens describes what was said. It does not rate parties or members."
+msgstr "HansardLens décrit ce qui a été dit. Il n'évalue ni les partis ni les députés."
+
+#: templates/base.html
+msgid "Open data API"
+msgstr "API de données ouvertes"
+
+#: templates/home.html
+msgid "What was said in the House of Commons"
+msgstr "Ce qui s'est dit à la Chambre des communes"
+
+#: templates/home.html
+#, python-format
+msgid "Search every debate from %(first)s to %(last)s, in English or French: %(n)s sittings so far."
+msgstr "Cherchez dans tous les débats de %(first)s au %(last)s, en français ou en anglais : %(n)s séances à ce jour."
+
+#: templates/home.html
+msgid "No debates are loaded yet. Run load_hansard to add sittings."
+msgstr "Aucun débat n'est encore chargé. Lancez load_hansard pour ajouter des séances."
+
+#: templates/home.html templates/search.html
+msgid "Search debates"
+msgstr "Chercher dans les débats"
+
+#: templates/home.html templates/search.html
+msgid "housing, “carbon tax”, souveraineté…"
+msgstr "logement, « taxe carbone », housing…"
+
+#: templates/home.html templates/search.html templates/trends.html
+msgid "Search in"
+msgstr "Chercher dans"
+
+#: templates/home.html templates/search.html templates/trends.html
+msgid "English text"
+msgstr "le texte anglais"
+
+#: templates/home.html templates/search.html templates/trends.html
+msgid "French text"
+msgstr "le texte français"
+
+#: templates/home.html
+msgid "Use quotes for an exact phrase, <code>OR</code> for either word, and a minus sign to leave a word out: <code>\"dental care\" -provinces</code>. Accents are optional."
+msgstr "Utilisez des guillemets pour une expression exacte, <code>OR</code> pour l'un ou l'autre mot et un signe moins pour exclure un mot : <code>\"soins dentaires\" -provinces</code>. Les accents sont facultatifs."
+
+#: templates/home.html
+msgid "Latest sittings"
+msgstr "Dernières séances"
+
+#: templates/home.html
+#, python-format
+msgid "Sitting %(n)s, %(parl)s"
+msgstr "Séance %(n)s, %(parl)s"
+
+#: templates/language.html
+msgid "English and French on the floor"
+msgstr "Le français et l'anglais à la Chambre"
+
+#: templates/language.html
+msgid "Hansard is published in both languages, but each speech is given in one. These figures use the language members actually spoke."
+msgstr "Le Hansard est publié dans les deux langues, mais chaque intervention est prononcée dans une seule. Ces chiffres reposent sur la langue réellement parlée par les députés."
+
+#: templates/language.html templates/search.html templates/trends.html
+msgid "Parliament"
+msgstr "Législature"
+
+#: templates/language.html
+msgid "All loaded debates"
+msgstr "Tous les débats chargés"
+
+#: templates/language.html
+msgid "Show"
+msgstr "Afficher"
+
+#: templates/language.html
+#, python-format
+msgid "<strong>%(share)s%%</strong> of what members said was spoken in French."
+msgstr "<strong>%(share)s %%</strong> de ce que les députés ont dit l'a été en français."
+
+#: templates/language.html templates/topic_detail.html templates/trends.html
+msgid "No sittings this month"
+msgstr "Aucune séance ce mois-ci"
+
+#: templates/language.html templates/topic_detail.html templates/trends.html
+msgid "Too little debate this month to compare"
+msgstr "Trop peu de débats ce mois-ci pour comparer"
+
+#: templates/language.html
+msgid "Share of speech in French by month"
+msgstr "Part des interventions en français, par mois"
+
+#: templates/language.html
+msgid "Share spoken in French, by month"
+msgstr "Part prononcée en français, par mois"
+
+#: templates/language.html
+msgid "Gaps are months without sittings or with too little debate to compare."
+msgstr "Les vides correspondent aux mois sans séance ou avec trop peu de débats pour comparer."
+
+#: templates/language.html templates/topic_detail.html templates/trends.html
+msgid "Show the numbers as a table"
+msgstr "Afficher les chiffres sous forme de tableau"
+
+#: templates/language.html templates/topic_detail.html templates/trends.html
+msgid "Month"
+msgstr "Mois"
+
+#: templates/language.html
+msgid "French"
+msgstr "Français"
+
+#: templates/language.html
+msgid "Words measured"
+msgstr "Mots mesurés"
+
+#: templates/language.html
+msgid "By party"
+msgstr "Par parti"
+
+#: templates/language.html
+msgid "Parties with at least 20,000 words of speech. A party's share reflects where its members were elected as much as anything else."
+msgstr "Partis comptant au moins 20 000 mots d'interventions. La part d'un parti reflète d'abord les régions où ses députés ont été élus."
+
+#: templates/language.html
+msgid "By member"
+msgstr "Par député"
+
+#: templates/language.html
+#, python-format
+msgid "Members with at least %(n)s words of speech. Party is the most recent one recorded."
+msgstr "Députés comptant au moins %(n)s mots d'interventions. Le parti est le plus récent enregistré."
+
+#: templates/language.html
+msgid "Sort by"
+msgstr "Trier par"
+
+#: templates/language.html templates/search.html
+msgid "Member"
+msgstr "Député"
+
+#: templates/language.html templates/search.html templates/trends.html
+msgid "Party"
+msgstr "Parti"
+
+#: templates/language.html
+msgid "No debates are loaded yet."
+msgstr "Aucun débat n'est encore chargé."
+
+#: templates/language.html templates/whats_new.html
+msgid "How this is measured"
+msgstr "Méthode de mesure"
+
+#: templates/language.html
+msgid "Hansard marks each passage as spoken in English or French. Every paragraph is measured by the length of its English text, whichever language was spoken, so both languages are counted with the same yardstick (French usually takes more words to say the same thing). Chair occupants, procedural text and written answers are left out."
+msgstr "Le Hansard indique pour chaque passage s'il a été prononcé en français ou en anglais. Chaque paragraphe est mesuré par la longueur de son texte anglais, quelle que soit la langue parlée, afin de compter les deux langues avec la même mesure (le français demande généralement plus de mots pour dire la même chose). La présidence, le texte de procédure et les réponses écrites sont exclus."
+
+#: templates/search.html
+msgid "Filters"
+msgstr "Filtres"
+
+#: templates/search.html templates/trends.html
+msgid "All parties"
+msgstr "Tous les partis"
+
+#: templates/search.html
+msgid "Any member"
+msgstr "Tout député"
+
+#: templates/search.html
+msgid "Part of the day"
+msgstr "Moment de la journée"
+
+#: templates/search.html
+msgid "Any"
+msgstr "Tous"
+
+#: templates/search.html templates/trends.html
+msgid "All"
+msgstr "Toutes"
+
+#: templates/search.html
+msgid "Dates"
+msgstr "Dates"
+
+#: templates/search.html
+msgid "From"
+msgstr "Du"
+
+#: templates/search.html
+msgid "To"
+msgstr "Au"
+
+#: templates/search.html
+msgid "Order"
+msgstr "Ordre"
+
+#: templates/search.html
+msgid "Apply filters"
+msgstr "Appliquer les filtres"
+
+#: templates/search.html
+msgid "Matching paragraphs by party"
+msgstr "Paragraphes correspondants par parti"
+
+#: templates/search.html
+msgid "Raw counts. Parties with more seats speak more often, so compare with care."
+msgstr "Nombres bruts. Les partis qui ont plus de sièges interviennent plus souvent : comparez avec prudence."
+
+#: templates/search.html
+msgid "Type a word or phrase to search what members said. Results are paragraphs, each linked to the full speech in both languages."
+msgstr "Tapez un mot ou une expression pour chercher dans ce qu'ont dit les députés. Les résultats sont des paragraphes, chacun relié à l'intervention complète dans les deux langues."
+
+#: templates/search.html
+#, python-format
+msgid "No paragraphs match “%(q)s”."
+msgstr "Aucun paragraphe ne correspond à « %(q)s »."
+
+#: templates/search.html
+msgid "Try fewer words, remove filters, or search the French text instead."
+msgstr "Essayez moins de mots, retirez des filtres ou cherchez plutôt dans le texte français."
+
+#: templates/search.html
+msgid "Try fewer words, remove filters, or search the English text instead."
+msgstr "Essayez moins de mots, retirez des filtres ou cherchez plutôt dans le texte anglais."
+
+#: templates/search.html
+#, python-format
+msgid "%(n)s matching paragraph"
+msgid_plural "%(n)s matching paragraphs"
+msgstr[0] "%(n)s paragraphe correspondant"
+msgstr[1] "%(n)s paragraphes correspondants"
+
+#: templates/search.html
+msgid "spoken in French"
+msgstr "prononcé en français"
+
+#: templates/search.html
+msgid "spoken in English"
+msgstr "prononcé en anglais"
+
+#: templates/search.html
+msgid "Pages"
+msgstr "Pages"
+
+#: templates/search.html templates/speech.html
+msgid "Previous"
+msgstr "Précédent"
+
+#: templates/search.html
+#, python-format
+msgid "Page %(n)s of %(of)s"
+msgstr "Page %(n)s sur %(of)s"
+
+#: templates/search.html templates/speech.html
+msgid "Next"
+msgstr "Suivant"
+
+#: templates/sitting_detail.html
+#, python-format
+msgid "Sitting %(n)s of the %(parl)s, session %(s)s"
+msgstr "Séance %(n)s de la %(parl)s, session %(s)s"
+
+#: templates/sitting_detail.html
+#, python-format
+msgid "Speaker: %(name)s"
+msgstr "Présidence : %(name)s"
+
+#: templates/sitting_detail.html
+msgid "Show the French text"
+msgstr "Afficher le texte français"
+
+#: templates/sitting_detail.html
+msgid "Show the English text"
+msgstr "Afficher le texte anglais"
+
+#: templates/sitting_detail.html
+msgid "Other sittings"
+msgstr "Autres séances"
+
+#: templates/sitting_detail.html
+msgid "Previous sitting"
+msgstr "Séance précédente"
+
+#: templates/sitting_detail.html
+msgid "Next sitting"
+msgstr "Séance suivante"
+
+#: templates/sitting_list.html
+#, python-format
+msgid "%(parl)s, session %(s)s"
+msgstr "%(parl)s, session %(s)s"
+
+#: templates/sitting_list.html
+msgid "Date"
+msgstr "Date"
+
+#: templates/sitting_list.html
+msgid "Sitting"
+msgstr "Séance"
+
+#: templates/sitting_list.html
+msgid "Interventions"
+msgstr "Interventions"
+
+#: templates/sitting_list.html
+msgid "No sittings are loaded yet."
+msgstr "Aucune séance n'est encore chargée."
+
+#: templates/speech.html
+#, python-format
+msgid "Around %(t)s"
+msgstr "Vers %(t)s"
+
+#: templates/speech.html
+msgid "The marked text is what was actually said on the floor; the other column is the official translation."
+msgstr "Le texte marqué est celui qui a réellement été prononcé à la Chambre; l'autre colonne est la traduction officielle."
+
+#: templates/speech.html
+msgid "Show the French text first"
+msgstr "Afficher d'abord le texte français"
+
+#: templates/speech.html
+msgid "Show the English text first"
+msgstr "Afficher d'abord le texte anglais"
+
+#: templates/speech.html
+msgid "Translated from French"
+msgstr "Traduit du français"
+
+#: templates/speech.html
+msgid "Translated from English"
+msgstr "Traduit de l'anglais"
+
+#: templates/speech.html
+msgid "Nearby speeches"
+msgstr "Interventions voisines"
+
+#: templates/topic_detail.html
+msgid "All topics"
+msgstr "Tous les thèmes"
+
+#: templates/topic_detail.html
+#, python-format
+msgid "The main topic of %(share)s%% of the %(n)s speeches analysed."
+msgstr "Thème principal de %(share)s %% des %(n)s interventions analysées."
+
+#: templates/topic_detail.html
+msgid "Words that define it"
+msgstr "Mots qui le définissent"
+
+#: templates/topic_detail.html
+msgid "Weight relative to the strongest word (100). Click a word to search for it."
+msgstr "Poids par rapport au mot le plus fort (100). Cliquez sur un mot pour le chercher."
+
+#: templates/topic_detail.html
+msgid "speeches"
+msgstr "interventions"
+
+#: templates/topic_detail.html
+msgid "Share of speeches on this topic by month"
+msgstr "Part des interventions sur ce thème, par mois"
+
+#: templates/topic_detail.html
+msgid "Share of each month's speeches with this as the main topic"
+msgstr "Part des interventions de chaque mois ayant ce thème principal"
+
+#: templates/topic_detail.html
+msgid "Gaps are months without sittings or with too few speeches to compare."
+msgstr "Les vides correspondent aux mois sans séance ou avec trop peu d'interventions pour comparer."
+
+#: templates/topic_detail.html
+msgid "Share"
+msgstr "Part"
+
+#: templates/topic_detail.html
+msgid "Speeches on topic"
+msgstr "Interventions sur le thème"
+
+#: templates/topic_detail.html
+msgid "All speeches"
+msgstr "Toutes les interventions"
+
+#: templates/topic_detail.html
+msgid "Share of each party's speeches"
+msgstr "Part des interventions de chaque parti"
+
+#: templates/topic_detail.html
+msgid "Out of each party's own speeches, so large and small parties compare fairly. Parties with at least 200 speeches. Bars are scaled to the largest value."
+msgstr "Calculée sur les interventions de chaque parti, pour comparer équitablement grands et petits partis. Partis comptant au moins 200 interventions. Les barres sont proportionnelles à la valeur la plus élevée."
+
+#: templates/topic_detail.html
+msgid "Speeches most clearly about this topic"
+msgstr "Interventions les plus clairement liées à ce thème"
+
+#: templates/topics.html
+msgid "What members talk about"
+msgstr "De quoi parlent les députés"
+
+#: templates/topics.html
+#, python-format
+msgid "%(k)s topics found in %(n)s speeches from %(first)s to %(last)s. Each speech is counted under its main topic."
+msgstr "%(k)s thèmes trouvés dans %(n)s interventions, de %(first)s à %(last)s. Chaque intervention est comptée sous son thème principal."
+
+#: templates/topics.html
+msgid "Topics are computed from the English text."
+msgstr "Les thèmes sont calculés à partir du texte anglais."
+
+#: templates/topics.html
+msgid "Topics are computed from the French text."
+msgstr "Les thèmes sont calculés à partir du texte français."
+
+#: templates/topics.html
+msgid "No topic model has been built yet. Run the build_topics command after loading debates."
+msgstr "Aucun modèle de thèmes n'a encore été construit. Lancez la commande build_topics après avoir chargé les débats."
+
+#: templates/topics.html
+msgid "How topics are found"
+msgstr "Comment les thèmes sont trouvés"
+
+#: templates/topics.html
+msgid "Speeches are turned into word weights (TF-IDF: words frequent in a speech but rare overall weigh more), then split into topics with non-negative matrix factorization (NMF). A topic is a set of words that tend to appear together; the name shown is its strongest words unless an editor has given it a title. Procedural phrases and party names are left out so that topics group speeches by subject. Topics are found by the method, not chosen in advance, and one speech can touch several; only its main topic is counted here."
+msgstr "Les interventions sont converties en poids de mots (TF-IDF : un mot fréquent dans une intervention mais rare ailleurs pèse davantage), puis réparties en thèmes par factorisation en matrices non négatives (NMF). Un thème est un ensemble de mots qui apparaissent souvent ensemble; son nom correspond à ses mots les plus forts, à moins qu'un responsable ne lui ait donné un titre. Les formules de procédure et les noms de partis sont exclus pour que les thèmes regroupent les interventions par sujet. Les thèmes sont trouvés par la méthode, et non choisis d'avance; une intervention peut en toucher plusieurs, mais seul son thème principal est compté ici."
+
+#: templates/trends.html
+msgid "How often a subject comes up"
+msgstr "La fréquence d'un sujet"
+
+#: templates/trends.html
+msgid "Compare up to four words or phrases month by month. Each line shows the share of speech paragraphs that mention the term, so busy and quiet months compare fairly."
+msgstr "Comparez jusqu'à quatre mots ou expressions, mois par mois. Chaque ligne montre la part des paragraphes d'interventions qui mentionnent le terme, pour comparer équitablement les mois chargés et les mois calmes."
+
+#: templates/trends.html
+#, python-format
+msgid "Term %(n)s"
+msgstr "Terme %(n)s"
+
+#: templates/trends.html
+msgid "Show trends"
+msgstr "Afficher les tendances"
+
+#: templates/trends.html
+msgid "paragraphs"
+msgstr "paragraphes"
+
+#: templates/trends.html
+msgid "Mentions per 1,000 paragraphs by month"
+msgstr "Mentions pour 1 000 paragraphes, par mois"
+
+#: templates/trends.html
+msgid "Paragraphs mentioning each term, per 1,000 speech paragraphs"
+msgstr "Paragraphes mentionnant chaque terme, pour 1 000 paragraphes d'interventions"
+
+#: templates/trends.html
+#, python-format
+msgid "Speeches by %(p)s members only."
+msgstr "Interventions des députés du %(p)s seulement."
+
+#: templates/trends.html
+msgid "Gaps are months without sittings or with too little debate to compare. Hover or use the arrow keys for exact values."
+msgstr "Les vides correspondent aux mois sans séance ou avec trop peu de débats pour comparer. Survolez le graphique ou utilisez les flèches pour voir les valeurs exactes."
+
+#: templates/trends.html
+msgid "Paragraphs"
+msgstr "Paragraphes"
+
+#: templates/trends.html
+msgid "None of these terms appear in the selected debates. Check the spelling, or switch the search language."
+msgstr "Aucun de ces termes n'apparaît dans les débats choisis. Vérifiez l'orthographe ou changez la langue de recherche."
+
+#: templates/trends.html
+msgid "Enter at least one term above. For example:"
+msgstr "Entrez au moins un terme ci-dessus. Par exemple :"
+
+#: templates/trends.html
+msgid "Method: a paragraph counts once however many times it uses the term. Words are matched with stemming and without accents, the same way as in Search. Chair occupants and procedural text are left out. A rise means the subject took a larger share of debate, not that anyone's position changed."
+msgstr "Méthode : un paragraphe compte une seule fois, quel que soit le nombre de fois où il emploie le terme. Les mots sont reconnus par leur radical et sans les accents, comme dans la recherche. La présidence et le texte de procédure sont exclus. Une hausse signifie que le sujet a occupé une plus grande part des débats, et non qu'une position a changé."
+
+#: templates/whats_new.html
+msgid "What's new in debate"
+msgstr "Nouveautés dans les débats"
+
+#: templates/whats_new.html
+#, python-format
+msgid "Words and phrases used noticeably more, or less, from %(rs)s to %(re)s than in the year before (%(bs)s to %(be)s)."
+msgstr "Mots et expressions employés nettement plus, ou moins, du %(rs)s au %(re)s que pendant l'année précédente (du %(bs)s au %(be)s)."
+
+#: templates/whats_new.html
+msgid "Computed from the English text."
+msgstr "Calculé à partir du texte anglais."
+
+#: templates/whats_new.html
+msgid "Computed from the French text."
+msgstr "Calculé à partir du texte français."
+
+#: templates/whats_new.html
+msgid "Term"
+msgstr "Terme"
+
+#: templates/whats_new.html
+msgid "Before"
+msgstr "Avant"
+
+#: templates/whats_new.html
+msgid "Recent"
+msgstr "Récent"
+
+#: templates/whats_new.html
+msgid "Strength"
+msgstr "Force"
+
+#: templates/whats_new.html
+msgid "Before and Recent are uses per 10,000 words. Click a term to see its trend over time."
+msgstr "Avant et Récent indiquent le nombre d'emplois pour 10 000 mots. Cliquez sur un terme pour voir son évolution."
+
+#: templates/whats_new.html
+msgid "Nothing computed yet. Run the build_term_shifts command after loading debates."
+msgstr "Rien n'a encore été calculé. Lancez la commande build_term_shifts après avoir chargé les débats."
+
+#: templates/whats_new.html
+msgid "Each term is scored with the log-odds ratio with an informative prior (Monroe, Colaresi and Quinn, 2008): how much more likely the term is in the recent period than before, adjusted so that rare words do not jump to the top by chance. Strength bars show that score; longer means more certain, not more important. A rising term means a subject took more of the conversation, not that any view changed."
+msgstr "Chaque terme reçoit un score de rapport de cotes logarithmique avec a priori informatif (Monroe, Colaresi et Quinn, 2008) : il mesure à quel point le terme est plus probable dans la période récente qu'auparavant, avec un ajustement qui empêche les mots rares de monter en tête par hasard. Les barres de force montrent ce score; une barre plus longue signifie un résultat plus sûr, et non plus important. Un terme en hausse indique qu'un sujet a pris plus de place dans les échanges, et non qu'une opinion a changé."
+
+#: debates/search.py
+msgid "Most relevant"
+msgstr "Les plus pertinents"
+
+#: debates/search.py
+msgid "Newest first"
+msgstr "Les plus récents d'abord"
+
+#: debates/search.py
+msgid "Oldest first"
+msgstr "Les plus anciens d'abord"
+
+#: debates/search.py
+msgid "Oral Questions"
+msgstr "Questions orales"
+
+#: debates/search.py
+msgid "Statements by Members"
+msgstr "Déclarations de députés"
+
+#: debates/search.py
+msgid "Routine Proceedings"
+msgstr "Affaires courantes"
+
+#: debates/search.py
+msgid "Private Members' Business"
+msgstr "Affaires émanant des députés"
+
+#: debates/search.py
+msgid "Adjournment Proceedings"
+msgstr "Débat d'ajournement"
+
+#: debates/search.py
+msgid "Recorded divisions"
+msgstr "Votes par appel nominal"
+
+#: debates/search.py
+msgid "Government Orders and other business"
+msgstr "Ordres émanant du gouvernement et autres affaires"
+
+#: debates/search.py
+msgid "None"
+msgstr "Aucun"
+
+#: debates/search.py
+msgid "Dates must look like 2024-03-31."
+msgstr "Les dates doivent avoir la forme 2024-03-31."
+
+#: debates/templatetags/hansard.py
+#, python-format
+msgid "%(nth)s Parliament"
+msgstr "%(nth)s législature"
+
+#: debates/views.py
+msgid "French share"
+msgstr "Part du français"
+
+#: debates/views.py
+msgid "Words"
+msgstr "Mots"
+
+#: debates/views.py
+msgid "Name"
+msgstr "Nom"
+
+#: debates/views.py
+msgid "Used more"
+msgstr "Employés davantage"
+
+#: debates/views.py
+msgid "Used less"
+msgstr "Employés moins"
