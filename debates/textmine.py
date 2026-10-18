@@ -42,7 +42,10 @@ parties leader opposition prime riding constituents thank thanks deputy chair pr
 did does doing got get gets getting come comes came coming went goes put puts paid pay
 tell told ask asked asking heard hear able clear fact far little long ago yes
 january february march april may june july august september october november december
-""".split()
+speech speeches colleague's member's wonder comments comment remarks intervention
+appreciate listened enjoyed mentioned interesting friend
+""".split()  # last two lines: courtesy around questions ("I thank my colleague for his
+# speech; I wonder ..."), which otherwise forms a topic of its own
 
 FRENCH_STOP = """
 au aux avec ce ces dans de des du elle en et eux il ils je la le les leur lui ma mais me
@@ -63,6 +66,7 @@ comité rapport libéral libéraux libéraux conservateur conservateurs npd bloc
 vert parti partis chef opposition premier circonscription merci vice
 janvier février mars avril mai juin juillet août septembre octobre novembre décembre
 fois chose choses façon oui non
+discours intervention remercie commentaires propos demande demander collègue
 """.split()
 
 STOP_WORDS = {
