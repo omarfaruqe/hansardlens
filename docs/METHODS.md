@@ -10,9 +10,15 @@ a party or a member.
 - **Data:** the official Hansard (Debates) of the House of Commons of Canada, published as
   XML on ourcommons.ca, one file per sitting and language:
   `https://www.ourcommons.ca/Content/House/{parliament}{session}/Debates/{nnn}/HAN{nnn}-{E|F}.XML`.
-- **Coverage in v1.0.0:** the 44th Parliament, 1st session (November 2021 to
+- **Coverage:** the 43rd Parliament, 1st and 2nd sessions (December 2019 to August
+  2021, added in version 1.7), the 44th Parliament, 1st session (November 2021 to
   December 2024, 391 sittings) and the 45th Parliament, 1st session (from May 2025),
   updated daily.
+- **The 43rd Parliament** uses the same XML structure, checked on 19 sittings across
+  both sessions, including the first sitting (election of the Speaker) and the
+  reduced-attendance and hybrid sittings of 2020 and 2021. Those sittings had far fewer
+  members in the chamber at first, so some 2020 recorded votes have about 50 names
+  rather than 330, and one (23 to 23) was decided by the Speaker's casting vote.
 - **Terms:** reproduced under the Speaker's permission, which allows reproduction
   provided it is accurate, is not presented as official, and is not for commercial use.
   Text is stored as published, with whitespace normalized and recorded-vote name lists
@@ -219,8 +225,8 @@ uses. Each term is shown with its rate per 10,000 words in both windows.
 
 ## 11. Limits
 
-- **Coverage:** two sessions; earlier Parliaments use the same XML structure, but have not
-  been loaded or checked.
+- **Coverage:** three Parliaments from December 2019. Earlier Parliaments are not loaded
+  or checked.
 - **Translation:** English and French are translations of each other, not independent
   corpora. A term trend in French text partly reflects translators' choices.
 - **Counting is not meaning:** a rising term means a subject took more of the

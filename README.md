@@ -71,7 +71,10 @@ Docker Compose · pytest · Ruff · GitHub Actions
 cp .env.example .env
 docker compose up -d --build
 
-# Load the 44th and 45th Parliaments (about an hour; downloads are cached in data/raw)
+# Load the 43rd, 44th and 45th Parliaments (about 90 minutes; downloads are cached in
+# data/raw unless you add --no-cache)
+docker compose run --rm web python manage.py load_hansard --parliament 43 --session 1
+docker compose run --rm web python manage.py load_hansard --parliament 43 --session 2
 docker compose run --rm web python manage.py load_hansard --parliament 44 --session 1
 docker compose run --rm web python manage.py load_hansard --parliament 45 --session 1
 

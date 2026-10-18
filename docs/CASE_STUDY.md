@@ -21,7 +21,7 @@ denominator; the site describes what was said and does not rate parties or membe
 | --- | --- |
 | Data | 540 sittings (44th and 45th Parliaments), about 184,000 interventions and 640,000 paragraphs, each in English and French; 1,106 recorded votes with 356,327 individual votes |
 | Stack | Python 3.12, Django 5.2 LTS, PostgreSQL 16, scikit-learn, Django REST Framework, Docker Compose, Caddy, GitHub Actions |
-| Quality | 226 automated tests on PostgreSQL in CI; data-quality report; checks against real sittings |
+| Quality | 238 automated tests on PostgreSQL in CI; data-quality report; checks against real sittings |
 | Operations | Daily automatic refresh, nightly verified backups, failure alerts, pinned and hashed dependencies, weekly update proposals |
 | Interface | Complete English and French interface; WCAG AA text contrast; charts with table views |
 
@@ -107,7 +107,7 @@ and deployed before the next began.
 
 ## Quality
 
-- **Tests:** 226 tests with pytest against PostgreSQL, run in GitHub Actions with
+- **Tests:** 238 tests with pytest against PostgreSQL, run in GitHub Actions with
   linting, formatting and migration checks. They cover the parser, alignment, speaker
   parsing, ingestion against a fake House website (missing sittings, network failures,
   new sessions and Parliaments), search, analysis, topics on a synthetic corpus, votes,
@@ -128,13 +128,12 @@ and deployed before the next began.
 
 ## Limits and next steps
 
-- Two sessions are loaded; earlier Parliaments use the same format but are not yet
-  checked.
+- Three Parliaments are loaded, from December 2019; earlier ones are not yet checked.
 - English and French are translations of each other, so a trend in French text partly
   reflects translators' choices.
 - Topics are a statistical model and change somewhat with its settings.
-- Next: HTTPS with a domain name, an accessibility audit against WCAG 2.1 AA, the 43rd
-  Parliament, and committee evidence.
+- Next: an accessibility audit against WCAG 2.1 AA, earlier Parliaments, and committee
+  evidence.
 
 ## Skills shown
 
@@ -147,4 +146,4 @@ and deployed before the next began.
 | Official languages | Complete French interface, French data side by side, language actually spoken recorded |
 | Accessibility | Contrast, keyboard use, table equivalents for charts, phone layouts |
 | Security and operations | Production settings, non-root containers, pinned dependencies, backups, alerts, health checks, side-by-side deployment |
-| Testing and documentation | 226 tests in CI; README, architecture, methods note, deployment runbook |
+| Testing and documentation | 238 tests in CI; README, architecture, methods note, deployment runbook |

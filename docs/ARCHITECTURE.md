@@ -72,7 +72,7 @@ erDiagram
 
 ## Testing
 
-- 226 tests with pytest against PostgreSQL (CI uses a PostgreSQL service).
+- 238 tests with pytest against PostgreSQL (CI uses a PostgreSQL service).
 - The parser is tested on invented XML with the real structure (real Hansard text is
   never committed), and on real sittings when they have been downloaded locally.
 - The ingestion commands are tested against a fake House website: missing sittings,

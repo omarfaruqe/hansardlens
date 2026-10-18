@@ -1,5 +1,19 @@
 # Changelog
 
+## 1.7.0 – 2026-10-18
+
+- **43rd Parliament:** checked on 19 sittings across both sessions (December 2019 to
+  June 2021): same XML structure, no alignment issues, every speaker matched. Load it
+  with `load_hansard --parliament 43 --session 1` and `--session 2`.
+- **Votes in 2020 sittings:** reduced-attendance sittings print "(The House divided on
+  the motion:)" with the outcome announced afterwards; the result is now read from the
+  Speaker's announcement, so a 23–23 tie decided by the casting vote is recorded
+  correctly.
+- **Bills moved under a generic heading** ("Main Estimates, 2021-22" for an
+  appropriation bill) take their long title as title and are linked only to the debate
+  where they are moved.
+- **`load_hansard --no-cache`** loads without keeping the XML in `data/raw`.
+
 ## 1.6.1 – 2026-10-18
 
 - **French dates:** short dates use the usual French abbreviations (juin, juill., déc.);
