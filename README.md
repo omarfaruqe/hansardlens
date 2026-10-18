@@ -25,7 +25,7 @@ sitting day). **API docs:** http://103.99.176.180/hansardlens/api/docs/
 - **Search** either language at paragraph level: accent-insensitive with stemming,
   `"exact phrases"`, `OR` and `-exclude`, with filters for party, member, part of the
   sitting day, Parliament and dates.
-- **Read** any speech with English and French side by side; the column marked in green
+- **Read** any speech with English and French side by side; the column marked in red
   is what was actually said, the other is the official translation.
 - **Trends:** compare up to four terms month by month, per 1,000 speech paragraphs.
 - **Languages:** share of speech given in French, overall, by month, party and member,

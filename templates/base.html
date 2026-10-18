@@ -8,13 +8,15 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Source+Serif+4:opsz,wght@8..60,400;8..60,600&family=Work+Sans:wght@400;500;600&display=swap">
+  <link rel="icon" href="{% static 'img/leaf.svg' %}" type="image/svg+xml">
+  <meta name="theme-color" content="#b5121b">
   <link rel="stylesheet" href="{% static 'css/site.css' %}">
 </head>
 <body>
   <a class="skip" href="#main">{% translate "Skip to content" %}</a>
   <header class="site-header">
     <div class="wrap">
-      <a class="wordmark" href="{% url 'home' %}">HansardLens</a>
+      <a class="wordmark" href="{% url 'home' %}"><svg class="leaf" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M12 1.2 L13.4 4.4 L15.9 3.5 L15 8.6 L18.3 6.1 L19 8 L22.6 7.3 L21.3 10.7 L23 11.5 L17.4 16 L18.1 18.2 L12.7 17.4 L12.7 22 L11.3 22 L11.3 17.4 L5.9 18.2 L6.6 16 L1 11.5 L2.7 10.7 L1.4 7.3 L5 8 L5.7 6.1 L9 8.6 L8.1 3.5 L10.6 4.4 Z"/></svg>HansardLens</a>
       <nav class="site-nav" aria-label="{% translate 'Main' %}">
         {% with name=request.resolver_match.url_name %}
         <a href="{% url 'search' %}" {% if name == 'search' %}aria-current="page"{% endif %}>{% translate "Search" %}</a>
