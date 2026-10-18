@@ -1,4 +1,4 @@
-"""Serving under a URL prefix, as behind nginx at /maplemetrics/hansardlens/.
+"""Serving under a URL prefix, as behind a reverse proxy at /hansardlens/.
 
 The proxy strips the prefix, so requests arrive as /search/; FORCE_SCRIPT_NAME makes
 Django put the prefix back on every link, static file and cookie."""
@@ -12,7 +12,7 @@ from debates.loader import store
 from debates.parsing import merge, parse_document
 
 FIXTURES = Path(__file__).parent / "fixtures"
-PREFIX = "/maplemetrics/hansardlens"
+PREFIX = "/hansardlens"
 pytestmark = pytest.mark.django_db
 
 subpath = override_settings(

@@ -1,7 +1,8 @@
 # Deploying HansardLens next to another app
 
-Target: `http://103.99.176.180/maplemetrics/hansardlens/`, on a server that already runs
-MapleMetrics at `/maplemetrics/` with Docker.
+Target: `http://103.99.176.180/hansardlens/`, on a server that already runs
+MapleMetrics at `/maplemetrics/` with Docker. The two apps are independent and get
+separate addresses.
 
 How it stays out of MapleMetrics' way:
 
@@ -9,11 +10,11 @@ How it stays out of MapleMetrics' way:
   so its containers, network and database volume are new and separate. Nothing of
   MapleMetrics is stopped, rebuilt or shared.
 - **No public port.** HansardLens listens only on the server's loopback,
-  `127.0.0.1:8010`. It becomes visible only when nginx forwards to it.
+  `127.0.0.1:8010`. It becomes visible only when the gateway (Caddy) forwards to it.
 - **One added proxy block.** The server's gateway is Caddy (container `gateway-caddy-1`,
-  host network, config `/home/faruqe/gateway/Caddyfile`). `/maplemetrics/hansardlens/`
-  is a longer path than `/maplemetrics/`, so Caddy sends only that path to HansardLens.
-  Everything else keeps going to MapleMetrics. Removing the block undoes it.
+  host network, config `/home/faruqe/gateway/Caddyfile`). `/hansardlens/` and
+  `/maplemetrics/` do not overlap, so Caddy sends each path to its own app and the new
+  block cannot affect MapleMetrics. Removing the block undoes it.
 - **Own cookies.** HansardLens cookie names start with `hansardlens_` and are scoped to
   its path, so logins and settings never mix with MapleMetrics.
 
@@ -59,7 +60,7 @@ DJANGO_SECRET_KEY=<the long random value printed above>
 DJANGO_DEBUG=0
 DJANGO_ALLOWED_HOSTS=103.99.176.180,localhost
 DJANGO_CSRF_TRUSTED_ORIGINS=http://103.99.176.180
-DJANGO_SCRIPT_NAME=/maplemetrics/hansardlens
+DJANGO_SCRIPT_NAME=/hansardlens
 HANSARD_CACHE=file
 POSTGRES_PASSWORD=<a strong password, letters and digits only>
 HANSARD_PORT=8010
@@ -141,12 +142,12 @@ nano ~/gateway/Caddyfile
 
 Add these two pieces inside the `:80 { ... }` block (the full result is in
 `deploy/Caddyfile.example`): the redirect next to the existing `redir` line, and the
-`handle_path` block above the MapleMetrics one.
+`handle_path` block after the MapleMetrics one.
 
 ```caddyfile
-	redir /maplemetrics/hansardlens /maplemetrics/hansardlens/ permanent
+	redir /hansardlens /hansardlens/ permanent
 
-	handle_path /maplemetrics/hansardlens/* {
+	handle_path /hansardlens/* {
 		reverse_proxy 127.0.0.1:8010
 	}
 ```
@@ -166,9 +167,9 @@ backup with `cp ~/gateway/Caddyfile.bak-<date> ~/gateway/Caddyfile`.
 
 ## 7. Check it
 
-- http://103.99.176.180/maplemetrics/hansardlens/ shows HansardLens with its styling.
+- http://103.99.176.180/hansardlens/ shows HansardLens with its styling.
 - http://103.99.176.180/maplemetrics/ shows MapleMetrics as before.
-- http://103.99.176.180/maplemetrics/hansardlens/health/ includes the last refresh.
+- http://103.99.176.180/hansardlens/health/ includes the last refresh.
 
 ## Everyday operations
 

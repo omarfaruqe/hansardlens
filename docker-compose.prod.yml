@@ -1,7 +1,7 @@
 # Production stack: gunicorn, DEBUG off, hashed static files, no source mount.
 #
 # It listens only on the server's loopback (127.0.0.1:${HANSARD_PORT:-8010}); the reverse
-# proxy already on the server publishes it, e.g. at /maplemetrics/hansardlens/.
+# proxy already on the server publishes it, e.g. at /hansardlens/.
 # The fixed project name keeps its containers, network and volume separate from any
 # other app on the same host. See deploy/DEPLOY.md.
 #

@@ -120,7 +120,7 @@ USE_I18N = True
 USE_TZ = True
 
 # Optional URL prefix when served behind a reverse proxy under a sub-path, e.g.
-# DJANGO_SCRIPT_NAME=/maplemetrics/hansardlens. The proxy strips the prefix before
+# DJANGO_SCRIPT_NAME=/hansardlens. The proxy strips the prefix before
 # forwarding; Django adds it back to every link, static URL and cookie path.
 SCRIPT_NAME = os.environ.get("DJANGO_SCRIPT_NAME", "").rstrip("/")
 FORCE_SCRIPT_NAME = SCRIPT_NAME or None
