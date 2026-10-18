@@ -132,7 +132,10 @@ under a sub-path (`DJANGO_SCRIPT_NAME`) next to other apps on the same server: s
   policies); `DJANGO_HTTPS=1` adds secure cookies, HSTS and an HTTPS redirect.
 - Shared file cache for analysis results and API rate limits; cache keys include the
   latest load time, so new data refreshes every figure.
-- Non-root container with a health check on `/health/`.
+- Non-root container with a health check on `/health/`, which also reports the last
+  refresh and the newest backup.
+- Nightly database backups with retention and a tested restore procedure; optional
+  email alerts when the refresh or a backup fails (see deploy/DEPLOY.md).
 
 ## Development
 
@@ -143,6 +146,21 @@ docker compose run --rm web ruff format --check .
 ```
 
 GitHub Actions runs the same checks on every push and pull request.
+
+### Updating dependencies
+
+`requirements.in` and `requirements-dev.in` list the version ranges the project accepts.
+`requirements.txt` and `requirements-dev.txt` are generated from them with exact
+versions and checksums, so every build installs the same packages. Dependabot proposes
+updates weekly as pull requests, which CI tests before you merge. To regenerate by hand:
+
+```bash
+pip install pip-tools
+pip-compile --generate-hashes --strip-extras --allow-unsafe -o requirements.txt requirements.in
+pip-compile --generate-hashes --strip-extras --allow-unsafe -o requirements-dev.txt requirements-dev.in
+```
+
+### Translations
 
 Interface translations live in `locale/fr/LC_MESSAGES/`. After changing interface text:
 

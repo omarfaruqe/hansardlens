@@ -69,7 +69,7 @@ HANSARD_PORT=8010
 The container runs as an unprivileged user (uid 1000), so give it the data folder:
 
 ```bash
-mkdir -p data
+mkdir -p data/backups
 sudo chown -R 1000:1000 data
 ```
 
@@ -179,10 +179,73 @@ backup with `cp ~/gateway/Caddyfile.bak-<date> ~/gateway/Caddyfile`.
 | Logs | `docker compose -f docker-compose.prod.yml logs --tail 100 web scheduler` |
 | Refresh now | `docker compose -f docker-compose.prod.yml run --rm web python manage.py refresh_data` |
 | Update the code | `git pull && docker compose -f docker-compose.prod.yml up -d --build` |
-| Back up the database | `docker compose -f docker-compose.prod.yml exec -T db pg_dump -U hansardlens -d hansardlens -Fc > backup-$(date +%F).dump` |
+| Back up now (besides the nightly run) | `docker compose -f docker-compose.prod.yml run --rm backup --now` |
+| List backups | `ls -lh data/backups/` |
 | Admin account | `docker compose -f docker-compose.prod.yml run --rm web python manage.py createsuperuser` |
 
 The stack restarts by itself after a server reboot (`restart: unless-stopped`).
+
+## Backups
+
+The `backup` service dumps the database every night at 02:30 (server time zone
+America/Toronto) into `data/backups/hansardlens-YYYY-MM-DD.dump` and keeps the newest
+three (`BACKUP_KEEP` in `.env`). Each dump is checked as readable before it replaces
+anything, and a server that was off at 02:30 makes the backup when it is back.
+`/hansardlens/health/` shows the newest one and its age in hours.
+
+The dumps are on the same disk as the database, so they protect against mistakes and
+broken updates, not against losing the server. Copy one off the server now and then
+**(Mac)**:
+
+```bash
+mkdir -p ~/Backups/hansardlens
+scp "faruqe@103.99.176.180:~/hansardlens/data/backups/*.dump" ~/Backups/hansardlens/
+```
+
+### Restoring
+
+Restore replaces the current database with a dump. Stop the app first, so nothing
+writes during the restore:
+
+```bash
+cd ~/hansardlens
+docker compose -f docker-compose.prod.yml stop web scheduler
+ls -lh data/backups/                                    # choose a dump
+docker compose -f docker-compose.prod.yml exec -T db \
+  pg_restore -U hansardlens -d hansardlens --no-owner --clean --if-exists \
+  < data/backups/hansardlens-YYYY-MM-DD.dump
+docker compose -f docker-compose.prod.yml start web scheduler
+curl -s http://127.0.0.1:8010/health/
+```
+
+This procedure was tested by restoring a dump into an empty database: same sittings
+and paragraphs, search columns rebuilt, identical search results.
+
+## Alerts
+
+[Healthchecks.io](https://healthchecks.io) (free for a few checks) emails you when a job
+fails or does not report in on time.
+
+1. Create an account and two checks:
+   - **HansardLens refresh**: schedule cron `30 6 * * 2-6`, time zone America/Toronto,
+     grace time 2 hours.
+   - **HansardLens backup**: schedule cron `30 2 * * *`, time zone America/Toronto,
+     grace time 2 hours.
+2. Copy each check's ping URL into `~/hansardlens/.env`:
+
+   ```
+   REFRESH_HEALTHCHECK_URL=https://hc-ping.com/<refresh-uuid>
+   BACKUP_HEALTHCHECK_URL=https://hc-ping.com/<backup-uuid>
+   ```
+
+3. Apply: `docker compose -f docker-compose.prod.yml up -d --force-recreate scheduler backup`
+4. Test the backup alert at once:
+   `docker compose -f docker-compose.prod.yml run --rm backup --now`
+   The backup check turns green on Healthchecks.io within a minute.
+
+The refresh reports its start, its success, or its failure with the error message; you
+get an email for a failure, and also when no success arrives by the end of the grace
+time (server down, scheduler stopped).
 
 ## Removing it again
 

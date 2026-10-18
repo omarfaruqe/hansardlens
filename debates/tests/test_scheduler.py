@@ -88,3 +88,72 @@ def test_health_reports_last_refresh(client, settings, tmp_path):
     body = client.get("/health/").json()
     assert body["refresh"]["status"] == "ok"
     assert body["refresh"]["last_success"].startswith("2026-10-14")
+
+
+class FakePost:
+    def __init__(self, fail=False):
+        self.calls, self.fail = [], fail
+
+    def __call__(self, url, data=b"", timeout=None):
+        if self.fail:
+            import requests
+
+            raise requests.ConnectionError("monitoring down")
+        self.calls.append((url, data.decode()))
+
+
+@pytest.mark.django_db
+def test_healthcheck_pings_start_and_success(settings, tmp_path, monkeypatch):
+    settings.DATA_DIR = tmp_path
+    fake = FakePost()
+    monkeypatch.setenv("REFRESH_HEALTHCHECK_URL", "https://hc.example/abc/")
+    monkeypatch.setattr(rs.requests, "post", fake)
+    monkeypatch.setattr(rs, "call_command", lambda name, **kw: None)
+    call_command("run_scheduler", once=True, days="mon,tue,wed,thu,fri,sat,sun", at="00:00")
+    assert [u for u, _ in fake.calls] == ["https://hc.example/abc/start", "https://hc.example/abc"]
+
+
+@pytest.mark.django_db
+def test_healthcheck_reports_failure_with_the_error(settings, tmp_path, monkeypatch):
+    settings.DATA_DIR = tmp_path
+    fake = FakePost()
+    monkeypatch.setenv("REFRESH_HEALTHCHECK_URL", "https://hc.example/abc")
+
+    def boom(name, **kw):
+        raise CommandError("3 sitting(s) failed to load")
+
+    monkeypatch.setattr(rs.requests, "post", fake)
+    monkeypatch.setattr(rs, "call_command", boom)
+    call_command("run_scheduler", once=True, days="mon,tue,wed,thu,fri,sat,sun", at="00:00")
+    url, body = fake.calls[-1]
+    assert url == "https://hc.example/abc/fail" and "failed to load" in body
+
+
+def test_healthcheck_is_optional_and_never_raises(monkeypatch):
+    calls = FakePost()
+    monkeypatch.setattr(rs.requests, "post", calls)
+    monkeypatch.delenv("REFRESH_HEALTHCHECK_URL", raising=False)
+    rs.ping_healthcheck("/start")
+    assert calls.calls == []
+    monkeypatch.setenv("REFRESH_HEALTHCHECK_URL", "https://hc.example/abc")
+    monkeypatch.setattr(rs.requests, "post", FakePost(fail=True))
+    rs.ping_healthcheck("")  # monitoring outage must not break the refresh
+
+
+@pytest.mark.django_db
+def test_health_reports_latest_backup(client, settings, tmp_path):
+    settings.DATA_DIR = tmp_path
+    backups = tmp_path / "backups"
+    backups.mkdir()
+    (backups / "hansardlens-2026-10-17.dump").write_bytes(b"x")
+    (backups / "hansardlens-2026-10-18.dump").write_bytes(b"xy")
+    (backups / "hansardlens-2026-10-19.dump.partial").write_bytes(b"incomplete")
+    backup = client.get("/health/").json()["backup"]
+    assert backup["latest"] == "hansardlens-2026-10-18.dump"
+    assert backup["count"] == 2 and backup["age_hours"] is not None
+
+
+@pytest.mark.django_db
+def test_health_without_backups(client, settings, tmp_path):
+    settings.DATA_DIR = tmp_path
+    assert client.get("/health/").json()["backup"] == {"latest": None, "count": 0}

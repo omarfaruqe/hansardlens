@@ -8,18 +8,24 @@ Catches up: if the computer was asleep or off at the scheduled time, the run hap
 as soon as the scheduler is running again. After a failure it retries every hour until
 it succeeds or the next scheduled time comes. Status is written to
 data/scheduler_state.json and shown by /health/.
+
+Alerts: if REFRESH_HEALTHCHECK_URL is set (for example a Healthchecks.io check), each run
+pings URL/start, then URL on success or URL/fail with the error. The service emails you
+when a run fails or when no success arrives on time (server or scheduler down).
 """
 
 from __future__ import annotations
 
 import datetime as dt
 import json
+import os
 import signal
 import sys
 import time
 from pathlib import Path
 from zoneinfo import ZoneInfo
 
+import requests
 from django.conf import settings
 from django.core.management import call_command
 from django.core.management.base import BaseCommand, CommandError
@@ -89,6 +95,18 @@ def is_due(
     return last_attempt is None or last_attempt < slot or now - last_attempt >= retry
 
 
+def ping_healthcheck(suffix: str = "", message: str = "") -> None:
+    """Report to the monitoring URL, if configured. Never raises: monitoring must not
+    break the refresh itself."""
+    url = os.environ.get("REFRESH_HEALTHCHECK_URL", "").rstrip("/")
+    if not url:
+        return
+    try:
+        requests.post(f"{url}{suffix}", data=message.encode()[:10_000], timeout=10)
+    except requests.RequestException:
+        pass
+
+
 def _parse_time(value: str | None) -> dt.datetime | None:
     return dt.datetime.fromisoformat(value) if value else None
 
@@ -146,14 +164,17 @@ class Command(BaseCommand):
         state.update(command=command, last_attempt=started.isoformat(), status="running")
         save_state(state)
         self.log(f"starting {command}")
+        ping_healthcheck("/start")
         close_old_connections()
         try:
             call_command(command, stdout=self.stdout, stderr=self.stderr)
         except Exception as exc:  # keep the scheduler alive whatever happens
             state.update(status="failed", last_error=f"{type(exc).__name__}: {exc}"[:500])
             self.log(f"{command} failed: {exc}; will retry")
+            ping_healthcheck("/fail", state["last_error"])
         else:
             state.update(status="ok", last_success=started.isoformat(), last_error="")
+            ping_healthcheck("", f"{command} finished")
             self.log(f"{command} finished in {(dt.datetime.now(self.tz) - started).seconds} s")
         finally:
             close_old_connections()
