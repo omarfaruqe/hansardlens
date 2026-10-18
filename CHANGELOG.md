@@ -1,5 +1,15 @@
 # Changelog
 
+## 1.3.1 – 2026-10-18
+
+- **Backups:** only one backup runs at a time (a lock in the backup folder; a lock left
+  by a killed run is cleared after two hours), and each run writes its own temporary
+  file. Previously a manual `--now` started alongside the service's catch-up run failed.
+- **Dependabot:** major upgrades of Django (beyond the 5.2 LTS line), PostgreSQL and the
+  Python base image, and other major versions, are no longer proposed; they are planned
+  upgrades.
+- **Docs:** the server health check sends `Host: localhost`, which the site accepts.
+
 ## 1.3.0 – 2026-10-18
 
 - **Reproducible builds:** `requirements.in` / `requirements-dev.in` hold the accepted
