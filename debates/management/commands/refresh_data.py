@@ -6,6 +6,7 @@
 
 Continues the most recent session. When it has nothing new, it checks whether a new
 session (prorogation) or a new Parliament (election) has started, and follows it.
+Bills are relinked to their debates and votes whenever something new arrived.
 The topic model is refit when --topics is given or when it is more than 7 days old.
 Exits with an error status if any sitting failed to load, so a scheduler can alert.
 """
@@ -27,7 +28,7 @@ TOPIC_MAX_AGE = dt.timedelta(days=7)
 
 
 class Command(BaseCommand):
-    help = "Load new sittings and refresh term shifts (and topics weekly)."
+    help = "Load new sittings, refresh term shifts and bills (and topics weekly)."
 
     def add_arguments(self, parser):
         parser.add_argument("--sleep", type=float, default=1.0)
@@ -96,6 +97,7 @@ class Command(BaseCommand):
         if not o["skip_analysis"] and Sitting.objects.exists():
             if new:
                 self._run("build_term_shifts")
+                self._run("build_bills")
             model = TopicModel.objects.filter(lang="en", is_active=True).first()
             stale = model is None or timezone.now() - model.created_at > TOPIC_MAX_AGE
             if o["topics"] or (new and stale):

@@ -68,14 +68,15 @@ def test_term_shifts_run_after_new_sittings(house, monkeypatch):
     real = call_command
 
     def spy(name, *args, **kwargs):
-        if name in ("build_term_shifts", "build_topics"):
+        if name in ("build_term_shifts", "build_bills", "build_topics"):
             ran.append(name)
             return None
         return real(name, *args, **kwargs)
 
     monkeypatch.setattr("debates.management.commands.refresh_data.call_command", spy)
     call_command("refresh_data", sleep=0)
-    assert ran == ["build_term_shifts", "build_topics"]  # no topic model yet -> built
+    # no topic model yet -> built
+    assert ran == ["build_term_shifts", "build_bills", "build_topics"]
     assert TermShift.objects.count() == 0  # spy stood in for the real command
 
 

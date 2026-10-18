@@ -117,6 +117,10 @@ class Intervention(models.Model):
     person = models.ForeignKey(
         Person, null=True, blank=True, on_delete=models.SET_NULL, related_name="interventions"
     )
+    # The bill under debate, set by build_bills (null outside bill debates).
+    bill = models.ForeignKey(
+        "Bill", null=True, blank=True, on_delete=models.SET_NULL, related_name="interventions"
+    )
     speaker_db_id = models.CharField(max_length=20, blank=True)
     speaker_type = models.CharField(max_length=10, blank=True)
     speaker_label_en = models.CharField(max_length=400, blank=True)
@@ -322,6 +326,11 @@ class Division(models.Model):
     yeas = models.PositiveSmallIntegerField(default=0)
     nays = models.PositiveSmallIntegerField(default=0)
     paired = models.PositiveSmallIntegerField(default=0)
+    # Set by build_bills: the bill voted on and the stage moved before the vote.
+    bill = models.ForeignKey(
+        "Bill", null=True, blank=True, on_delete=models.SET_NULL, related_name="divisions"
+    )
+    bill_stage = models.CharField(max_length=12, blank=True)
 
     class Meta:
         ordering = ["sitting", "number"]
@@ -383,3 +392,58 @@ class Vote(models.Model):
 
     def __str__(self):
         return f"{self.division}: {self.label} {self.choice}"
+
+
+class Bill(models.Model):
+    """A bill debated in the House in one session, found from the motions that move it
+    ("moved that Bill C-37, An Act ..., be read the second time") by build_bills."""
+
+    parliament = models.PositiveSmallIntegerField()
+    session = models.PositiveSmallIntegerField()
+    code = models.CharField(max_length=8)  # "C-37", "S-214"
+    number = models.PositiveSmallIntegerField()  # 37, for sorting
+    short_title_en = models.CharField(max_length=300, blank=True)
+    short_title_fr = models.CharField(max_length=300, blank=True)
+    long_title_en = models.TextField(blank=True)
+    long_title_fr = models.TextField(blank=True)
+    first_date = models.DateField(null=True)
+    last_date = models.DateField(null=True)
+    speeches = models.PositiveIntegerField(default=0)  # in its own debates
+    mentions = models.PositiveIntegerField(default=0)  # paragraphs naming it, anywhere
+    # [{"date", "stage", "event": "moved"|"done", "sitting": [p, s, n], "sequence"}]
+    timeline = models.JSONField(default=list)
+
+    class Meta:
+        ordering = ["parliament", "session", "code"]
+        constraints = [
+            models.UniqueConstraint(
+                fields=["parliament", "session", "code"], name="unique_bill_code"
+            )
+        ]
+
+    def __str__(self):
+        return f"{self.parliament}-{self.session} {self.code}"
+
+    @property
+    def is_senate(self) -> bool:
+        return self.code.startswith("S")
+
+    def get_absolute_url(self):
+        from django.urls import reverse
+
+        return reverse("bill_detail", args=[(self.parliament, self.session), self.code])
+
+    def legisinfo_url(self, lang: str = "en") -> str:
+        lang = "fr" if lang == "fr" else "en"
+        return (
+            f"https://www.parl.ca/legisinfo/{lang}/bill/{self.parliament}-{self.session}/"
+            f"{self.code.lower()}"
+        )
+
+    @property
+    def legisinfo_url_en(self) -> str:
+        return self.legisinfo_url("en")
+
+    @property
+    def legisinfo_url_fr(self) -> str:
+        return self.legisinfo_url("fr")
