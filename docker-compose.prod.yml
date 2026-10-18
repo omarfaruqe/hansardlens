@@ -1,6 +1,13 @@
-# Production-style stack: gunicorn, DEBUG off, hashed static files, no source mount.
-#   cp .env.example .env   # then set DJANGO_SECRET_KEY, hosts and a strong DB password
+# Production stack: gunicorn, DEBUG off, hashed static files, no source mount.
+#
+# It listens only on the server's loopback (127.0.0.1:${HANSARD_PORT:-8010}); the reverse
+# proxy already on the server publishes it, e.g. at /maplemetrics/hansardlens/.
+# The fixed project name keeps its containers, network and volume separate from any
+# other app on the same host. See deploy/DEPLOY.md.
+#
 #   docker compose -f docker-compose.prod.yml up -d --build
+name: hansardlens
+
 services:
   db:
     image: postgres:16
@@ -21,14 +28,14 @@ services:
     build: .
     restart: unless-stopped
     env_file: .env
-    environment:
+    environment: &prod-env
       DJANGO_DEBUG: "0"
       DJANGO_PRODUCTION: "1"
       DJANGO_STATIC_MANIFEST: "1"
       HANSARD_CACHE: file
       POSTGRES_HOST: db
     ports:
-      - "8000:8000"
+      - "${HANSARD_BIND:-127.0.0.1}:${HANSARD_PORT:-8010}:8000"
     volumes:
       - ./data:/app/data
     depends_on:
@@ -36,13 +43,27 @@ services:
         condition: service_healthy
     command: >
       sh -c "python manage.py migrate --noinput &&
-             gunicorn config.wsgi --bind 0.0.0.0:8000 --workers 3 --timeout 60
-             --access-logfile -"
+             gunicorn config.wsgi --bind 0.0.0.0:8000 --workers $${GUNICORN_WORKERS:-2}
+             --timeout 60 --access-logfile -"
     healthcheck:
       test: ["CMD", "python", "-c", "import urllib.request; urllib.request.urlopen('http://localhost:8000/health/')"]
       interval: 30s
       timeout: 5s
       retries: 3
+
+  # Downloads new sittings and updates the analysis on a timetable.
+  # Logs: docker compose -f docker-compose.prod.yml logs -f scheduler
+  scheduler:
+    build: .
+    restart: unless-stopped
+    env_file: .env
+    environment: *prod-env
+    volumes:
+      - ./data:/app/data
+    depends_on:
+      db:
+        condition: service_healthy
+    command: python manage.py run_scheduler --at 06:30 --days tue,wed,thu,fri,sat
 
 volumes:
   pgdata_prod:

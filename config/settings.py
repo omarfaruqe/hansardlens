@@ -119,7 +119,21 @@ TIME_ZONE = "America/Toronto"
 USE_I18N = True
 USE_TZ = True
 
-STATIC_URL = "static/"
+# Optional URL prefix when served behind a reverse proxy under a sub-path, e.g.
+# DJANGO_SCRIPT_NAME=/maplemetrics/hansardlens. The proxy strips the prefix before
+# forwarding; Django adds it back to every link, static URL and cookie path.
+SCRIPT_NAME = os.environ.get("DJANGO_SCRIPT_NAME", "").rstrip("/")
+FORCE_SCRIPT_NAME = SCRIPT_NAME or None
+COOKIE_PATH = f"{SCRIPT_NAME}/" if SCRIPT_NAME else "/"
+SESSION_COOKIE_PATH = CSRF_COOKIE_PATH = LANGUAGE_COOKIE_PATH = COOKIE_PATH
+# Distinct names, so another Django app on the same host never shares these cookies.
+SESSION_COOKIE_NAME = "hansardlens_sessionid"
+CSRF_COOKIE_NAME = "hansardlens_csrftoken"
+
+# Absolute when prefixed: gunicorn starts Django without setting the script prefix, so a
+# relative STATIC_URL would be cached unprefixed. WhiteNoise strips FORCE_SCRIPT_NAME
+# from it again when matching incoming (already stripped) paths.
+STATIC_URL = f"{SCRIPT_NAME}/static/" if SCRIPT_NAME else "static/"
 STATICFILES_DIRS = [BASE_DIR / "static"]
 STATIC_ROOT = BASE_DIR / "staticfiles"
 STORAGES = {

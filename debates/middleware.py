@@ -26,6 +26,7 @@ class LanguageParameterMiddleware:
                 settings.LANGUAGE_COOKIE_NAME,
                 chosen,
                 max_age=settings.LANGUAGE_COOKIE_AGE,
+                path=settings.LANGUAGE_COOKIE_PATH,
                 samesite=settings.LANGUAGE_COOKIE_SAMESITE,
                 secure=getattr(settings, "LANGUAGE_COOKIE_SECURE", False),
             )
