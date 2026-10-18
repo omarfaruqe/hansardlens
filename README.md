@@ -18,7 +18,17 @@ sitting day). **API docs:** http://103.99.176.180/hansardlens/api/docs/
 | ---------------------- | ---------------- |
 | ![A speech in English and French side by side; the language actually spoken is marked](docs/screenshots/speech.png) | ![Search in the French interface](docs/screenshots/search-fr.png) |
 
+| Recorded vote by party | Bill page |
+| ---------------------- | --------- |
+| ![A recorded vote with counts, a breakdown by party and each member's vote](docs/screenshots/vote.png) | ![A bill page with its stages in the House, speakers and debate days](docs/screenshots/bill.png) |
+
+| Members | Votes in the French interface |
+| ------- | ----------------------------- |
+| ![The list of members with party, riding, speeches and last appearance](docs/screenshots/members.png) | ![The list of recorded votes in French](docs/screenshots/votes-fr.png) |
+
 *Screenshots from a development database with a sample of sittings.*
+
+**How it was built and why:** [docs/CASE_STUDY.md](docs/CASE_STUDY.md).
 
 ## Features
 
