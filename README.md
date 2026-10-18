@@ -53,10 +53,13 @@ sitting day). **API docs:** http://103.99.176.180/hansardlens/api/docs/
   within each party's own speeches.
 - **What's new:** terms rising or fading in the last 60 days of sittings compared with the
   year before (log-odds ratio with an informative prior).
+- **Accessible:** audited against WCAG 2.1 AA, keyboard-usable charts whose values are
+  read out, and an accessibility statement at `/accessibility/`.
 - **Bilingual interface** throughout, with House terminology, French dates and ordinals.
 - **REST API** under `/api/v1/` with interactive OpenAPI docs.
 
 How each number is computed, and its limits: **[docs/METHODS.md](docs/METHODS.md)**.
+Accessibility (WCAG 2.1 AA audit, fixes and limits): **[docs/ACCESSIBILITY.md](docs/ACCESSIBILITY.md)**.
 How the code is organised: **[docs/ARCHITECTURE.md](docs/ARCHITECTURE.md)**.
 
 ## Stack

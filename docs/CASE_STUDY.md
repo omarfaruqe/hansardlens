@@ -21,9 +21,9 @@ denominator; the site describes what was said and does not rate parties or membe
 | --- | --- |
 | Data | 709 sittings from December 2019 (43rd, 44th and 45th Parliaments): 237,383 interventions and 840,469 paragraphs, each in English and French; 1,317 recorded votes with 422,392 individual votes; 699 bills; 550 people |
 | Stack | Python 3.12, Django 5.2 LTS, PostgreSQL 16, scikit-learn, Django REST Framework, Docker Compose, Caddy, GitHub Actions |
-| Quality | 238 automated tests on PostgreSQL in CI; data-quality report; checks against real sittings |
+| Quality | 274 automated tests on PostgreSQL in CI; data-quality report; checks against real sittings |
 | Operations | Daily automatic refresh, nightly verified backups, failure alerts, pinned and hashed dependencies, weekly update proposals |
-| Interface | Complete English and French interface; WCAG AA text contrast; charts with table views |
+| Interface | Complete English and French interface; audited against WCAG 2.1 AA with a published accessibility statement; charts with table views and keyboard access |
 
 ## The problem
 
@@ -74,6 +74,7 @@ and deployed before the next began.
 | 1.5 | Recorded votes: parsing, member matching, party lines, vote pages and API |
 | 1.6 | Bill pages: stages in the House, votes, debates and speakers, linked to LEGISinfo |
 | 1.7 | The 43rd Parliament (2019–2021), including the reduced-attendance and hybrid sittings of the pandemic |
+| 1.8 | Accessibility audit against WCAG 2.1 AA, fixes and a bilingual accessibility statement |
 
 ## Decisions and trade-offs
 
@@ -107,15 +108,17 @@ and deployed before the next began.
 
 ## Quality
 
-- **Tests:** 238 tests with pytest against PostgreSQL, run in GitHub Actions with
+- **Tests:** 274 tests with pytest against PostgreSQL, run in GitHub Actions with
   linting, formatting and migration checks. They cover the parser, alignment, speaker
   parsing, ingestion against a fake House website (missing sittings, network failures,
   new sessions and Parliaments), search, analysis, topics on a synthetic corpus, votes,
   bills, the API, both interface languages and hosting under a sub-path.
 - **Real data:** tests also run against real sittings when they have been downloaded.
-- **Accessibility:** text contrast of 6.4:1 or more, skip link, keyboard-usable charts
-  with table equivalents, `lang` attributes on every passage, layouts checked at phone
-  width.
+- **Accessibility:** audited against WCAG 2.1 AA (axe-core on every page type in both
+  languages at two widths, keyboard, reflow at 320 px, computed contrast); 13 issues
+  fixed, from invisible focus on the red header to chart values that screen readers
+  could not hear. Report in [ACCESSIBILITY.md](ACCESSIBILITY.md); statement on the site
+  at `/accessibility/`; structural checks run as tests on every push.
 
 ## Operations
 
@@ -132,8 +135,7 @@ and deployed before the next began.
 - English and French are translations of each other, so a trend in French text partly
   reflects translators' choices.
 - Topics are a statistical model and change somewhat with its settings.
-- Next: an accessibility audit against WCAG 2.1 AA, earlier Parliaments, and committee
-  evidence.
+- Next: testing with screen-reader users, earlier Parliaments, and committee evidence.
 
 ## Skills shown
 
@@ -144,6 +146,6 @@ and deployed before the next began.
 | Databases | PostgreSQL full-text search configurations, generated columns, GIN indexes, migrations with data backfills |
 | Analysis and machine learning | Rates with stated denominators, TF-IDF and NMF topics, log-odds term shifts, methods note with limits |
 | Official languages | Complete French interface, French data side by side, language actually spoken recorded |
-| Accessibility | Contrast, keyboard use, table equivalents for charts, phone layouts |
+| Accessibility | WCAG 2.1 AA audit and fixes, accessibility statement, automated structural tests, keyboard-usable charts with live values |
 | Security and operations | Production settings, non-root containers, pinned dependencies, backups, alerts, health checks, side-by-side deployment |
-| Testing and documentation | 238 tests in CI; README, architecture, methods note, deployment runbook |
+| Testing and documentation | 274 tests in CI; README, architecture, methods note, deployment runbook |

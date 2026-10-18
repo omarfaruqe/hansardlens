@@ -1,5 +1,22 @@
 # Changelog
 
+## 1.8.0 – 2026-10-18
+
+- **Accessibility audit** against WCAG 2.1 AA: axe-core on every page type in English
+  and French at desktop and phone widths, keyboard testing, reflow at 320 px and
+  computed contrast. Report in `docs/ACCESSIBILITY.md`; `tools/a11y_audit.js` reruns it.
+- **Fixes:** visible keyboard focus on the red header and on date fields; form field
+  borders, chart lines and bars at 3:1 or more; placeholder contrast; a level-one
+  heading and correct heading order on the search page; no autofocus on the home page;
+  the Languages page applies its filter with a button; current sort marked for screen
+  readers; the API documentation page has a language, main landmark and heading.
+- **Charts:** keys explained in each chart's accessible name, values read out as the
+  keyboard moves between months, Home and End keys, and Escape closes the tooltip.
+- **Accessibility statement** at `/accessibility/` in English and French, linked from
+  every page.
+- **Tests:** structural accessibility checks (language, title, headings, landmarks,
+  skip link, labels) on 17 pages in both languages.
+
 ## 1.7.1 – 2026-10-18
 
 - **Topics:** courtesy around questions ("I thank my colleague for his speech; I
