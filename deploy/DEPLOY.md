@@ -111,7 +111,7 @@ docker compose -f docker-compose.prod.yml run --rm web python manage.py build_te
 ```bash
 docker compose -f docker-compose.prod.yml up -d --build
 docker compose -f docker-compose.prod.yml ps
-curl -s http://127.0.0.1:8010/health/
+curl -s -H 'Host: localhost' http://127.0.0.1:8010/health/
 ```
 
 `ps` should show `db`, `web` (healthy after about 30 seconds) and `scheduler`. The
@@ -215,7 +215,7 @@ docker compose -f docker-compose.prod.yml exec -T db \
   pg_restore -U hansardlens -d hansardlens --no-owner --clean --if-exists \
   < data/backups/hansardlens-YYYY-MM-DD.dump
 docker compose -f docker-compose.prod.yml start web scheduler
-curl -s http://127.0.0.1:8010/health/
+curl -s -H 'Host: localhost' http://127.0.0.1:8010/health/
 ```
 
 This procedure was tested by restoring a dump into an empty database: same sittings
