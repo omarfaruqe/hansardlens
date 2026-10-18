@@ -10,9 +10,10 @@ How it stays out of MapleMetrics' way:
   MapleMetrics is stopped, rebuilt or shared.
 - **No public port.** HansardLens listens only on the server's loopback,
   `127.0.0.1:8010`. It becomes visible only when nginx forwards to it.
-- **One added nginx location.** `/maplemetrics/hansardlens/` is a longer prefix than
-  `/maplemetrics/`, so nginx sends only that path to HansardLens. Everything else keeps
-  going to MapleMetrics. Removing the block undoes it.
+- **One added proxy block.** The server's gateway is Caddy (container `gateway-caddy-1`,
+  host network, config `/home/faruqe/gateway/Caddyfile`). `/maplemetrics/hansardlens/`
+  is a longer path than `/maplemetrics/`, so Caddy sends only that path to HansardLens.
+  Everything else keeps going to MapleMetrics. Removing the block undoes it.
 - **Own cookies.** HansardLens cookie names start with `hansardlens_` and are scoped to
   its path, so logins and settings never mix with MapleMetrics.
 
@@ -28,11 +29,14 @@ sudo ss -ltnp | grep -E ':(80|443|8010) '
 docker ps --format 'table {{.Names}}\t{{.Image}}\t{{.Ports}}'
 ```
 
-The `ss` line shows what serves port 80, which decides step 6:
+The `ss` line shows what serves port 80. On this server it is `caddy`, from the
+`gateway-caddy-1` container in host network mode, which step 6 uses. (If a server uses
+nginx instead, `deploy/nginx-hansardlens.conf` has the equivalent location blocks.)
 
-- **`nginx` listed as the process on :80** means nginx runs directly on the server
-  (case A).
-- **`docker-proxy` on :80** means the web server runs in a container (case B).
+HansardLens needs about 4 GB to install (2 GB database, 1.5 GB image and build cache,
+0.5 GB temporary database copy). Keep at least 10 GB free so the disk never fills;
+`sudo apt-get clean`, `sudo journalctl --vacuum-size=300M` and `docker builder prune -f`
+free space without touching running apps.
 
 Port 8010 must not be listed. If it is, choose another port and set `HANSARD_PORT` in
 step 2 and in the nginx block.
@@ -120,65 +124,45 @@ docker compose -f docker-compose.prod.yml logs -f scheduler      # Ctrl+C to sto
 MapleMetrics is untouched up to this point. Check it still answers:
 `curl -s -o /dev/null -w '%{http_code}\n' http://127.0.0.1/maplemetrics/`
 
-## 5. Back up the nginx configuration first
+## 5. Back up the Caddy configuration
 
 ```bash
-sudo grep -rln "maplemetrics" /etc/nginx/ 2>/dev/null         # case A: which file
+cd ~/gateway
+cp Caddyfile Caddyfile.bak-$(date +%F)
 ```
 
-Copy that file before editing, for example:
+## 6. Add HansardLens to Caddy
+
+Open the Caddyfile:
 
 ```bash
-sudo cp /etc/nginx/sites-available/default /etc/nginx/sites-available/default.bak-$(date +%F)
+nano ~/gateway/Caddyfile
 ```
 
-## 6. Add the HansardLens location
+Add these two pieces inside the `:80 { ... }` block (the full result is in
+`deploy/Caddyfile.example`): the redirect next to the existing `redir` line, and the
+`handle_path` block above the MapleMetrics one.
 
-### Case A: nginx on the server
+```caddyfile
+	redir /maplemetrics/hansardlens /maplemetrics/hansardlens/ permanent
 
-Open the file found in step 5:
+	handle_path /maplemetrics/hansardlens/* {
+		reverse_proxy 127.0.0.1:8010
+	}
+```
+
+Save with Ctrl+O, Enter, then Ctrl+X. Check that the container sees the new file and
+that it is valid, then reload. A reload keeps current connections and does not
+restart Caddy or MapleMetrics:
 
 ```bash
-sudo nano /etc/nginx/sites-available/default
+docker exec gateway-caddy-1 cat /etc/caddy/Caddyfile
+docker exec gateway-caddy-1 caddy validate --config /etc/caddy/Caddyfile --adapter caddyfile
+docker exec -w /etc/caddy gateway-caddy-1 caddy reload --config /etc/caddy/Caddyfile --adapter caddyfile
 ```
 
-Inside the same `server { ... }` block that contains `location /maplemetrics/`,
-paste the two blocks from `deploy/nginx-hansardlens.conf` (in this repository):
-
-```nginx
-location = /maplemetrics/hansardlens {
-    return 301 /maplemetrics/hansardlens/;
-}
-
-location ^~ /maplemetrics/hansardlens/ {
-    proxy_pass http://127.0.0.1:8010/;
-    proxy_set_header Host $host;
-    proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
-    proxy_set_header X-Forwarded-Proto $scheme;
-    proxy_read_timeout 120s;
-    client_max_body_size 2m;
-}
-```
-
-Then test and reload. A reload keeps current connections and does not restart
-MapleMetrics:
-
-```bash
-sudo nginx -t && sudo systemctl reload nginx
-```
-
-If `nginx -t` reports an error, nothing has changed yet: fix the typo, or restore the
-backup, and test again.
-
-### Case B: the web server runs in a container
-
-The container cannot reach the server's `127.0.0.1`, so the setup differs slightly.
-Send the output of these commands back before changing anything:
-
-```bash
-docker ps --format 'table {{.Names}}\t{{.Image}}\t{{.Ports}}'
-docker inspect $(docker ps -q --filter publish=80) --format '{{.Name}} {{json .Mounts}} {{json .NetworkSettings.Networks}}'
-```
+If `validate` reports an error, nothing has changed yet: fix the typo, or restore the
+backup with `cp ~/gateway/Caddyfile.bak-<date> ~/gateway/Caddyfile`.
 
 ## 7. Check it
 
@@ -201,8 +185,8 @@ The stack restarts by itself after a server reboot (`restart: unless-stopped`).
 
 ## Removing it again
 
-1. Delete the two location blocks from the nginx file, then
-   `sudo nginx -t && sudo systemctl reload nginx`.
+1. Remove the HansardLens `redir` line and `handle_path` block from
+   `~/gateway/Caddyfile`, then reload Caddy as in step 6.
 2. `docker compose -f docker-compose.prod.yml down` (add `-v` to delete its database too).
 
 MapleMetrics is not affected by either step.

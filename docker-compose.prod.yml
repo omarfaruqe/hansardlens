@@ -8,10 +8,19 @@
 #   docker compose -f docker-compose.prod.yml up -d --build
 name: hansardlens
 
+# Container logs are capped (3 files x 10 MB per service) so they cannot fill the disk.
+x-logging: &logging
+  driver: json-file
+  options:
+    max-size: "10m"
+    max-file: "3"
+
 services:
   db:
-    image: postgres:16
+    # Same major version as development (16); the Alpine image is smaller.
+    image: postgres:16-alpine
     restart: unless-stopped
+    logging: *logging
     environment:
       POSTGRES_DB: ${POSTGRES_DB:-hansardlens}
       POSTGRES_USER: ${POSTGRES_USER:-hansardlens}
@@ -27,6 +36,7 @@ services:
   web:
     build: .
     restart: unless-stopped
+    logging: *logging
     env_file: .env
     environment: &prod-env
       DJANGO_DEBUG: "0"
@@ -56,6 +66,7 @@ services:
   scheduler:
     build: .
     restart: unless-stopped
+    logging: *logging
     env_file: .env
     environment: *prod-env
     volumes:

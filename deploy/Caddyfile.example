@@ -1,0 +1,26 @@
+# Gateway Caddyfile with HansardLens added next to MapleMetrics
+# (server: /home/faruqe/gateway/Caddyfile, mounted into the gateway-caddy-1 container).
+#
+# Caddy sorts handle_path blocks by path, longest first, so /maplemetrics/hansardlens/*
+# is tried before /maplemetrics/* whatever their order in this file. handle_path strips
+# the prefix before forwarding; HansardLens adds it back (DJANGO_SCRIPT_NAME).
+# Verified with Caddy 2.10: MapleMetrics routes are unchanged.
+
+:80 {
+	redir /maplemetrics /maplemetrics/ permanent
+	redir /maplemetrics/hansardlens /maplemetrics/hansardlens/ permanent
+
+	# HansardLens (listens on the host's loopback, port 8010)
+	handle_path /maplemetrics/hansardlens/* {
+		reverse_proxy 127.0.0.1:8010
+	}
+
+	# MapleMetrics
+	handle_path /maplemetrics/* {
+		reverse_proxy 127.0.0.1:8000
+	}
+
+	handle {
+		respond "Server is running. Projects: /maplemetrics/ /maplemetrics/hansardlens/" 200
+	}
+}
