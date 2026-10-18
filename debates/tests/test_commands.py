@@ -10,12 +10,13 @@ FIXTURES = Path(__file__).parent / "fixtures"
 pytestmark = pytest.mark.django_db
 
 
-def fixture_for(number, lang):
-    """Fixture XML re-numbered as sitting `number`."""
+def fixture_for(number, lang, parliament=44, session=1):
+    """Fixture XML re-numbered as sitting `number` of `parliament`-`session`."""
     xml = (FIXTURES / f"sitting_{lang}.xml").read_text(encoding="utf-8")
-    return xml.replace('"MetaNumberNumber">050<', f'"MetaNumberNumber">{number:03d}<').encode(
-        "utf-8"
-    )
+    xml = xml.replace('"MetaNumberNumber">050<', f'"MetaNumberNumber">{number:03d}<')
+    xml = xml.replace('"ParliamentNumber">44<', f'"ParliamentNumber">{parliament}<')
+    xml = xml.replace('"SessionNumber">1<', f'"SessionNumber">{session}<')
+    return xml.encode("utf-8")
 
 
 class FakeHouse:
@@ -32,7 +33,8 @@ class FakeHouse:
             response = requests.Response()
             response.status_code = 404
             raise requests.HTTPError(response=response)
-        return fixture_for(number, lang)
+        house = url.split("/Content/House/", 1)[1][:3]  # "441" -> 44, 1
+        return fixture_for(number, lang, int(house[:2]), int(house[2:]))
 
 
 @pytest.fixture
@@ -98,3 +100,21 @@ def test_open_ended_load_stops_when_network_is_down(house, monkeypatch, capsys):
     monkeypatch.setattr("debates.loader.fetch", broken)
     call_command("load_hansard", parliament=44, session=1, sleep=0, max_misses=3)
     assert "several failures in a row" in capsys.readouterr().err
+
+
+def test_no_cache_keeps_nothing_in_data_raw(house, settings):
+    house([1, 2])
+    call_command("load_hansard", parliament=44, session=1, start=1, end=2, sleep=0, no_cache=True)
+    assert Sitting.objects.count() == 2
+    assert not list((Path(settings.DATA_DIR) / "raw").glob("*.xml"))
+
+
+def test_earlier_parliament_loads_beside_later_ones(house):
+    house([1, 2])
+    call_command("load_hansard", parliament=45, session=1, start=1, end=1, sleep=0)
+    call_command("load_hansard", parliament=43, session=2, start=1, end=2, sleep=0)
+    assert sorted(Sitting.objects.values_list("parliament", "session", "number")) == [
+        (43, 2, 1),
+        (43, 2, 2),
+        (45, 1, 1),
+    ]

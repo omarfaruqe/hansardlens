@@ -55,6 +55,11 @@ class Command(BaseCommand):
         parser.add_argument(
             "--refresh", action="store_true", help="Download again even if cached in data/raw."
         )
+        parser.add_argument(
+            "--no-cache",
+            action="store_true",
+            help="Do not save downloaded XML in data/raw (about 1.5 MB per sitting).",
+        )
 
     def handle(self, *args, **opts):
         p, s = opts["parliament"], opts["session"]
@@ -70,7 +75,9 @@ class Command(BaseCommand):
         while end is None or number <= end:
             cached = raw_path(p, s, number, "en").exists() and not opts["refresh"]
             try:
-                result = load_sitting(p, s, number, refresh=opts["refresh"])
+                result = load_sitting(
+                    p, s, number, refresh=opts["refresh"], keep=not opts["no_cache"]
+                )
             except SittingNotFound:
                 misses += 1
                 self.stdout.write(f"  {number:03d}: not published")

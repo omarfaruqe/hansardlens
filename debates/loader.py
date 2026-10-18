@@ -193,11 +193,14 @@ def backfill_missing_parties() -> int:
     return fixed
 
 
-def load_sitting(parliament: int, session: int, number: int, refresh: bool = False) -> LoadResult:
-    """Fetch EN (required) and FR (optional), merge and store one sitting."""
-    en_doc = parse_document(get_xml(parliament, session, number, "en", refresh))
+def load_sitting(
+    parliament: int, session: int, number: int, refresh: bool = False, keep: bool = True
+) -> LoadResult:
+    """Fetch EN (required) and FR (optional), merge and store one sitting. `keep=False`
+    does not save downloads in data/raw."""
+    en_doc = parse_document(get_xml(parliament, session, number, "en", refresh, keep))
     try:
-        fr_doc = parse_document(get_xml(parliament, session, number, "fr", refresh))
+        fr_doc = parse_document(get_xml(parliament, session, number, "fr", refresh, keep))
     except SittingNotFound:
         fr_doc = None
     merged = merge(en_doc, fr_doc)
