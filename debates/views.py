@@ -1,3 +1,4 @@
+import datetime as dt
 from itertools import groupby
 
 from django.core.paginator import Paginator
@@ -5,6 +6,7 @@ from django.db import connection
 from django.db.models import Count, Max, Min
 from django.http import Http404, HttpResponse, HttpResponseServerError, JsonResponse
 from django.shortcuts import get_object_or_404, render
+from django.urls import reverse
 from django.utils.translation import get_language
 from django.utils.translation import gettext_lazy as _
 
@@ -79,7 +81,11 @@ def search_view(request):
 
 
 def speech_detail(request, house_id: str):
-    iv = Intervention.objects.filter(house_id=house_id).select_related("sitting", "person").first()
+    iv = (
+        Intervention.objects.filter(house_id=house_id)
+        .select_related("sitting", "person", "bill")
+        .first()
+    )
     if iv is None:
         raise Http404("No such speech")
     lang = content_lang(request)
@@ -548,7 +554,7 @@ def division_detail(request, parliament: int, session: int, number: int):
     from .models import Division
 
     division = get_object_or_404(
-        Division.objects.select_related("sitting"),
+        Division.objects.select_related("sitting", "bill"),
         sitting__parliament=parliament,
         sitting__session=session,
         number=number,
@@ -575,7 +581,137 @@ def division_detail(request, parliament: int, session: int, number: int):
         "groups": groups,
         "against": [v for v in votes if v.against_party],
         "unmatched": sum(1 for v in votes if v.person_id is None),
+        "stage": STAGE_LABELS.get(division.bill_stage, ""),
         "previous": others.filter(number__lt=number).order_by("-number").first(),
         "next": others.filter(number__gt=number).order_by("number").first(),
     }
     return render(request, "division_detail.html", context)
+
+
+# -- bills -------------------------------------------------------------------------------
+
+STAGE_LABELS = {
+    "introduction": _("Introduction and first reading"),
+    "second": _("Second reading"),
+    "committee": _("Referral to committee"),
+    "report": _("Report stage"),
+    "third": _("Third reading"),
+}
+
+
+def bills_view(request):
+    from django.db.models import Q
+
+    from .models import Bill
+
+    lang = content_lang(request)
+    session = _session(request)
+    q = " ".join(request.GET.get("q", "").split())[:100]
+    bills = Bill.objects.annotate(
+        days=Count("interventions__sitting", distinct=True),
+        votes=Count("divisions", distinct=True),
+    ).order_by("-last_date", "-parliament", "-session", "number")
+    if session:
+        bills = bills.filter(parliament=session[0], session=session[1])
+    if q:
+        code = q.upper().replace(" ", "")
+        bills = bills.filter(
+            Q(code__iexact=code)
+            | Q(short_title_en__icontains=q)
+            | Q(short_title_fr__icontains=q)
+            | Q(long_title_en__icontains=q)
+            | Q(long_title_fr__icontains=q)
+        )
+    page = Paginator(bills, VOTE_PAGE_SIZE).get_page(request.GET.get("page"))
+    query = request.GET.copy()
+    query.pop("page", None)
+    query.pop("lang", None)
+    context = {
+        "lang": lang,
+        "page": page,
+        "total": page.paginator.count,
+        "q": q,
+        "session": f"{session[0]}-{session[1]}" if session else "",
+        "sessions": [
+            f"{p}-{s}"
+            for p, s in Bill.objects.values_list("parliament", "session")
+            .distinct()
+            .order_by("-parliament", "-session")
+        ],
+        "querystring": query.urlencode(),
+    }
+    return render(request, "bills.html", context)
+
+
+def bill_detail(request, parliament: int, session: int, code: str):
+    from django.db.models import Q
+
+    from .models import Bill
+
+    bill = get_object_or_404(Bill, parliament=parliament, session=session, code=code.upper())
+    if code != bill.code:
+        from django.shortcuts import redirect
+
+        return redirect(bill.get_absolute_url(), permanent=True)
+    lang = content_lang(request)
+
+    # One row per stage and day: moved, and completed when the House records it.
+    steps: dict[tuple, dict] = {}
+    for e in bill.timeline:
+        row = steps.setdefault(
+            (e["date"], e["stage"]),
+            {
+                "date": dt.date.fromisoformat(e["date"]),
+                "stage": STAGE_LABELS.get(e["stage"], e["stage"]),
+                "moved": False,
+                "done": False,
+                "passed": False,
+                "url": None,
+            },
+        )
+        row[e["event"]] = True
+        row["passed"] = row["passed"] or e["passed"]
+        if row["url"] is None:
+            p, s, n = e["sitting"]
+            row["url"] = f"{reverse('sitting_detail', args=[(p, s), n])}#iv-{e['sequence']}"
+
+    speeches = bill.interventions.filter(person__isnull=False, is_chair=False)
+    days = (
+        bill.interventions.values(
+            "sitting__parliament", "sitting__session", "sitting__number", "sitting__date"
+        )
+        .annotate(
+            first=Min("sequence"),
+            n=Count("id", filter=Q(person__isnull=False, is_chair=False)),
+        )
+        .order_by("sitting__date")
+    )
+    for d in days:
+        d["url"] = (
+            reverse(
+                "sitting_detail",
+                args=[(d["sitting__parliament"], d["sitting__session"]), d["sitting__number"]],
+            )
+            + f"#iv-{d['first']}"
+        )
+    speakers = list(
+        speeches.values("person__name", "person__slug")
+        .annotate(n=Count("id"), party=Max("party"))
+        .order_by("-n", "person__name")[:12]
+    )
+    parties = list(
+        speeches.exclude(party="").values("party").annotate(n=Count("id")).order_by("-n")
+    )
+    context = {
+        "lang": lang,
+        "bill": bill,
+        "steps": sorted(steps.values(), key=lambda r: r["date"]),
+        "divisions": bill.divisions.select_related("sitting").order_by("sitting__date", "number"),
+        "days": days,
+        "speakers": speakers,
+        "parties": parties,
+        "party_total": sum(p["n"] for p in parties),
+        "stage_labels": STAGE_LABELS,
+        "search_url": f"{reverse('search')}?text=en&q=%22Bill+{bill.code}%22",
+    }
+    return render(request, "bill_detail.html", context)

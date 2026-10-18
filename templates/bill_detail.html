@@ -1,0 +1,73 @@
+{% extends "base.html" %}{% load i18n humanize hansard %}
+{% block title %}{% translate "Bill" %} {{ bill.code }} – HansardLens{% endblock %}
+{% block content %}{% field bill "long_title" lang as long %}
+<p class="small"><a href="{% url 'bills' %}">{% translate "All bills" %}</a></p>
+<p class="kicker">{% if bill.is_senate %}{% blocktranslate with code=bill.code parl=bill.parliament s=bill.session %}Senate bill {{ code }} · {{ parl }}-{{ s }}{% endblocktranslate %}{% else %}{% blocktranslate with code=bill.code parl=bill.parliament s=bill.session %}Bill {{ code }} · {{ parl }}-{{ s }}{% endblocktranslate %}{% endif %}</p>
+<h1 lang="{{ lang }}">{% include "_bill_title.html" %}</h1>
+{% if long %}<p class="lede" lang="{{ lang }}">{{ long }}</p>{% endif %}
+<p class="small"><a href="{% if LANGUAGE_CODE == 'fr' %}{{ bill.legisinfo_url_fr }}{% else %}{{ bill.legisinfo_url_en }}{% endif %}" rel="external">{% translate "Status, text and Senate stages on LEGISinfo" %}</a></p>
+
+<dl class="facts">
+  <div><dt>{% translate "Debate days" %}</dt><dd>{{ days|length }}</dd></div>
+  <div><dt>{% translate "Speeches" %}</dt><dd>{{ bill.speeches|intcomma }}</dd></div>
+  <div><dt>{% translate "Recorded votes" %}</dt><dd>{{ divisions|length }}</dd></div>
+  <div><dt>{% translate "Paragraphs naming it" %}</dt><dd>{{ bill.mentions|intcomma }}</dd></div>
+</dl>
+
+{% if steps %}
+  <h2>{% translate "In the House" %}</h2>
+  <ol class="timeline">
+    {% for s in steps %}
+      <li>
+        <span class="when">{{ s.date|ldate:"date" }}</span>
+        <a href="{{ s.url }}">{{ s.stage }}</a>
+        <span class="muted">{% if s.done %}{% if s.passed %}{% translate "passed" %}{% else %}{% translate "agreed to" %}{% endif %}{% elif s.moved %}{% translate "moved" %}{% endif %}</span>
+      </li>
+    {% endfor %}
+  </ol>
+  <p class="small muted">{% translate "Stages moved and completed in the loaded debates, as recorded in Hansard. Committee and Senate stages happen outside the House: see LEGISinfo." %}</p>
+{% endif %}
+
+{% if divisions %}
+  <h2>{% translate "Recorded votes" %}</h2>
+  <div class="table-wide">
+    <table class="data-table vote-table">
+      <thead><tr><th>{% translate "Date" %}</th><th class="text">{% translate "Stage" %}</th><th class="text">{% translate "Result" %}</th><th>{% translate "Yea" %}</th><th>{% translate "Nay" %}</th></tr></thead>
+      <tbody>
+        {% for d in divisions %}
+          <tr>
+            <td><a href="{{ d.get_absolute_url }}?text={{ lang }}">{{ d.sitting.date|ldate:"short" }}</a></td>
+            <td class="text">{% if d.bill_stage %}{% for key, label in stage_labels.items %}{% if key == d.bill_stage %}{{ label }}{% endif %}{% endfor %}{% else %}–{% endif %}{% field d "object" lang as obj %}{% if obj %} <span class="muted" lang="{{ lang }}">· {{ obj }}</span>{% endif %}</td>
+            <td class="text">{% include "_vote_result.html" %}</td>
+            <td>{{ d.yeas }}</td><td>{{ d.nays }}</td>
+          </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+{% endif %}
+
+{% if speakers %}
+  <h2>{% translate "Who spoke most in its debates" %}</h2>
+  <ol class="role-list">
+    {% for s in speakers %}<li><a href="{% url 'member_detail' s.person__slug %}">{{ s.person__name }}</a> <span class="muted">{{ s.party|party }}</span> · {% blocktranslate count counter=s.n %}{{ counter }} speech{% plural %}{{ counter }} speeches{% endblocktranslate %}</li>{% endfor %}
+  </ol>
+{% endif %}
+
+{% if parties %}
+  <h3>{% translate "Speeches by party" %}</h3>
+  <ul class="breakdown bill-parties">
+    {% for p in parties %}<li><span>{{ p.party|party }}</span><span class="bar"><span style="width: {{ p.n|pct_of:party_total }}%"></span></span><span class="n">{{ p.n|intcomma }}</span></li>{% endfor %}
+  </ul>
+  <p class="small muted">{% translate "Raw counts. Parties with more seats speak more often, so compare with care." %}</p>
+{% endif %}
+
+{% if days %}
+  <h2>{% translate "Debate days" %}</h2>
+  <ul class="sitting-votes">
+    {% for d in days %}<li><a href="{{ d.url }}">{{ d.sitting__date|ldate:"long" }}</a> <span class="muted small">{% blocktranslate count counter=d.n %}{{ counter }} speech{% plural %}{{ counter }} speeches{% endblocktranslate %}</span></li>{% endfor %}
+  </ul>
+{% endif %}
+
+<p class="small"><a href="{{ search_url }}">{% blocktranslate with code=bill.code %}Search every mention of Bill {{ code }} (English text){% endblocktranslate %}</a></p>
+{% endblock %}

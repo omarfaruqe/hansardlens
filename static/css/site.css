@@ -283,3 +283,12 @@ h3 { font-size: 1.1rem; margin: 1.5rem 0 0.5rem; }
 .vote-names li { padding: 0.15rem 0; break-inside: avoid; }
 .sitting-votes { list-style: none; padding: 0; margin: 0.5rem 0 1.5rem; max-width: var(--measure); }
 .sitting-votes li { padding: 0.35rem 0; border-bottom: 1px solid var(--rule); }
+
+/* Bills */
+.timeline { list-style: none; padding: 0; margin: 0.5rem 0; max-width: var(--measure); border-left: 2px solid var(--rule); }
+.timeline li { position: relative; padding: 0.35rem 0 0.35rem 1.1rem; }
+.timeline li::before { content: ""; position: absolute; left: -6px; top: 0.85rem; width: 10px; height: 10px; border-radius: 50%; background: var(--data); }
+.timeline .when { display: inline-block; min-width: 9.5rem; color: var(--muted); font-size: 0.9rem; }
+.bill-table td:first-child { white-space: nowrap; }
+.bill-parties { max-width: 32rem; }
+.context-link { font-size: 0.95rem; margin: 0.25rem 0 0.75rem; }

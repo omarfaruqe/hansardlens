@@ -19,12 +19,31 @@ class SessionConverter:
 register_converter(SessionConverter, "session")
 
 
+class BillCodeConverter:
+    """'C-37' (or 'c-37', redirected to 'C-37')"""
+
+    regex = r"[CcSs]-\d{1,4}"
+
+    def to_python(self, value):
+        return value
+
+    def to_url(self, value):
+        return value
+
+
+register_converter(BillCodeConverter, "billcode")
+
+
 def sitting_detail(request, ps, number):
     return views.sitting_detail(request, ps[0], ps[1], number)
 
 
 def division_detail(request, ps, number):
     return views.division_detail(request, ps[0], ps[1], number)
+
+
+def bill_detail(request, ps, code):
+    return views.bill_detail(request, ps[0], ps[1], code)
 
 
 urlpatterns = [
@@ -37,6 +56,8 @@ urlpatterns = [
     path("members/<slug:slug>/", views.member_detail, name="member_detail"),
     path("votes/", views.votes_view, name="votes"),
     path("votes/<session:ps>/<int:number>/", division_detail, name="division_detail"),
+    path("bills/", views.bills_view, name="bills"),
+    path("bills/<session:ps>/<billcode:code>/", bill_detail, name="bill_detail"),
     path("trends/", views.trends_view, name="trends"),
     path("language/", views.language_view, name="language"),
     path("topics/", views.topics_view, name="topics"),

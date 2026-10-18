@@ -10,6 +10,7 @@
   {% if order and subject %}<br><span lang="{{ lang }}">{{ order }}</span>{% endif %}
   {% if iv.time %}<br>{% blocktranslate with t=iv.time|time:"H:i" %}Around {{ t }}{% endblocktranslate %}{% endif %}
 </p>
+{% if iv.bill %}{% with bill=iv.bill %}<p class="context-link"><a href="{{ bill.get_absolute_url }}?text={{ lang }}">{% blocktranslate with code=bill.code %}Debate on Bill {{ code }}{% endblocktranslate %}</a></p>{% endwith %}{% endif %}
 <p class="legend">{% translate "The marked text is what was actually said on the floor; the other column is the official translation." %}</p>
 <p class="small"><a href="{% with_text other_lang %}">{% if other_lang == "fr" %}{% translate "Show the French text first" %}{% else %}{% translate "Show the English text first" %}{% endif %}</a></p>
 

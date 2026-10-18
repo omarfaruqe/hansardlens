@@ -7,6 +7,7 @@
 <p class="lede"><span lang="{{ lang }}">{% if qualifier and subject %}{{ subject }}. {% endif %}{{ obj }}</span><br>
   <a href="{{ d.sitting.get_absolute_url }}?text={{ lang }}">{{ d.sitting.date|ldate:"long" }}</a>{% if d.time %} · {% blocktranslate with t=d.time|time:"H:i" %}Around {{ t }}{% endblocktranslate %}{% endif %}</p>
 
+{% if d.bill %}{% with bill=d.bill %}<p class="context-link"><a href="{{ bill.get_absolute_url }}?text={{ lang }}">{% blocktranslate with code=bill.code %}Bill {{ code }}{% endblocktranslate %}</a>{% if stage %} · {{ stage }}{% endif %}</p>{% endwith %}{% endif %}
 <dl class="facts">
   <div><dt>{% translate "Result" %}</dt><dd class="result-cell">{% include "_vote_result.html" %}</dd></div>
   <div><dt>{% translate "Yea" %}</dt><dd>{{ d.yeas }}</dd></div>

@@ -1,0 +1,55 @@
+{% extends "base.html" %}{% load i18n humanize hansard %}
+{% block title %}{% translate "Bills" %} – HansardLens{% endblock %}
+{% block content %}
+<h1>{% translate "Bills" %}</h1>
+<p class="lede">{% translate "Bills debated in the House in the loaded debates, found from the motions that move them. Each page gathers the bill's debates, stages, recorded votes and speakers." %}</p>
+
+<form method="get" class="filter-row member-filters" role="search">
+  <label>{% translate "Number or title" %}
+    <input type="search" name="q" value="{{ q }}" placeholder="{% translate 'e.g. C-4, water' %}">
+  </label>
+  <label>{% translate "Session" %}
+    <select name="session">
+      <option value="">{% translate "All sessions" %}</option>
+      {% for s in sessions %}<option value="{{ s }}" {% if session == s %}selected{% endif %}>{{ s }}</option>{% endfor %}
+    </select>
+  </label>
+  <button class="button" type="submit">{% translate "Show" %}</button>
+</form>
+
+<p class="result-count" aria-live="polite">{% blocktranslate count counter=total with n=total|intcomma %}{{ n }} bill{% plural %}{{ n }} bills{% endblocktranslate %}</p>
+{% if page.object_list %}
+  <div class="table-wide">
+    <table class="data-table vote-table bill-table">
+      <thead><tr>
+        <th>{% translate "Bill" %}</th><th class="text">{% translate "Title" %}</th>
+        <th>{% translate "Last debated" %}</th><th>{% translate "Debate days" %}</th><th>{% translate "Speeches" %}</th><th>{% translate "Votes" %}</th>
+      </tr></thead>
+      <tbody>
+        {% for bill in page.object_list %}
+          <tr>
+            <td><a href="{{ bill.get_absolute_url }}?text={{ lang }}">{{ bill.code }}</a> <span class="muted small">{{ bill.parliament }}-{{ bill.session }}</span></td>
+            <td class="text question" lang="{{ lang }}">{% include "_bill_title.html" %}</td>
+            <td>{{ bill.last_date|ldate:"short"|default:"–" }}</td>
+            <td>{{ bill.days }}</td>
+            <td>{{ bill.speeches|intcomma }}</td>
+            <td>{{ bill.votes }}</td>
+          </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+  {% if page.has_other_pages %}
+    <nav class="pager" aria-label="{% translate 'Pages' %}">
+      {% if page.has_previous %}<a href="?{% if querystring %}{{ querystring }}&amp;{% endif %}page={{ page.previous_page_number }}">{% translate "Previous" %}</a>{% endif %}
+      <span class="muted">{% blocktranslate with n=page.number of=page.paginator.num_pages %}Page {{ n }} of {{ of }}{% endblocktranslate %}</span>
+      {% if page.has_next %}<a href="?{% if querystring %}{{ querystring }}&amp;{% endif %}page={{ page.next_page_number }}">{% translate "Next" %}</a>{% endif %}
+    </nav>
+  {% endif %}
+{% else %}
+  <div class="notice"><p>{% translate "No bills match these filters." %}</p></div>
+{% endif %}
+
+<h2>{% translate "How bills are found" %}</h2>
+<p class="method">{% translate "A bill appears here when a motion in the loaded debates moves it (“moved that Bill C-37, An Act …, be read the second time”) or introduces it. The heading of that debate is its short title, and later debates with the same heading in the session are counted as debates on the bill. Where several bills share a heading (“Criminal Code”), a debate goes to the bill it names most. Bill status and full text are on LEGISinfo, linked from each bill." %}</p>
+{% endblock %}
