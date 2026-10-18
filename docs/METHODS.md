@@ -160,7 +160,35 @@ uses. Each term is shown with its rate per 10,000 words in both windows.
 - **Addresses:** `/members/<slug>/`, where the slug is made once from the name
   (`Bernard Généreux` → `bernard-genereux`) and kept on reloads.
 
-## 9. Limits
+## 9. Recorded votes
+
+- **Source:** the `Division` blocks at the end of each debate in Hansard: the division
+  number, then the names of members voting yea, nay and paired. Paired members agreed
+  with an absent member of the other side that neither would vote.
+- **What was voted on:** the debate's heading in Hansard (the subject qualifier when
+  there is one, such as *Opposition Motion—…* or *Concurrence in Vote 5b—…*, otherwise
+  the subject), and the object named in the sentence before the list (*Motion No. 3*,
+  *the amendment*). A qualifier names one question only, so later votes in the same
+  subject (bill stages after the estimates, say) show the subject alone. The motion's
+  full text and sponsor are on the House of Commons page linked from each vote.
+- **Result:** as stated in that sentence (*agreed to* / *negatived*); otherwise from
+  the counts.
+- **Matching names:** each printed name carries the House's member id, which is also on
+  the member's speeches. Ministers and parliamentary secretaries speak under a role id,
+  so names that do not match by id are matched by surname, and by riding where the list
+  prints one ("Falk (Provencher)"), among the members who spoke in the same Parliament.
+  A name matching no one, or more than one, keeps its printed label and is counted as
+  "not matched". Votes are matched again after every load, so members who speak later
+  are linked to their earlier votes.
+- **Party at the time of the vote:** the party printed with the member's label on the
+  sittings around the vote date (section 2).
+- **Voted differently from most of their party:** a yea or nay that differs from what
+  most of the same party's members voted in that division, counted only when at least
+  five of them voted yea or nay and they did not split evenly. Paired members,
+  independents and unmatched names are not compared. This describes the vote; it says
+  nothing about why (a free vote, a riding issue, a mistake corrected later).
+
+## 10. Limits
 
 - **Coverage:** two sessions; earlier Parliaments use the same XML structure, but have not
   been loaded or checked.

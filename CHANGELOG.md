@@ -1,5 +1,24 @@
 # Changelog
 
+## 1.5.0 – 2026-10-18
+
+- **Recorded votes:** divisions are read from Hansard as sittings load: number, the
+  question (debate heading, qualifier such as *Opposition Motion—…*, and *Motion No. 3*
+  or *the amendment*), result, and every member's yea, nay or paired vote.
+- **Vote pages:** `/votes/` lists every division (filter by subject, session, result or
+  member); `/votes/44-1/481/` shows the counts, a breakdown by party at the time of the
+  vote, the members who voted differently from most of their party, every member's
+  vote, and links to the debate and to the House of Commons page with the motion text.
+- **Members and sittings:** member pages summarise their recorded votes with the latest
+  ones; sitting pages list their votes.
+- **Name matching:** printed names are matched to members by House id, then by surname
+  and riding (ministers speak under a role id); unmatched names keep their label and
+  are matched again after each load.
+- **Existing databases:** `python manage.py load_divisions` adds votes to sittings loaded
+  earlier, without changing speeches (`--no-cache` avoids storing the XML).
+- **API:** `GET /api/v1/votes/` and `GET /api/v1/votes/{parliament}-{session}/{number}/`.
+- Methods note section 9; French translation of the new pages.
+
 ## 1.4.0 – 2026-10-18
 
 - **Member pages:** `/members/` lists everyone who has spoken, with party, riding,

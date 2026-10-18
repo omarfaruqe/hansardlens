@@ -21,7 +21,7 @@ def test_health_reports_database_ok(client):
     assert response.status_code == 200
     body = response.json()
     assert body["status"] == "ok" and body["database"] is True
-    assert body["vendor"] == "postgresql" and body["version"] == "1.4.0"
+    assert body["vendor"] == "postgresql" and body["version"] == "1.5.0"
 
 
 def test_home_empty_database(client):
@@ -201,3 +201,18 @@ def test_member_page_in_french(client, sitting):
     html = client.get("/members/luc-martel/", {"lang": "fr"}).content.decode()
     assert "Tous les députés" in html and "Interventions par mois" in html
     assert "Députés" in client.get("/members/", {"lang": "fr"}).content.decode()
+
+
+def test_vote_pages_in_french(client):
+    fx = FIXTURES
+    store(
+        merge(
+            parse_document((fx / "votes_en.xml").read_bytes()),
+            parse_document((fx / "votes_fr.xml").read_bytes()),
+        )
+    )
+    html = client.get("/votes/44-1/55/", {"lang": "fr"}).content.decode()
+    assert "Adoption du crédit 1 — Agence exemple" in html and "La motion no 1" in html
+    assert "https://www.ourcommons.ca/members/fr/votes/44/1/55" in html
+    assert "Adoptée" in html and "Pour" in html and "Le vote de chaque député" in html
+    assert "3 votes par appel nominal" in client.get("/votes/", {"lang": "fr"}).content.decode()

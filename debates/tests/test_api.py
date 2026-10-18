@@ -132,3 +132,29 @@ def test_throttling(client, sitting, settings):
         AnonRateThrottle.THROTTLE_RATES = original
         cache.clear()
     assert codes == [200, 200, 429]
+
+
+def test_votes_api(client):
+    fx = Path(__file__).parent / "fixtures"
+    store(
+        merge(
+            parse_document((fx / "votes_en.xml").read_bytes()),
+            parse_document((fx / "votes_fr.xml").read_bytes()),
+        )
+    )
+    data = client.get("/api/v1/votes/", {"result": "agreed"}).json()
+    assert data["count"] == 2 and data["results"][0]["number"] == 56
+    assert client.get("/api/v1/votes/", {"member": "tom-reed"}).json()["count"] == 2
+    one = client.get("/api/v1/votes/44-1/54/").json()
+    assert one["qualifier_fr"] == "Motion de l'opposition — Les loyers exemple"
+    assert one["official_url"] == "https://www.ourcommons.ca/members/en/votes/44/1/54"
+    reed = next(v for v in one["votes"] if v["label"] == "Reed (Westvale)")
+    assert reed == {
+        "label": "Reed (Westvale)",
+        "name": "Tom Reed",
+        "person": "tom-reed",
+        "party": "Lib.",
+        "choice": "yea",
+        "against_party": True,
+    }
+    assert client.get("/api/v1/votes/44-1/999/").status_code == 404

@@ -135,7 +135,7 @@ msgstr "Législature"
 msgid "All loaded debates"
 msgstr "Tous les débats chargés"
 
-#: templates/language.html templates/members.html
+#: templates/language.html templates/members.html templates/votes.html
 msgid "Show"
 msgstr "Afficher"
 
@@ -180,7 +180,7 @@ msgstr "Français"
 msgid "Words measured"
 msgstr "Mots mesurés"
 
-#: templates/language.html
+#: templates/division_detail.html templates/language.html
 msgid "By party"
 msgstr "Par parti"
 
@@ -205,7 +205,7 @@ msgstr "Trier par"
 msgid "Member"
 msgstr "Député"
 
-#: templates/language.html templates/members.html templates/search.html templates/trends.html
+#: templates/division_detail.html templates/language.html templates/members.html templates/search.html templates/trends.html
 msgid "Party"
 msgstr "Parti"
 
@@ -237,7 +237,7 @@ msgstr "Tout député"
 msgid "Part of the day"
 msgstr "Moment de la journée"
 
-#: templates/search.html
+#: templates/search.html templates/votes.html
 msgid "Any"
 msgstr "Tous"
 
@@ -305,20 +305,20 @@ msgstr "prononcé en français"
 msgid "spoken in English"
 msgstr "prononcé en anglais"
 
-#: templates/member_detail.html templates/search.html
+#: templates/member_detail.html templates/search.html templates/votes.html
 msgid "Pages"
 msgstr "Pages"
 
-#: templates/member_detail.html templates/search.html templates/speech.html
+#: templates/member_detail.html templates/search.html templates/speech.html templates/votes.html
 msgid "Previous"
 msgstr "Précédent"
 
-#: templates/member_detail.html templates/search.html
+#: templates/member_detail.html templates/search.html templates/votes.html
 #, python-format
 msgid "Page %(n)s of %(of)s"
 msgstr "Page %(n)s sur %(of)s"
 
-#: templates/member_detail.html templates/search.html templates/speech.html
+#: templates/member_detail.html templates/search.html templates/speech.html templates/votes.html
 msgid "Next"
 msgstr "Suivant"
 
@@ -357,7 +357,7 @@ msgstr "Séance suivante"
 msgid "%(parl)s, session %(s)s"
 msgstr "%(parl)s, session %(s)s"
 
-#: templates/sitting_list.html
+#: templates/member_detail.html templates/sitting_list.html templates/votes.html
 msgid "Date"
 msgstr "Date"
 
@@ -373,7 +373,7 @@ msgstr "Interventions"
 msgid "No sittings are loaded yet."
 msgstr "Aucune séance n'est encore chargée."
 
-#: templates/speech.html
+#: templates/division_detail.html templates/speech.html
 #, python-format
 msgid "Around %(t)s"
 msgstr "Vers %(t)s"
@@ -627,7 +627,7 @@ msgstr "Votes par appel nominal"
 msgid "Government Orders and other business"
 msgstr "Ordres émanant du gouvernement et autres affaires"
 
-#: debates/search.py
+#: debates/search.py templates/division_detail.html
 msgid "None"
 msgstr "Aucun"
 
@@ -813,3 +813,184 @@ msgstr "Réponses"
 #: debates/views.py
 msgid "Members' statements"
 msgstr "Déclarations de députés"
+
+#: debates/views.py templates/_vote_choice.html templates/division_detail.html templates/votes.html
+msgid "Yea"
+msgstr "Pour"
+
+#: debates/views.py templates/_vote_choice.html templates/division_detail.html templates/votes.html
+msgid "Nay"
+msgstr "Contre"
+
+#: debates/views.py templates/_vote_choice.html templates/division_detail.html
+msgid "Paired"
+msgstr "Pairé"
+
+#: templates/_vote_result.html templates/votes.html
+msgid "Agreed to"
+msgstr "Adoptée"
+
+#: templates/_vote_result.html templates/votes.html
+msgid "Negatived"
+msgstr "Rejetée"
+
+#: templates/base.html
+msgid "Votes"
+msgstr "Votes"
+
+#: templates/division_detail.html
+#, python-format
+msgid "Division No. %(n)s"
+msgstr "Vote no %(n)s"
+
+#: templates/division_detail.html templates/votes.html
+msgid "All recorded votes"
+msgstr "Tous les votes par appel nominal"
+
+#: templates/division_detail.html
+#, python-format
+msgid "Division No. %(n)s · %(parl)s-%(s)s"
+msgstr "Vote no %(n)s · %(parl)s-%(s)s"
+
+#: templates/division_detail.html templates/member_detail.html templates/votes.html
+msgid "Result"
+msgstr "Résultat"
+
+#: templates/division_detail.html
+msgid "Read the debate before the vote"
+msgstr "Lire le débat qui précède le vote"
+
+#: templates/division_detail.html
+msgid "Motion text and sponsor on the House of Commons website"
+msgstr "Texte de la motion et parrain sur le site de la Chambre des communes"
+
+#: templates/division_detail.html
+msgid "Not matched"
+msgstr "Non associé"
+
+#: templates/division_detail.html
+msgid "Party at the time of the vote, from the member's labels in Hansard."
+msgstr "Parti au moment du vote, d'après les mentions du député dans le Hansard."
+
+#: templates/division_detail.html
+#, python-format
+msgid "%(counter)s name in the list could not be matched to a member who has spoken in the loaded debates."
+msgid_plural "%(counter)s names in the list could not be matched to members who have spoken in the loaded debates."
+msgstr[0] "%(counter)s nom de la liste n'a pu être associé à un député ayant pris la parole dans les débats chargés."
+msgstr[1] "%(counter)s noms de la liste n'ont pu être associés à des députés ayant pris la parole dans les débats chargés."
+
+#: templates/division_detail.html
+msgid "Voted differently from most of their party"
+msgstr "Ont voté autrement que la majorité de leur parti"
+
+#: templates/division_detail.html
+msgid "Compared with the majority of the same party's members voting yea or nay in this division (parties with at least five such members)."
+msgstr "Par rapport à la majorité des députés du même parti ayant voté pour ou contre lors de ce vote (partis comptant au moins cinq tels députés)."
+
+#: templates/division_detail.html
+msgid "How each member voted"
+msgstr "Le vote de chaque député"
+
+#: templates/division_detail.html
+msgid "Other votes"
+msgstr "Autres votes"
+
+#: templates/division_detail.html
+#, python-format
+msgid "Previous: Division No. %(n)s"
+msgstr "Précédent : vote no %(n)s"
+
+#: templates/division_detail.html
+#, python-format
+msgid "Next: Division No. %(n)s"
+msgstr "Suivant : vote no %(n)s"
+
+#: templates/member_detail.html templates/sitting_detail.html templates/votes.html
+msgid "Recorded votes"
+msgstr "Votes par appel nominal"
+
+#: templates/member_detail.html
+#, python-format
+msgid "%(n)s recorded vote in the loaded debates: %(yea)s yea, %(nay)s nay, %(paired)s paired."
+msgid_plural "%(n)s recorded votes in the loaded debates: %(yea)s yea, %(nay)s nay, %(paired)s paired."
+msgstr[0] "%(n)s vote par appel nominal dans les débats chargés : %(yea)s pour, %(nay)s contre, %(paired)s pairé."
+msgstr[1] "%(n)s votes par appel nominal dans les débats chargés : %(yea)s pour, %(nay)s contre, %(paired)s pairé."
+
+#: templates/member_detail.html
+#, python-format
+msgid "Voted differently from most of their party in %(k)s of %(m)s votes where the party had a clear majority."
+msgstr "A voté autrement que la majorité de son parti dans %(k)s des %(m)s votes où le parti avait une majorité claire."
+
+#: templates/member_detail.html templates/votes.html
+msgid "Question"
+msgstr "Question"
+
+#: templates/member_detail.html
+msgid "Vote"
+msgstr "Vote"
+
+#: templates/member_detail.html
+msgid "differs from party"
+msgstr "diffère du parti"
+
+#: templates/member_detail.html
+msgid "All of this member's recorded votes"
+msgstr "Tous les votes par appel nominal de ce député"
+
+#: templates/sitting_detail.html
+#, python-format
+msgid "No. %(n)s: %(y)s yea, %(na)s nay"
+msgstr "No %(n)s : %(y)s pour, %(na)s contre"
+
+#: templates/votes.html
+#, python-format
+msgid "Recorded votes: %(name)s"
+msgstr "Votes par appel nominal : %(name)s"
+
+#: templates/votes.html
+msgid "Every division of the House in the loaded debates: what was put to the vote, the result, and how each member voted, from the lists printed in Hansard."
+msgstr "Tous les votes par appel nominal de la Chambre dans les débats chargés : la question mise aux voix, le résultat et le vote de chaque député, d'après les listes imprimées dans le Hansard."
+
+#: templates/votes.html
+#, python-format
+msgid "Back to %(name)s"
+msgstr "Retour à %(name)s"
+
+#: templates/votes.html
+msgid "Subject"
+msgstr "Sujet"
+
+#: templates/votes.html
+msgid "e.g. estimates, opposition motion"
+msgstr "p. ex. crédits, motion de l'opposition"
+
+#: templates/votes.html
+msgid "Session"
+msgstr "Session"
+
+#: templates/votes.html
+msgid "All sessions"
+msgstr "Toutes les sessions"
+
+#: templates/votes.html
+#, python-format
+msgid "%(n)s recorded vote"
+msgid_plural "%(n)s recorded votes"
+msgstr[0] "%(n)s vote par appel nominal"
+msgstr[1] "%(n)s votes par appel nominal"
+
+#: templates/votes.html
+msgid "No."
+msgstr "No"
+
+#: templates/votes.html
+msgid "No recorded votes match these filters."
+msgstr "Aucun vote ne correspond à ces filtres."
+
+#: templates/votes.html
+msgid "About recorded votes"
+msgstr "À propos des votes par appel nominal"
+
+#: templates/votes.html
+msgid "Most questions are decided without a recorded vote; a division is held when members ask for one. Hansard prints the names of members voting yea and nay, and of paired members (who agreed not to vote with an absent member of the other side). The question is the debate's heading in Hansard; the full motion text and sponsor are on the House of Commons page linked from each vote."
+msgstr "La plupart des questions sont tranchées sans vote par appel nominal ; il y en a un lorsque des députés le demandent. Le Hansard imprime les noms des députés qui votent pour et contre, et des députés pairés (qui ont convenu de ne pas voter avec un député absent de l'autre côté). La question est l'intitulé du débat dans le Hansard ; le texte complet de la motion et son parrain figurent sur la page de la Chambre des communes liée à chaque vote."

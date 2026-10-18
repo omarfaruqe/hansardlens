@@ -18,7 +18,7 @@ from rest_framework.response import Response
 from rest_framework.views import APIView
 
 from . import analysis, search
-from .models import Intervention, Paragraph, Person, Sitting, TermShift
+from .models import Division, Intervention, Paragraph, Person, Sitting, TermShift, Vote
 from .textmine import active_model
 
 
@@ -261,6 +261,110 @@ class PersonDetail(APIView):
                 **profile,
                 "topics": analysis.member_topics(person, model) if model else None,
             }
+        )
+
+
+# -- recorded votes ------------------------------------------------------------------
+
+
+class DivisionSerializer(serializers.ModelSerializer):
+    parliament = serializers.IntegerField(source="sitting.parliament")
+    session = serializers.IntegerField(source="sitting.session")
+    date = serializers.DateField(source="sitting.date")
+    url = serializers.SerializerMethodField()
+    official_url = serializers.SerializerMethodField()
+
+    class Meta:
+        model = Division
+        fields = [
+            "parliament",
+            "session",
+            "number",
+            "date",
+            "time",
+            "order_title_en",
+            "order_title_fr",
+            "subject_title_en",
+            "subject_title_fr",
+            "qualifier_en",
+            "qualifier_fr",
+            "object_en",
+            "object_fr",
+            "result",
+            "yeas",
+            "nays",
+            "paired",
+            "url",
+            "official_url",
+        ]
+
+    def get_url(self, obj) -> str:
+        return obj.get_absolute_url()
+
+    def get_official_url(self, obj) -> str:
+        return obj.official_url("en")
+
+
+class VoteSerializer(serializers.ModelSerializer):
+    person = serializers.SlugRelatedField(slug_field="slug", read_only=True)
+    name = serializers.SerializerMethodField()
+
+    class Meta:
+        model = Vote
+        fields = ["label", "name", "person", "party", "choice", "against_party"]
+
+    def get_name(self, obj) -> str:
+        return obj.person.name if obj.person else ""
+
+
+class DivisionDetailSerializer(DivisionSerializer):
+    votes = VoteSerializer(many=True, read_only=True)
+
+    class Meta(DivisionSerializer.Meta):
+        fields = DivisionSerializer.Meta.fields + ["votes"]
+
+
+@extend_schema(
+    tags=["Votes"],
+    parameters=[
+        OpenApiParameter("parliament", int),
+        OpenApiParameter("session", int),
+        OpenApiParameter("result", str, enum=["agreed", "negatived"]),
+        OpenApiParameter("member", str, description="Member slug: only votes they took part in"),
+    ],
+)
+class DivisionList(generics.ListAPIView):
+    """Recorded votes (divisions), newest first."""
+
+    serializer_class = DivisionSerializer
+    pagination_class = Pagination
+
+    def get_queryset(self):
+        qs = Division.objects.select_related("sitting").order_by("-sitting__date", "-number")
+        p = self.request.query_params
+        for field in ("parliament", "session"):
+            if p.get(field, "").isdigit():
+                qs = qs.filter(**{f"sitting__{field}": int(p[field])})
+        if p.get("result") in ("agreed", "negatived"):
+            qs = qs.filter(result=p["result"])
+        if p.get("member"):
+            qs = qs.filter(votes__person__slug=p["member"][:180])
+        return qs
+
+
+@extend_schema(tags=["Votes"])
+class DivisionDetail(generics.RetrieveAPIView):
+    """One recorded vote with every member's vote, party at the time and whether it
+    differed from most of their party."""
+
+    serializer_class = DivisionDetailSerializer
+
+    def get_object(self):
+        return get_object_or_404(
+            Division.objects.select_related("sitting").prefetch_related("votes__person"),
+            sitting__parliament=self.kwargs["ps"][0],
+            sitting__session=self.kwargs["ps"][1],
+            number=self.kwargs["number"],
         )
 
 
