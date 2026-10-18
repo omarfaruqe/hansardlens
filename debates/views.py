@@ -158,6 +158,22 @@ def _refresh_status() -> dict:
     return {k: state.get(k) for k in keys} if state else {"status": "never run"}
 
 
+def _backup_status() -> dict:
+    """Newest finished database dump written by the backup service (data/backups)."""
+    import time
+    from pathlib import Path
+
+    from django.conf import settings
+
+    folder = Path(settings.DATA_DIR) / "backups"
+    dumps = sorted(folder.glob("hansardlens-*.dump")) if folder.is_dir() else []
+    if not dumps:
+        return {"latest": None, "count": 0}
+    latest = max(dumps, key=lambda p: p.stat().st_mtime)
+    age = (time.time() - latest.stat().st_mtime) / 3600
+    return {"latest": latest.name, "count": len(dumps), "age_hours": round(age, 1)}
+
+
 def health(request):
     """Liveness check that also confirms the database answers."""
     try:
@@ -175,6 +191,7 @@ def health(request):
             "vendor": connection.vendor,
             "version": __version__,
             "refresh": _refresh_status(),
+            "backup": _backup_status(),
         },
         status=status,
     )

@@ -76,5 +76,30 @@ services:
         condition: service_healthy
     command: python manage.py run_scheduler --at 06:30 --days tue,wed,thu,fri,sat
 
+  # Nightly database dumps into ./data/backups (newest BACKUP_KEEP kept); see deploy/backup.sh.
+  # Same PostgreSQL version as the database, so pg_dump always matches the server.
+  backup:
+    image: postgres:16-alpine
+    restart: unless-stopped
+    logging: *logging
+    user: "1000:1000"
+    environment:
+      PGHOST: db
+      PGUSER: ${POSTGRES_USER:-hansardlens}
+      PGPASSWORD: ${POSTGRES_PASSWORD:?set POSTGRES_PASSWORD in .env}
+      PGDATABASE: ${POSTGRES_DB:-hansardlens}
+      TZ: America/Toronto
+      BACKUP_DIR: /backups
+      BACKUP_AT: ${BACKUP_AT:-02:30}
+      BACKUP_KEEP: ${BACKUP_KEEP:-3}
+      BACKUP_HEALTHCHECK_URL: ${BACKUP_HEALTHCHECK_URL:-}
+    volumes:
+      - ./data/backups:/backups
+      - ./deploy/backup.sh:/usr/local/bin/backup.sh:ro
+    depends_on:
+      db:
+        condition: service_healthy
+    entrypoint: ["/bin/sh", "/usr/local/bin/backup.sh"]
+
 volumes:
   pgdata_prod:
