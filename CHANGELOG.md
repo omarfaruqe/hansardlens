@@ -1,5 +1,12 @@
 # Changelog
 
+## 1.6.1 – 2026-10-18
+
+- **French dates:** short dates use the usual French abbreviations (juin, juill., déc.);
+  June and July were both shortened to "jui".
+- **Docs:** case study (`docs/CASE_STUDY.md`) and new screenshots of members, votes and
+  bills in the README.
+
 ## 1.6.0 – 2026-10-18
 
 - **Bills:** `build_bills` finds each bill debated in the House from the motions that

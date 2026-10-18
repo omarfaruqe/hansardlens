@@ -21,7 +21,7 @@ def test_health_reports_database_ok(client):
     assert response.status_code == 200
     body = response.json()
     assert body["status"] == "ok" and body["database"] is True
-    assert body["vendor"] == "postgresql" and body["version"] == "1.6.0"
+    assert body["vendor"] == "postgresql" and body["version"] == "1.6.1"
 
 
 def test_home_empty_database(client):
@@ -187,6 +187,9 @@ def test_template_helpers_in_both_languages():
         assert ldate(dt.date(2024, 3, 1), "long") == "vendredi 1er mars 2024"
         assert ldate(dt.date(2024, 3, 11), "date") == "11 mars 2024"
         assert ldate(dt.date(2024, 3, 1), "date") == "1er mars 2024"
+        # juin and juillet must not both shorten to "jui"
+        assert ldate(dt.date(2025, 6, 10), "short") == "mar 10 juin 2025"
+        assert ldate(dt.date(2025, 7, 1), "short") == "mar 1er juill. 2025"
         assert party("CPC") == "PCC" and party("NDP") == "NPD" and party("BQ") == "BQ"
 
 

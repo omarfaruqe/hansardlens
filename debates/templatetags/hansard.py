@@ -15,6 +15,20 @@ DATE_FORMATS = {
     "day": ("F j", "j F"),
     "month": ("F Y", "F Y"),
 }
+FR_MONTHS_SHORT = (
+    "janv.",
+    "févr.",
+    "mars",
+    "avr.",
+    "mai",
+    "juin",
+    "juill.",
+    "août",
+    "sept.",
+    "oct.",
+    "nov.",
+    "déc.",
+)
 PARTY_FR = {"CPC": "PCC", "NDP": "NPD", "GP": "PV"}
 
 
@@ -30,6 +44,11 @@ def ldate(value, style="date"):
     en, fr = DATE_FORMATS.get(style, DATE_FORMATS["date"])
     if not _is_fr():
         return dateformat.format(value, en)
+    if style == "short":
+        # Django abbreviates juin and juillet both as "jui": use the usual French forms.
+        weekday = dateformat.format(value, "D").lower()
+        day = "1er" if value.day == 1 else str(value.day)
+        return f"{weekday} {day} {FR_MONTHS_SHORT[value.month - 1]} {value.year}"
     text = dateformat.format(value, fr)
     if value.day == 1 and "j" in fr:  # French writes the first of the month as "1er"
         text = text.replace(" 1 ", " 1er ", 1) if " 1 " in f" {text} " else text
