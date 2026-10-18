@@ -1,0 +1,6 @@
+# Development and test tools, constrained to the same versions as production.
+-c requirements.txt
+-r requirements.in
+pytest>=8,<9
+pytest-django>=4.9,<5
+ruff>=0.6
