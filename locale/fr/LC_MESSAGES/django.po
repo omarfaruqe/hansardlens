@@ -37,7 +37,7 @@ msgstr "Aller au contenu"
 msgid "Main"
 msgstr "Navigation principale"
 
-#: templates/base.html templates/home.html templates/search.html
+#: templates/base.html templates/home.html templates/member_detail.html templates/search.html
 msgid "Search"
 msgstr "Recherche"
 
@@ -57,7 +57,7 @@ msgstr "Nouveautés"
 msgid "Languages"
 msgstr "Langues"
 
-#: templates/base.html templates/sitting_list.html
+#: templates/base.html templates/member_detail.html templates/sitting_list.html
 msgid "Sittings"
 msgstr "Séances"
 
@@ -86,11 +86,11 @@ msgstr "Cherchez dans tous les débats de %(first)s au %(last)s, en français ou
 msgid "No debates are loaded yet. Run load_hansard to add sittings."
 msgstr "Aucun débat n'est encore chargé. Lancez load_hansard pour ajouter des séances."
 
-#: templates/home.html templates/search.html
+#: templates/home.html templates/member_detail.html templates/search.html
 msgid "Search debates"
 msgstr "Chercher dans les débats"
 
-#: templates/home.html templates/search.html
+#: templates/home.html templates/member_detail.html templates/search.html
 msgid "housing, “carbon tax”, souveraineté…"
 msgstr "logement, « taxe carbone », housing…"
 
@@ -127,15 +127,15 @@ msgstr "Le français et l'anglais à la Chambre"
 msgid "Hansard is published in both languages, but each speech is given in one. These figures use the language members actually spoke."
 msgstr "Le Hansard est publié dans les deux langues, mais chaque intervention est prononcée dans une seule. Ces chiffres reposent sur la langue réellement parlée par les députés."
 
-#: templates/language.html templates/search.html templates/trends.html
+#: templates/language.html templates/members.html templates/search.html templates/trends.html
 msgid "Parliament"
 msgstr "Législature"
 
-#: templates/language.html
+#: templates/language.html templates/members.html
 msgid "All loaded debates"
 msgstr "Tous les débats chargés"
 
-#: templates/language.html
+#: templates/language.html templates/members.html
 msgid "Show"
 msgstr "Afficher"
 
@@ -144,7 +144,7 @@ msgstr "Afficher"
 msgid "<strong>%(share)s%%</strong> of what members said was spoken in French."
 msgstr "<strong>%(share)s %%</strong> de ce que les députés ont dit l'a été en français."
 
-#: templates/language.html templates/topic_detail.html templates/trends.html
+#: templates/language.html templates/member_detail.html templates/topic_detail.html templates/trends.html
 msgid "No sittings this month"
 msgstr "Aucune séance ce mois-ci"
 
@@ -164,11 +164,11 @@ msgstr "Part prononcée en français, par mois"
 msgid "Gaps are months without sittings or with too little debate to compare."
 msgstr "Les vides correspondent aux mois sans séance ou avec trop peu de débats pour comparer."
 
-#: templates/language.html templates/topic_detail.html templates/trends.html
+#: templates/language.html templates/member_detail.html templates/topic_detail.html templates/trends.html
 msgid "Show the numbers as a table"
 msgstr "Afficher les chiffres sous forme de tableau"
 
-#: templates/language.html templates/topic_detail.html templates/trends.html
+#: templates/language.html templates/member_detail.html templates/topic_detail.html templates/trends.html
 msgid "Month"
 msgstr "Mois"
 
@@ -197,7 +197,7 @@ msgstr "Par député"
 msgid "Members with at least %(n)s words of speech. Party is the most recent one recorded."
 msgstr "Députés comptant au moins %(n)s mots d'interventions. Le parti est le plus récent enregistré."
 
-#: templates/language.html
+#: templates/language.html templates/members.html
 msgid "Sort by"
 msgstr "Trier par"
 
@@ -205,7 +205,7 @@ msgstr "Trier par"
 msgid "Member"
 msgstr "Député"
 
-#: templates/language.html templates/search.html templates/trends.html
+#: templates/language.html templates/members.html templates/search.html templates/trends.html
 msgid "Party"
 msgstr "Parti"
 
@@ -225,7 +225,7 @@ msgstr "Le Hansard indique pour chaque passage s'il a été prononcé en frança
 msgid "Filters"
 msgstr "Filtres"
 
-#: templates/search.html templates/trends.html
+#: templates/members.html templates/search.html templates/trends.html
 msgid "All parties"
 msgstr "Tous les partis"
 
@@ -305,20 +305,20 @@ msgstr "prononcé en français"
 msgid "spoken in English"
 msgstr "prononcé en anglais"
 
-#: templates/search.html
+#: templates/member_detail.html templates/search.html
 msgid "Pages"
 msgstr "Pages"
 
-#: templates/search.html templates/speech.html
+#: templates/member_detail.html templates/search.html templates/speech.html
 msgid "Previous"
 msgstr "Précédent"
 
-#: templates/search.html
+#: templates/member_detail.html templates/search.html
 #, python-format
 msgid "Page %(n)s of %(of)s"
 msgstr "Page %(n)s sur %(of)s"
 
-#: templates/search.html templates/speech.html
+#: templates/member_detail.html templates/search.html templates/speech.html
 msgid "Next"
 msgstr "Suivant"
 
@@ -648,7 +648,7 @@ msgstr "Part du français"
 msgid "Words"
 msgstr "Mots"
 
-#: debates/views.py
+#: debates/views.py templates/members.html
 msgid "Name"
 msgstr "Nom"
 
@@ -659,3 +659,157 @@ msgstr "Employés davantage"
 #: debates/views.py
 msgid "Used less"
 msgstr "Employés moins"
+
+#: templates/base.html templates/members.html
+msgid "Members"
+msgstr "Députés"
+
+#: templates/member_detail.html
+msgid "All members"
+msgstr "Tous les députés"
+
+#: templates/member_detail.html
+#, python-format
+msgid "Spoke from %(first)s to %(last)s in the loaded debates."
+msgstr "A pris la parole du %(first)s au %(last)s dans les débats chargés."
+
+#: debates/views.py templates/member_detail.html templates/members.html
+msgid "Speeches"
+msgstr "Interventions"
+
+#: templates/member_detail.html
+msgid "Sittings spoken in"
+msgstr "Séances avec intervention"
+
+#: templates/member_detail.html
+msgid "Spoken in French"
+msgstr "Parlé en français"
+
+#: templates/member_detail.html
+#, python-format
+msgid "The language share is shown from %(n)s words of speech."
+msgstr "La part des langues est affichée à partir de %(n)s mots prononcés."
+
+#: templates/member_detail.html
+msgid "This person has spoken only while presiding over the House."
+msgstr "Cette personne n'a pris la parole qu'à la présidence de la Chambre."
+
+#: templates/member_detail.html
+msgid "Roles in the record"
+msgstr "Fonctions dans le compte rendu"
+
+#: templates/member_detail.html
+msgid "presiding"
+msgstr "à la présidence"
+
+#: templates/member_detail.html
+msgid "Titles as printed in Hansard next to the member's name (in English)."
+msgstr "Titres tels qu'imprimés dans le Hansard à côté du nom du député (en anglais)."
+
+#: templates/member_detail.html
+msgid "Party and riding over time"
+msgstr "Parti et circonscription au fil du temps"
+
+#: templates/member_detail.html
+msgid "sittings"
+msgstr "séances"
+
+#: templates/member_detail.html
+msgid "Speeches by month"
+msgstr "Interventions par mois"
+
+#: templates/member_detail.html
+msgid "Gaps are months without sittings."
+msgstr "Les trous correspondent aux mois sans séance."
+
+#: templates/member_detail.html
+msgid "Main topics"
+msgstr "Principaux thèmes"
+
+#: templates/member_detail.html
+#, python-format
+msgid "%(n)s speech; %(house)s%% of all speeches in the House"
+msgid_plural "%(n)s speeches; %(house)s%% of all speeches in the House"
+msgstr[0] "%(n)s intervention ; %(house)s %% de toutes les interventions à la Chambre"
+msgstr[1] "%(n)s interventions ; %(house)s %% de toutes les interventions à la Chambre"
+
+#: templates/member_detail.html
+#, python-format
+msgid "Share of this member's %(n)s analysed speeches whose main topic it is. Bars are scaled to the largest value."
+msgstr "Part des %(n)s interventions analysées de ce député dont c'est le thème principal. Les barres sont proportionnelles à la plus grande valeur."
+
+#: templates/member_detail.html
+#, python-format
+msgid "Main topics are shown from %(n)s analysed speeches."
+msgstr "Les principaux thèmes sont affichés à partir de %(n)s interventions analysées."
+
+#: templates/member_detail.html
+msgid "Search this member's speeches"
+msgstr "Chercher dans les interventions de ce député"
+
+#: templates/member_detail.html templates/members.html
+msgid "About these figures"
+msgstr "À propos de ces chiffres"
+
+#: templates/member_detail.html
+msgid "Counts describe time on the floor, which depends on a member's role, party and the business of the day; they are not a measure of work done. Speeches exclude interjections and anything said while presiding. The French share uses the same yardstick as the Languages page: each paragraph is measured by the length of its English text, whichever language was spoken."
+msgstr "Les décomptes décrivent le temps de parole, qui dépend de la fonction du député, de son parti et des travaux du jour ; ils ne mesurent pas le travail accompli. Les interventions excluent les interruptions et tout ce qui est dit à la présidence. La part du français utilise la même mesure que la page Langues : chaque paragraphe est mesuré par la longueur de son texte anglais, quelle que soit la langue parlée."
+
+#: templates/members.html
+msgid "Everyone who has spoken in the loaded debates, with their most recent party and riding. Each page shows what a member said, how often, and on which topics."
+msgstr "Toutes les personnes qui ont pris la parole dans les débats chargés, avec leur parti et leur circonscription les plus récents. Chaque page montre ce qu'un député a dit, à quelle fréquence et sur quels thèmes."
+
+#: templates/members.html
+msgid "Name or riding"
+msgstr "Nom ou circonscription"
+
+#: templates/members.html
+msgid "e.g. Fortin, Halifax"
+msgstr "p. ex. Fortin, Halifax"
+
+#: templates/members.html
+#, python-format
+msgid "%(n)s person of %(total)s"
+msgid_plural "%(n)s people of %(total)s"
+msgstr[0] "%(n)s personne sur %(total)s"
+msgstr[1] "%(n)s personnes sur %(total)s"
+
+#: templates/members.html
+msgid "Riding"
+msgstr "Circonscription"
+
+#: templates/members.html
+msgid "Last spoke"
+msgstr "Dernière intervention"
+
+#: templates/members.html
+msgid "chair"
+msgstr "présidence"
+
+#: templates/members.html
+msgid "No one matches these filters."
+msgstr "Personne ne correspond à ces filtres."
+
+#: templates/members.html
+msgid "Speeches are a member's own interventions: debate, questions, answers and members' statements, without interjections and without anything said while presiding (people who have presided are marked “chair”). Party and riding are the most recent ones printed with the member's name in Hansard. More speeches means more time on the floor, which also depends on a member's role and party size; it is not a measure of work done."
+msgstr "Les interventions sont celles du député lui-même : débats, questions, réponses et déclarations de députés, sans les interruptions et sans ce qui est dit à la présidence (les personnes ayant présidé sont marquées « présidence »). Le parti et la circonscription sont les plus récents imprimés avec le nom du député dans le Hansard. Plus d'interventions signifie plus de temps de parole, ce qui dépend aussi de la fonction du député et de la taille de son parti ; ce n'est pas une mesure du travail accompli."
+
+#: debates/views.py
+msgid "Most recent"
+msgstr "Plus récentes"
+
+#: debates/views.py
+msgid "Debate"
+msgstr "Débat"
+
+#: debates/views.py
+msgid "Questions"
+msgstr "Questions"
+
+#: debates/views.py
+msgid "Answers"
+msgstr "Réponses"
+
+#: debates/views.py
+msgid "Members' statements"
+msgstr "Déclarations de députés"

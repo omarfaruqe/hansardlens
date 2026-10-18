@@ -137,9 +137,14 @@ class SittingDetailSerializer(SittingSerializer):
 
 
 class PersonSerializer(serializers.ModelSerializer):
+    url = serializers.SerializerMethodField()
+
     class Meta:
         model = Person
-        fields = ["name", "latest_party", "latest_riding", "latest_seen"]
+        fields = ["name", "slug", "latest_party", "latest_riding", "latest_seen", "url"]
+
+    def get_url(self, obj) -> str:
+        return obj.get_absolute_url()
 
 
 # -- views ------------------------------------------------------------------------------
@@ -232,6 +237,31 @@ class PersonList(generics.ListAPIView):
         if p.get("name"):
             qs = qs.filter(name__icontains=p["name"][:100])
         return qs
+
+
+@extend_schema(
+    tags=["People"],
+    parameters=[
+        OpenApiParameter("text", str, enum=["en", "fr"], description="Topic model language")
+    ],
+    responses=OpenApiTypes.OBJECT,
+)
+class PersonDetail(APIView):
+    """One person: speech counts by kind and month, parties, ridings and roles over
+    time, the share spoken in French, and their main topics."""
+
+    def get(self, request, slug: str):
+        person = get_object_or_404(Person, slug=slug)
+        lang = request.query_params.get("text", "en")
+        model = active_model(lang if lang in ("en", "fr") else "en")
+        profile = analysis.member_profile(person)
+        return Response(
+            {
+                **PersonSerializer(person).data,
+                **profile,
+                "topics": analysis.member_topics(person, model) if model else None,
+            }
+        )
 
 
 SEARCH_PARAMS = [

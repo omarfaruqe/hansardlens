@@ -24,7 +24,7 @@ flowchart LR
 | `debates/speakers.py` | Parse speaker labels: name, honorific, riding, role, party, chair occupants |
 | `debates/loader.py` | Cache, download, store a sitting atomically, backfill parties |
 | `debates/search.py` | Query parsing, filters, ranking, safe highlighted snippets |
-| `debates/analysis.py` | Monthly term rates, language shares, topic shares; cached by data version |
+| `debates/analysis.py` | Monthly term rates, language shares, topic shares, member profiles; cached by data version |
 | `debates/textmine.py` | TF-IDF + NMF topics; log-odds term shifts |
 | `debates/api.py` | Read-only DRF endpoints and OpenAPI schema |
 | `debates/middleware.py` | Interface language from `?lang=`, remembered in a cookie |
@@ -46,8 +46,9 @@ erDiagram
 - `Paragraph.search_en`, `search_fr` and `words_en` are PostgreSQL generated columns,
   so a load never needs a separate indexing step.
 - A sitting is replaced as a whole in one transaction, so reloading is idempotent.
-- Speeches are addressed by the House's own id (`/speeches/12601257/`) and sittings by
-  number (`/sittings/44-1/50/`), so links survive reloads.
+- Speeches are addressed by the House's own id (`/speeches/12601257/`), sittings by
+  number (`/sittings/44-1/50/`) and members by a name-based slug set once
+  (`/members/bernard-genereux/`), so links survive reloads.
 
 ## Commands
 
@@ -62,7 +63,7 @@ erDiagram
 
 ## Testing
 
-- 139 tests with pytest against PostgreSQL (CI uses a PostgreSQL service).
+- 178 tests with pytest against PostgreSQL (CI uses a PostgreSQL service).
 - The parser is tested on invented XML with the real structure (real Hansard text is
   never committed), and on real sittings when they have been downloaded locally.
 - The ingestion commands are tested against a fake House website: missing sittings,

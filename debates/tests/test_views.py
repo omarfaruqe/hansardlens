@@ -21,7 +21,7 @@ def test_health_reports_database_ok(client):
     assert response.status_code == 200
     body = response.json()
     assert body["status"] == "ok" and body["database"] is True
-    assert body["vendor"] == "postgresql" and body["version"] == "1.3.1"
+    assert body["vendor"] == "postgresql" and body["version"] == "1.4.0"
 
 
 def test_home_empty_database(client):
@@ -195,3 +195,9 @@ def test_french_interface_strings(client, sitting):
     assert "1 paragraphe correspondant" in html
     assert "Appliquer les filtres" in html
     assert "<sup>e</sup> législature" in html and "&lt;sup&gt;" not in html
+
+
+def test_member_page_in_french(client, sitting):
+    html = client.get("/members/luc-martel/", {"lang": "fr"}).content.decode()
+    assert "Tous les députés" in html and "Interventions par mois" in html
+    assert "Députés" in client.get("/members/", {"lang": "fr"}).content.decode()

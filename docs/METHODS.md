@@ -137,7 +137,30 @@ terms need at least 25 occurrences in the window where they are more common. A s
 word is dropped when a listed phrase containing it accounts for at least 80% of its
 uses. Each term is shown with its rate per 10,000 words in both windows.
 
-## 8. Limits
+## 8. Members
+
+- **Who is listed:** every person who has spoken, matched across sittings by name
+  without honorific (section 2). People who have presided over the House are marked.
+- **Speeches:** a member's own interventions of type debate, question, answer or
+  members' statement. Interjections, procedural text and anything said while presiding
+  are not counted.
+- **Party, riding and roles over time:** each value printed with the member's label,
+  with the first and last sitting it appears on. Roles (minister, parliamentary
+  secretary, presiding officer) are the titles printed in the English labels.
+- **Speeches by month:** counts, from the member's first speech to the latest sitting.
+  Months without sittings are gaps; months with sittings but no speech are zero.
+- **Spoken in French:** the measure of section 5 restricted to the member's paragraphs,
+  shown from 1,000 words.
+- **Main topics:** the share of the member's analysed speeches (section 6) whose main
+  topic is each topic, next to that topic's share of all speeches. Shown from 10
+  analysed speeches.
+- **Reading the counts:** time on the floor depends on role (ministers answer
+  questions, the government House leader moves business), party size and the business
+  of the day. The pages describe what was said, not how much work a member does.
+- **Addresses:** `/members/<slug>/`, where the slug is made once from the name
+  (`Bernard Généreux` → `bernard-genereux`) and kept on reloads.
+
+## 9. Limits
 
 - **Coverage:** two sessions; earlier Parliaments use the same XML structure, but have not
   been loaded or checked.

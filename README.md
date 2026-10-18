@@ -6,7 +6,7 @@ HansardLens loads the official Hansard every sitting day, pairs every paragraph 
 its translation, and records which language was actually spoken on the floor. On top of
 that record it offers bilingual full-text search, a side-by-side reading view, term
 trends, the share of debate held in French, topics found by NMF, and the words rising
-or fading in recent debate. Everything is available through a documented REST API.
+or fading in recent debate, and a page for every member. Everything is available through a documented REST API.
 Every figure is a descriptive share with a stated denominator.
 
 **Live site:** http://103.99.176.180/hansardlens/ (English and French, updated every
@@ -28,6 +28,9 @@ sitting day). **API docs:** http://103.99.176.180/hansardlens/api/docs/
 - **Read** any speech with English and French side by side; the column marked in red
   is what was actually said, the other is the official translation.
 - **Trends:** compare up to four terms month by month, per 1,000 speech paragraphs.
+- **Members:** a page for everyone who has spoken: party, riding and roles over time,
+  speeches by month and kind, the share spoken in French, main topics, and their
+  speeches, with a search limited to them.
 - **Languages:** share of speech given in French, overall, by month, party and member,
   measured with one yardstick for both languages.
 - **Topics:** 30 topics from TF-IDF and NMF, with each topic's share over time and
@@ -69,6 +72,7 @@ Open http://localhost:8000/ (or http://localhost:8000/?lang=fr for French).
 | Page | Address |
 | ---- | ------- |
 | Search | `/search/` |
+| Members | `/members/`, `/members/<name>/` |
 | Trends | `/trends/` |
 | Topics | `/topics/` |
 | What's new | `/new/` |
@@ -94,6 +98,7 @@ schema at `/api/schema/`.
 | `GET /api/v1/sittings/44-1/50/` | One sitting with every intervention |
 | `GET /api/v1/speeches/{house_id}/` | One speech, every paragraph in English and French with its floor language |
 | `GET /api/v1/people/` | Speakers with latest party and riding |
+| `GET /api/v1/people/{slug}/` | One member: speeches by kind and month, parties, ridings, roles, French share, main topics |
 | `GET /api/v1/search/?q=…&text=en` | Paragraph search with highlighted snippets |
 | `GET /api/v1/trends/?term=a&term=b` | Mentions per 1,000 paragraphs by month |
 | `GET /api/v1/language/` | French share overall, by month, party and member |

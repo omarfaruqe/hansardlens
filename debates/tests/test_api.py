@@ -63,6 +63,22 @@ def test_people(client, sitting):
     data = client.get("/api/v1/people/", {"party": "BQ"}).json()
     assert [p["name"] for p in data["results"]] == ["Luc Martel"]
     assert client.get("/api/v1/people/", {"name": "ald"}).json()["count"] == 1
+    assert data["results"][0]["url"] == "/members/luc-martel/"
+
+
+def test_person_detail(client, sitting):
+    data = client.get("/api/v1/people/sam-okafor/").json()
+    assert data["name"] == "Sam Okafor" and data["slug"] == "sam-okafor"
+    assert data["speeches"] >= 1 and set(data["by_kind"]) == {
+        "debate",
+        "questions",
+        "answers",
+        "statements",
+    }
+    assert data["roles"][0]["value"] == "Secretary of State (Housing)"
+    assert data["by_month"]["months"] == ["2022-03"]
+    assert data["topics"] is None  # no topic model in this test database
+    assert client.get("/api/v1/people/nobody/").status_code == 404
 
 
 def test_search(client, sitting):

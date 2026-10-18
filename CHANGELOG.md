@@ -1,5 +1,21 @@
 # Changelog
 
+## 1.4.0 – 2026-10-18
+
+- **Member pages:** `/members/` lists everyone who has spoken, with party, riding,
+  speech count and last appearance; filter by name or riding (accents optional), party
+  and Parliament, and sort by name, speeches or most recent. Each member's page shows
+  speeches by kind and by month, party and riding over time (floor crossings
+  included), roles printed in Hansard, the share spoken in French, main topics next to
+  the House average, and every speech, with a search limited to that member.
+- **Links:** speaker names on speech pages, search results, topic examples and the
+  Languages table lead to the member's page. Addresses are name-based
+  (`/members/bernard-genereux/`) and survive reloads (migration 0007 adds the slug).
+- **API:** `GET /api/v1/people/{slug}/` returns the member profile; the people list
+  now includes `slug` and `url`.
+- **Charts:** counts use whole-number gridlines.
+- Interface fully translated into French; methods note section 8 explains the figures.
+
 ## 1.3.1 – 2026-10-18
 
 - **Backups:** only one backup runs at a time (a lock in the backup folder; a lock left
