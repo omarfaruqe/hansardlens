@@ -135,7 +135,7 @@ msgstr "Législature"
 msgid "All loaded debates"
 msgstr "Tous les débats chargés"
 
-#: templates/language.html templates/members.html templates/votes.html
+#: templates/bills.html templates/language.html templates/members.html templates/votes.html
 msgid "Show"
 msgstr "Afficher"
 
@@ -269,7 +269,7 @@ msgstr "Appliquer les filtres"
 msgid "Matching paragraphs by party"
 msgstr "Paragraphes correspondants par parti"
 
-#: templates/search.html
+#: templates/bill_detail.html templates/search.html
 msgid "Raw counts. Parties with more seats speak more often, so compare with care."
 msgstr "Nombres bruts. Les partis qui ont plus de sièges interviennent plus souvent : comparez avec prudence."
 
@@ -305,20 +305,20 @@ msgstr "prononcé en français"
 msgid "spoken in English"
 msgstr "prononcé en anglais"
 
-#: templates/member_detail.html templates/search.html templates/votes.html
+#: templates/bills.html templates/member_detail.html templates/search.html templates/votes.html
 msgid "Pages"
 msgstr "Pages"
 
-#: templates/member_detail.html templates/search.html templates/speech.html templates/votes.html
+#: templates/bills.html templates/member_detail.html templates/search.html templates/speech.html templates/votes.html
 msgid "Previous"
 msgstr "Précédent"
 
-#: templates/member_detail.html templates/search.html templates/votes.html
+#: templates/bills.html templates/member_detail.html templates/search.html templates/votes.html
 #, python-format
 msgid "Page %(n)s of %(of)s"
 msgstr "Page %(n)s sur %(of)s"
 
-#: templates/member_detail.html templates/search.html templates/speech.html templates/votes.html
+#: templates/bills.html templates/member_detail.html templates/search.html templates/speech.html templates/votes.html
 msgid "Next"
 msgstr "Suivant"
 
@@ -357,7 +357,7 @@ msgstr "Séance suivante"
 msgid "%(parl)s, session %(s)s"
 msgstr "%(parl)s, session %(s)s"
 
-#: templates/member_detail.html templates/sitting_list.html templates/votes.html
+#: templates/bill_detail.html templates/member_detail.html templates/sitting_list.html templates/votes.html
 msgid "Date"
 msgstr "Date"
 
@@ -673,7 +673,7 @@ msgstr "Tous les députés"
 msgid "Spoke from %(first)s to %(last)s in the loaded debates."
 msgstr "A pris la parole du %(first)s au %(last)s dans les débats chargés."
 
-#: debates/views.py templates/member_detail.html templates/members.html
+#: debates/views.py templates/bill_detail.html templates/bills.html templates/member_detail.html templates/members.html
 msgid "Speeches"
 msgstr "Interventions"
 
@@ -814,11 +814,11 @@ msgstr "Réponses"
 msgid "Members' statements"
 msgstr "Déclarations de députés"
 
-#: debates/views.py templates/_vote_choice.html templates/division_detail.html templates/votes.html
+#: debates/views.py templates/_vote_choice.html templates/bill_detail.html templates/division_detail.html templates/votes.html
 msgid "Yea"
 msgstr "Pour"
 
-#: debates/views.py templates/_vote_choice.html templates/division_detail.html templates/votes.html
+#: debates/views.py templates/_vote_choice.html templates/bill_detail.html templates/division_detail.html templates/votes.html
 msgid "Nay"
 msgstr "Contre"
 
@@ -834,7 +834,7 @@ msgstr "Adoptée"
 msgid "Negatived"
 msgstr "Rejetée"
 
-#: templates/base.html
+#: templates/base.html templates/bills.html
 msgid "Votes"
 msgstr "Votes"
 
@@ -852,7 +852,7 @@ msgstr "Tous les votes par appel nominal"
 msgid "Division No. %(n)s · %(parl)s-%(s)s"
 msgstr "Vote no %(n)s · %(parl)s-%(s)s"
 
-#: templates/division_detail.html templates/member_detail.html templates/votes.html
+#: templates/bill_detail.html templates/division_detail.html templates/member_detail.html templates/votes.html
 msgid "Result"
 msgstr "Résultat"
 
@@ -905,7 +905,7 @@ msgstr "Précédent : vote no %(n)s"
 msgid "Next: Division No. %(n)s"
 msgstr "Suivant : vote no %(n)s"
 
-#: templates/member_detail.html templates/sitting_detail.html templates/votes.html
+#: templates/bill_detail.html templates/member_detail.html templates/sitting_detail.html templates/votes.html
 msgid "Recorded votes"
 msgstr "Votes par appel nominal"
 
@@ -964,11 +964,11 @@ msgstr "Sujet"
 msgid "e.g. estimates, opposition motion"
 msgstr "p. ex. crédits, motion de l'opposition"
 
-#: templates/votes.html
+#: templates/bills.html templates/votes.html
 msgid "Session"
 msgstr "Session"
 
-#: templates/votes.html
+#: templates/bills.html templates/votes.html
 msgid "All sessions"
 msgstr "Toutes les sessions"
 
@@ -994,3 +994,150 @@ msgstr "À propos des votes par appel nominal"
 #: templates/votes.html
 msgid "Most questions are decided without a recorded vote; a division is held when members ask for one. Hansard prints the names of members voting yea and nay, and of paired members (who agreed not to vote with an absent member of the other side). The question is the debate's heading in Hansard; the full motion text and sponsor are on the House of Commons page linked from each vote."
 msgstr "La plupart des questions sont tranchées sans vote par appel nominal ; il y en a un lorsque des députés le demandent. Le Hansard imprime les noms des députés qui votent pour et contre, et des députés pairés (qui ont convenu de ne pas voter avec un député absent de l'autre côté). La question est l'intitulé du débat dans le Hansard ; le texte complet de la motion et son parrain figurent sur la page de la Chambre des communes liée à chaque vote."
+
+#: templates/base.html templates/bills.html
+msgid "Bills"
+msgstr "Projets de loi"
+
+#: templates/bill_detail.html templates/bills.html
+msgid "Bill"
+msgstr "Projet de loi"
+
+#: templates/bill_detail.html
+msgid "All bills"
+msgstr "Tous les projets de loi"
+
+#: templates/bill_detail.html
+#, python-format
+msgid "Senate bill %(code)s · %(parl)s-%(s)s"
+msgstr "Projet de loi du Sénat %(code)s · %(parl)s-%(s)s"
+
+#: templates/bill_detail.html
+#, python-format
+msgid "Bill %(code)s · %(parl)s-%(s)s"
+msgstr "Projet de loi %(code)s · %(parl)s-%(s)s"
+
+#: templates/bill_detail.html
+msgid "Status, text and Senate stages on LEGISinfo"
+msgstr "État, texte et étapes au Sénat sur LEGISinfo"
+
+#: templates/bill_detail.html templates/bills.html
+msgid "Debate days"
+msgstr "Jours de débat"
+
+#: templates/bill_detail.html
+msgid "Paragraphs naming it"
+msgstr "Paragraphes qui le nomment"
+
+#: templates/bill_detail.html
+msgid "In the House"
+msgstr "À la Chambre"
+
+#: templates/bill_detail.html
+msgid "passed"
+msgstr "adopté"
+
+#: templates/bill_detail.html
+msgid "agreed to"
+msgstr "adoptée"
+
+#: templates/bill_detail.html
+msgid "moved"
+msgstr "proposée"
+
+#: templates/bill_detail.html
+msgid "Stages moved and completed in the loaded debates, as recorded in Hansard. Committee and Senate stages happen outside the House: see LEGISinfo."
+msgstr "Étapes proposées et franchies dans les débats chargés, telles que consignées dans le Hansard. Les étapes en comité et au Sénat se déroulent hors de la Chambre : voir LEGISinfo."
+
+#: templates/bill_detail.html
+msgid "Stage"
+msgstr "Étape"
+
+#: templates/bill_detail.html
+msgid "Who spoke most in its debates"
+msgstr "Qui a le plus pris la parole dans ses débats"
+
+#: templates/bill_detail.html
+#, python-format
+msgid "%(counter)s speech"
+msgid_plural "%(counter)s speeches"
+msgstr[0] "%(counter)s intervention"
+msgstr[1] "%(counter)s interventions"
+
+#: templates/bill_detail.html
+msgid "Speeches by party"
+msgstr "Interventions par parti"
+
+#: templates/bill_detail.html
+#, python-format
+msgid "Search every mention of Bill %(code)s (English text)"
+msgstr "Chercher toutes les mentions du projet de loi %(code)s (texte anglais)"
+
+#: templates/bills.html
+msgid "Bills debated in the House in the loaded debates, found from the motions that move them. Each page gathers the bill's debates, stages, recorded votes and speakers."
+msgstr "Projets de loi débattus à la Chambre dans les débats chargés, repérés à partir des motions qui les proposent. Chaque page réunit les débats, les étapes, les votes par appel nominal et les intervenants."
+
+#: templates/bills.html
+msgid "Number or title"
+msgstr "Numéro ou titre"
+
+#: templates/bills.html
+msgid "e.g. C-4, water"
+msgstr "p. ex. C-4, eau"
+
+#: templates/bills.html
+#, python-format
+msgid "%(n)s bill"
+msgid_plural "%(n)s bills"
+msgstr[0] "%(n)s projet de loi"
+msgstr[1] "%(n)s projets de loi"
+
+#: templates/bills.html
+msgid "Title"
+msgstr "Titre"
+
+#: templates/bills.html
+msgid "Last debated"
+msgstr "Dernier débat"
+
+#: templates/bills.html
+msgid "No bills match these filters."
+msgstr "Aucun projet de loi ne correspond à ces filtres."
+
+#: templates/bills.html
+msgid "How bills are found"
+msgstr "Comment les projets de loi sont repérés"
+
+#: templates/bills.html
+msgid "A bill appears here when a motion in the loaded debates moves it (“moved that Bill C-37, An Act …, be read the second time”) or introduces it. The heading of that debate is its short title, and later debates with the same heading in the session are counted as debates on the bill. Where several bills share a heading (“Criminal Code”), a debate goes to the bill it names most. Bill status and full text are on LEGISinfo, linked from each bill."
+msgstr "Un projet de loi figure ici lorsqu'une motion des débats chargés le propose (« propose que le projet de loi C-37, Loi …, soit lu pour la deuxième fois ») ou le dépose. L'intitulé de ce débat est son titre abrégé, et les débats suivants portant le même intitulé pendant la session sont comptés comme des débats sur le projet de loi. Lorsque plusieurs projets de loi partagent un intitulé (« Le Code criminel »), un débat est attribué à celui qu'il nomme le plus. L'état et le texte intégral figurent sur LEGISinfo, lié depuis chaque projet de loi."
+
+#: templates/division_detail.html
+#, python-format
+msgid "Bill %(code)s"
+msgstr "Projet de loi %(code)s"
+
+#: debates/views.py
+msgid "Introduction and first reading"
+msgstr "Dépôt et première lecture"
+
+#: debates/views.py
+msgid "Second reading"
+msgstr "Deuxième lecture"
+
+#: debates/views.py
+msgid "Referral to committee"
+msgstr "Renvoi au comité"
+
+#: debates/views.py
+msgid "Report stage"
+msgstr "Étape du rapport"
+
+#: debates/views.py
+msgid "Third reading"
+msgstr "Troisième lecture"
+
+#: templates/speech.html
+#, python-format
+msgid "Debate on Bill %(code)s"
+msgstr "Débat sur le projet de loi %(code)s"

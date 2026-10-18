@@ -21,7 +21,7 @@ def test_health_reports_database_ok(client):
     assert response.status_code == 200
     body = response.json()
     assert body["status"] == "ok" and body["database"] is True
-    assert body["vendor"] == "postgresql" and body["version"] == "1.5.0"
+    assert body["vendor"] == "postgresql" and body["version"] == "1.6.0"
 
 
 def test_home_empty_database(client):

@@ -188,7 +188,36 @@ uses. Each term is shown with its rate per 10,000 words in both windows.
   independents and unmatched names are not compared. This describes the vote; it says
   nothing about why (a free vote, a riding issue, a mistake corrected later).
 
-## 10. Limits
+## 10. Bills
+
+- **Finding a bill:** a bill is listed when a motion in the loaded debates moves or
+  introduces it by number: "moved that Bill C-37, An Act respecting water …, be read the
+  second time" or "moved for leave to introduce Bill C-370, An Act …". The number and
+  long title come from that motion, in English and French (where the French motion uses
+  the same number). Bill numbers are only meaningful within a session.
+- **Short title and debates:** the heading of the debate where the bill is moved is its
+  short title. Debates with the same heading in the same session are debates on the
+  bill. An untitled heading continues the previous subject, as in Hansard.
+- **Shared headings:** some headings belong to several bills ("Criminal Code" for many
+  private members' bills). Such a debate goes to the bill it names most, and stays
+  unlinked when it names another bill more or names none. When several bills are
+  introduced under one heading, each intervention goes to the bill it moves.
+- **Bills without a numbered motion in the loaded debates:** a debate that moves stages
+  without naming the bill ("moved that the bill be read the third time") and names one
+  bill at least twice as often as any other is counted as that bill's debate. Headings
+  about supply, estimates, routine business or privilege are excluded, because they
+  name several bills. Such bills have no long title here.
+- **Stages:** motions moving a stage (introduction, second reading, referral to
+  committee, report stage, third reading) and the House's record of the outcome
+  ("(Bill read the third time and passed)"). Committee and Senate stages take place
+  outside the House chamber and are on LEGISinfo, linked from each bill.
+- **Votes:** a recorded vote belongs to the bill of the debate it closes; its stage is the
+  last one moved before the vote, or else the one the House records after it.
+- **Counts:** speeches are members' own interventions in the bill's debates (as in
+  section 8); "paragraphs naming it" counts paragraphs anywhere in the session that
+  name the bill's number.
+
+## 11. Limits
 
 - **Coverage:** two sessions; earlier Parliaments use the same XML structure, but have not
   been loaded or checked.

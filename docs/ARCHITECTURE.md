@@ -26,6 +26,7 @@ flowchart LR
 | `debates/search.py` | Query parsing, filters, ranking, safe highlighted snippets |
 | `debates/analysis.py` | Monthly term rates, language shares, topic shares, member profiles; cached by data version |
 | `debates/textmine.py` | TF-IDF + NMF topics; log-odds term shifts |
+| `debates/bills.py` | Find bills from the motions that move them; link debates, stages and votes |
 | `debates/votes.py` | Store recorded votes, match printed names to members, mark party lines |
 | `debates/api.py` | Read-only DRF endpoints and OpenAPI schema |
 | `debates/middleware.py` | Interface language from `?lang=`, remembered in a cookie |
@@ -45,6 +46,8 @@ erDiagram
     Sitting ||--o{ Division : holds
     Division ||--o{ Vote : records
     Person |o--o{ Vote : casts
+    Bill |o--o{ Intervention : "debated in"
+    Bill |o--o{ Division : "voted in"
 ```
 
 - `Paragraph.search_en`, `search_fr` and `words_en` are PostgreSQL generated columns,
@@ -63,12 +66,13 @@ erDiagram
 | `hansard_quality` | Data-quality report |
 | `build_topics` | Fit the topic model |
 | `build_term_shifts` | Compute rising and fading terms |
+| `build_bills` | Find bills and link them to their debates and recorded votes |
 | `load_divisions` | Add recorded votes to sittings loaded before version 1.5 |
-| `refresh_data` | Daily: load new sittings (following a new session or Parliament), then update the analysis |
+| `refresh_data` | Daily: load new sittings (following a new session or Parliament), then update the analysis and bills |
 
 ## Testing
 
-- 204 tests with pytest against PostgreSQL (CI uses a PostgreSQL service).
+- 226 tests with pytest against PostgreSQL (CI uses a PostgreSQL service).
 - The parser is tested on invented XML with the real structure (real Hansard text is
   never committed), and on real sittings when they have been downloaded locally.
 - The ingestion commands are tested against a fake House website: missing sittings,

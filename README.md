@@ -6,7 +6,7 @@ HansardLens loads the official Hansard every sitting day, pairs every paragraph 
 its translation, and records which language was actually spoken on the floor. On top of
 that record it offers bilingual full-text search, a side-by-side reading view, term
 trends, the share of debate held in French, topics found by NMF, and the words rising
-or fading in recent debate, recorded votes, and a page for every member. Everything is available through a documented REST API.
+or fading in recent debate, bills, recorded votes, and a page for every member. Everything is available through a documented REST API.
 Every figure is a descriptive share with a stated denominator.
 
 **Live site:** http://103.99.176.180/hansardlens/ (English and French, updated every
@@ -34,6 +34,9 @@ sitting day). **API docs:** http://103.99.176.180/hansardlens/api/docs/
 - **Recorded votes:** every division with the question, result, a breakdown by party
   at the time of the vote, the members who voted differently from most of their party,
   and every member's vote, linked to the debate and to the House's own page.
+- **Bills:** each bill debated in the House, found from the motions that move it, with
+  its titles in both languages, stages moved and completed, recorded votes, debate days
+  and who spoke most, linked to LEGISinfo for status and text.
 - **Languages:** share of speech given in French, overall, by month, party and member,
   measured with one yardstick for both languages.
 - **Topics:** 30 topics from TF-IDF and NMF, with each topic's share over time and
@@ -77,6 +80,7 @@ Open http://localhost:8000/ (or http://localhost:8000/?lang=fr for French).
 | Search | `/search/` |
 | Members | `/members/`, `/members/<name>/` |
 | Recorded votes | `/votes/`, `/votes/44-1/481/` |
+| Bills | `/bills/`, `/bills/45-1/C-4/` |
 | Trends | `/trends/` |
 | Topics | `/topics/` |
 | What's new | `/new/` |
@@ -103,6 +107,8 @@ schema at `/api/schema/`.
 | `GET /api/v1/speeches/{house_id}/` | One speech, every paragraph in English and French with its floor language |
 | `GET /api/v1/people/` | Speakers with latest party and riding |
 | `GET /api/v1/people/{slug}/` | One member: speeches by kind and month, parties, ridings, roles, French share, main topics |
+| `GET /api/v1/bills/` | Bills, most recently debated first; filters `parliament`, `session`, `q` |
+| `GET /api/v1/bills/45-1/C-4/` | One bill: titles, stages in the House, recorded votes |
 | `GET /api/v1/votes/` | Recorded votes, newest first; filters `parliament`, `session`, `result`, `member` |
 | `GET /api/v1/votes/44-1/481/` | One vote with every member's vote, party and whether it differed from their party |
 | `GET /api/v1/search/?q=…&text=en` | Paragraph search with highlighted snippets |
@@ -119,7 +125,8 @@ when the computer was asleep or off at that time, retries hourly after a failure
 reports its last run on `/health/` and in `docker compose logs scheduler`.
 
 `refresh_data` loads new sittings, follows a new session or Parliament when the current
-one ends, rebuilds term shifts when anything new arrived and refits topics weekly. Run it
+one ends, rebuilds term shifts and bill links when anything new arrived and refits
+topics weekly. Run it
 by hand at any time:
 
 ```bash
@@ -128,7 +135,8 @@ docker compose run --rm web python manage.py refresh_data
 
 Recorded votes are stored as sittings load. A database loaded with version 1.4 or
 earlier gets them once with `python manage.py load_divisions` (reads the cached XML in
-`data/raw`, downloading what is missing; speeches are left untouched).
+`data/raw`, downloading what is missing; speeches are left untouched). Bill pages are
+built with `python manage.py build_bills` (also run by `refresh_data`).
 
 ## Production
 

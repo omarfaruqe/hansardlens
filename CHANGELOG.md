@@ -1,5 +1,21 @@
 # Changelog
 
+## 1.6.0 – 2026-10-18
+
+- **Bills:** `build_bills` finds each bill debated in the House from the motions that
+  move or introduce it ("moved that Bill C-37, An Act …, be read the second time"),
+  with its number, long title (English and French) and short title (the debate
+  heading). Debates under that heading are linked to the bill; shared headings such as
+  "Criminal Code" go to the bill the debate names most. `refresh_data` reruns it after
+  new sittings.
+- **Bill pages:** `/bills/` (search by number or title, filter by session) and
+  `/bills/45-1/C-4/`: titles, stages moved and completed in the House, recorded votes
+  with their stage, debate days, who spoke most and speeches by party, with links to
+  LEGISinfo for status and text.
+- **Links:** speeches in a bill debate and votes on a bill link to the bill page.
+- **API:** `GET /api/v1/bills/` and `GET /api/v1/bills/{parliament}-{session}/{code}/`.
+- Methods note section 10; French translation of the new pages.
+
 ## 1.5.0 – 2026-10-18
 
 - **Recorded votes:** divisions are read from Hansard as sittings load: number, the

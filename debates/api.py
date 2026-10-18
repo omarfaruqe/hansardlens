@@ -18,7 +18,7 @@ from rest_framework.response import Response
 from rest_framework.views import APIView
 
 from . import analysis, search
-from .models import Division, Intervention, Paragraph, Person, Sitting, TermShift, Vote
+from .models import Bill, Division, Intervention, Paragraph, Person, Sitting, TermShift, Vote
 from .textmine import active_model
 
 
@@ -365,6 +365,98 @@ class DivisionDetail(generics.RetrieveAPIView):
             sitting__parliament=self.kwargs["ps"][0],
             sitting__session=self.kwargs["ps"][1],
             number=self.kwargs["number"],
+        )
+
+
+# -- bills ---------------------------------------------------------------------------
+
+
+class BillSerializer(serializers.ModelSerializer):
+    url = serializers.SerializerMethodField()
+    legisinfo_url = serializers.SerializerMethodField()
+
+    class Meta:
+        model = Bill
+        fields = [
+            "parliament",
+            "session",
+            "code",
+            "short_title_en",
+            "short_title_fr",
+            "long_title_en",
+            "long_title_fr",
+            "first_date",
+            "last_date",
+            "speeches",
+            "mentions",
+            "url",
+            "legisinfo_url",
+        ]
+
+    def get_url(self, obj) -> str:
+        return obj.get_absolute_url()
+
+    def get_legisinfo_url(self, obj) -> str:
+        return obj.legisinfo_url("en")
+
+
+class BillDetailSerializer(BillSerializer):
+    divisions = serializers.SerializerMethodField()
+
+    class Meta(BillSerializer.Meta):
+        fields = BillSerializer.Meta.fields + ["timeline", "divisions"]
+
+    def get_divisions(self, obj) -> list[dict]:
+        return [
+            {**DivisionSerializer(d).data, "stage": d.bill_stage}
+            for d in obj.divisions.select_related("sitting").order_by("sitting__date", "number")
+        ]
+
+
+@extend_schema(
+    tags=["Bills"],
+    parameters=[
+        OpenApiParameter("parliament", int),
+        OpenApiParameter("session", int),
+        OpenApiParameter("q", str, description="Bill number or part of a title"),
+    ],
+)
+class BillList(generics.ListAPIView):
+    """Bills debated in the House, most recently debated first."""
+
+    serializer_class = BillSerializer
+    pagination_class = Pagination
+
+    def get_queryset(self):
+        from django.db.models import Q
+
+        qs = Bill.objects.order_by("-last_date", "-parliament", "-session", "number")
+        p = self.request.query_params
+        for field in ("parliament", "session"):
+            if p.get(field, "").isdigit():
+                qs = qs.filter(**{field: int(p[field])})
+        if p.get("q"):
+            q = p["q"][:100]
+            qs = qs.filter(
+                Q(code__iexact=q.replace(" ", ""))
+                | Q(short_title_en__icontains=q)
+                | Q(short_title_fr__icontains=q)
+            )
+        return qs
+
+
+@extend_schema(tags=["Bills"])
+class BillDetail(generics.RetrieveAPIView):
+    """One bill: titles, stages moved and completed in the House, recorded votes."""
+
+    serializer_class = BillDetailSerializer
+
+    def get_object(self):
+        return get_object_or_404(
+            Bill,
+            parliament=self.kwargs["ps"][0],
+            session=self.kwargs["ps"][1],
+            code=self.kwargs["code"].upper(),
         )
 
 
