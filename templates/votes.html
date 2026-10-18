@@ -1,0 +1,66 @@
+{% extends "base.html" %}{% load i18n humanize hansard %}
+{% block title %}{% translate "Recorded votes" %} – HansardLens{% endblock %}
+{% block content %}
+<h1>{% if member %}{% blocktranslate with name=member.name %}Recorded votes: {{ name }}{% endblocktranslate %}{% else %}{% translate "Recorded votes" %}{% endif %}</h1>
+<p class="lede">{% translate "Every division of the House in the loaded debates: what was put to the vote, the result, and how each member voted, from the lists printed in Hansard." %}</p>
+{% if member %}<p class="small"><a href="{{ member.get_absolute_url }}">{% blocktranslate with name=member.name %}Back to {{ name }}{% endblocktranslate %}</a> · <a href="{% url 'votes' %}">{% translate "All recorded votes" %}</a></p>{% endif %}
+
+<form method="get" class="filter-row member-filters" role="search">
+  <label>{% translate "Subject" %}
+    <input type="search" name="q" value="{{ q }}" placeholder="{% translate 'e.g. estimates, opposition motion' %}">
+  </label>
+  <label>{% translate "Session" %}
+    <select name="session">
+      <option value="">{% translate "All sessions" %}</option>
+      {% for s in sessions %}<option value="{{ s }}" {% if session == s %}selected{% endif %}>{{ s }}</option>{% endfor %}
+    </select>
+  </label>
+  <label>{% translate "Result" %}
+    <select name="result">
+      <option value="">{% translate "Any" %}</option>
+      <option value="agreed" {% if result == "agreed" %}selected{% endif %}>{% translate "Agreed to" %}</option>
+      <option value="negatived" {% if result == "negatived" %}selected{% endif %}>{% translate "Negatived" %}</option>
+    </select>
+  </label>
+  {% if member %}<input type="hidden" name="member" value="{{ member.slug }}">{% endif %}
+  <button class="button" type="submit">{% translate "Show" %}</button>
+</form>
+
+<p class="result-count" aria-live="polite">{% blocktranslate count counter=total with n=total|intcomma %}{{ n }} recorded vote{% plural %}{{ n }} recorded votes{% endblocktranslate %}</p>
+{% if page.object_list %}
+  <div class="table-wide">
+    <table class="data-table vote-table">
+      <thead><tr>
+        <th>{% translate "Date" %}</th><th class="num-col">{% translate "No." %}</th><th class="text">{% translate "Question" %}</th>
+        <th class="text">{% translate "Result" %}</th><th>{% translate "Yea" %}</th><th>{% translate "Nay" %}</th>
+        {% if member %}<th class="text">{{ member.name }}</th>{% endif %}
+      </tr></thead>
+      <tbody>
+        {% for d in page.object_list %}{% field d "object" lang as obj %}
+          <tr>
+            <td>{{ d.sitting.date|ldate:"short" }}</td>
+            <td class="num-col">{{ d.number }}</td>
+            <td class="text question"><a href="{{ d.get_absolute_url }}?text={{ lang }}" lang="{{ lang }}">{% include "_division_title.html" %}</a>{% if obj %} <span class="muted" lang="{{ lang }}">· {{ obj }}</span>{% endif %}</td>
+            <td class="text">{% include "_vote_result.html" %}</td>
+            <td>{{ d.yeas }}</td>
+            <td>{{ d.nays }}</td>
+            {% if member %}<td class="text"><strong>{% include "_vote_choice.html" with choice=d.member_choice %}</strong></td>{% endif %}
+          </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+  {% if page.has_other_pages %}
+    <nav class="pager" aria-label="{% translate 'Pages' %}">
+      {% if page.has_previous %}<a href="?{% if querystring %}{{ querystring }}&amp;{% endif %}page={{ page.previous_page_number }}">{% translate "Previous" %}</a>{% endif %}
+      <span class="muted">{% blocktranslate with n=page.number of=page.paginator.num_pages %}Page {{ n }} of {{ of }}{% endblocktranslate %}</span>
+      {% if page.has_next %}<a href="?{% if querystring %}{{ querystring }}&amp;{% endif %}page={{ page.next_page_number }}">{% translate "Next" %}</a>{% endif %}
+    </nav>
+  {% endif %}
+{% else %}
+  <div class="notice"><p>{% translate "No recorded votes match these filters." %}</p></div>
+{% endif %}
+
+<h2>{% translate "About recorded votes" %}</h2>
+<p class="method">{% translate "Most questions are decided without a recorded vote; a division is held when members ask for one. Hansard prints the names of members voting yea and nay, and of paired members (who agreed not to vote with an absent member of the other side). The question is the debate's heading in Hansard; the full motion text and sponsor are on the House of Commons page linked from each vote." %}</p>
+{% endblock %}

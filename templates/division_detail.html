@@ -1,0 +1,60 @@
+{% extends "base.html" %}{% load i18n humanize hansard %}
+{% block title %}{% blocktranslate with n=division.number %}Division No. {{ n }}{% endblocktranslate %} – HansardLens{% endblock %}
+{% block content %}{% with d=division %}{% field d "object" lang as obj %}{% field d "subject_title" lang as subject %}{% field d "qualifier" lang as qualifier %}
+<p class="small"><a href="{% url 'votes' %}">{% translate "All recorded votes" %}</a></p>
+<p class="kicker">{% blocktranslate with n=d.number parl=d.sitting.parliament s=d.sitting.session %}Division No. {{ n }} · {{ parl }}-{{ s }}{% endblocktranslate %}</p>
+<h1 lang="{{ lang }}">{% include "_division_title.html" %}</h1>
+<p class="lede"><span lang="{{ lang }}">{% if qualifier and subject %}{{ subject }}. {% endif %}{{ obj }}</span><br>
+  <a href="{{ d.sitting.get_absolute_url }}?text={{ lang }}">{{ d.sitting.date|ldate:"long" }}</a>{% if d.time %} · {% blocktranslate with t=d.time|time:"H:i" %}Around {{ t }}{% endblocktranslate %}{% endif %}</p>
+
+<dl class="facts">
+  <div><dt>{% translate "Result" %}</dt><dd class="result-cell">{% include "_vote_result.html" %}</dd></div>
+  <div><dt>{% translate "Yea" %}</dt><dd>{{ d.yeas }}</dd></div>
+  <div><dt>{% translate "Nay" %}</dt><dd>{{ d.nays }}</dd></div>
+  <div><dt>{% translate "Paired" %}</dt><dd>{{ d.paired }}</dd></div>
+</dl>
+<p class="small">
+  <a href="{{ d.sitting.get_absolute_url }}?text={{ lang }}#iv-{{ d.sequence }}">{% translate "Read the debate before the vote" %}</a> ·
+  <a href="{% if LANGUAGE_CODE == 'fr' %}{{ d.official_url_fr }}{% else %}{{ d.official_url_en }}{% endif %}" rel="external">{% translate "Motion text and sponsor on the House of Commons website" %}</a>
+</p>
+
+<h2>{% translate "By party" %}</h2>
+<div class="table-wide">
+  <table class="data-table party-votes">
+    <thead><tr><th>{% translate "Party" %}</th><th>{% translate "Yea" %}</th><th>{% translate "Nay" %}</th><th>{% translate "Paired" %}</th></tr></thead>
+    <tbody>
+      {% for r in party_rows %}
+        <tr><td>{% if r.party %}{{ r.party|party }}{% else %}<span class="muted">{% translate "Not matched" %}</span>{% endif %}</td><td>{{ r.yea }}</td><td>{{ r.nay }}</td><td>{{ r.paired }}</td></tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</div>
+<p class="small muted">{% translate "Party at the time of the vote, from the member's labels in Hansard." %}{% if unmatched %} {% blocktranslate count counter=unmatched %}{{ counter }} name in the list could not be matched to a member who has spoken in the loaded debates.{% plural %}{{ counter }} names in the list could not be matched to members who have spoken in the loaded debates.{% endblocktranslate %}{% endif %}</p>
+
+{% if against %}
+  <h2>{% translate "Voted differently from most of their party" %}</h2>
+  <ul class="role-list">
+    {% for v in against %}<li>{% if v.person %}<a href="{{ v.person.get_absolute_url }}">{{ v.person.name }}</a>{% else %}{{ v.label }}{% endif %} <span class="muted">{{ v.party|party }}</span> · {% include "_vote_choice.html" with choice=v.choice %}</li>{% endfor %}
+  </ul>
+  <p class="small muted">{% translate "Compared with the majority of the same party's members voting yea or nay in this division (parties with at least five such members)." %}</p>
+{% endif %}
+
+<h2>{% translate "How each member voted" %}</h2>
+<div class="vote-columns">
+  {% for key, label, rows in groups %}
+    <section>
+      <h3>{{ label }} <span class="muted">({{ rows|length }})</span></h3>
+      {% if rows %}
+        <ul class="vote-names">
+          {% for v in rows %}<li>{% if v.person %}<a href="{{ v.person.get_absolute_url }}">{{ v.person.name }}</a>{% else %}{{ v.label }}{% endif %}{% if v.party %} <span class="muted">{{ v.party|party }}</span>{% endif %}</li>{% endfor %}
+        </ul>
+      {% else %}<p class="muted">{% translate "None" %}</p>{% endif %}
+    </section>
+  {% endfor %}
+</div>
+
+<nav class="neighbours" aria-label="{% translate 'Other votes' %}">
+  <span>{% if previous %}<a href="{{ previous.get_absolute_url }}?text={{ lang }}">{% blocktranslate with n=previous.number %}Previous: Division No. {{ n }}{% endblocktranslate %}</a>{% endif %}</span>
+  <span>{% if next %}<a href="{{ next.get_absolute_url }}?text={{ lang }}">{% blocktranslate with n=next.number %}Next: Division No. {{ n }}{% endblocktranslate %}</a>{% endif %}</span>
+</nav>
+{% endwith %}{% endblock %}

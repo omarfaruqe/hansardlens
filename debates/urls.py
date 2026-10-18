@@ -23,6 +23,10 @@ def sitting_detail(request, ps, number):
     return views.sitting_detail(request, ps[0], ps[1], number)
 
 
+def division_detail(request, ps, number):
+    return views.division_detail(request, ps[0], ps[1], number)
+
+
 urlpatterns = [
     path("", views.home, name="home"),
     path("search/", views.search_view, name="search"),
@@ -31,6 +35,8 @@ urlpatterns = [
     path("speeches/<str:house_id>/", views.speech_detail, name="speech_detail"),
     path("members/", views.members_view, name="members"),
     path("members/<slug:slug>/", views.member_detail, name="member_detail"),
+    path("votes/", views.votes_view, name="votes"),
+    path("votes/<session:ps>/<int:number>/", division_detail, name="division_detail"),
     path("trends/", views.trends_view, name="trends"),
     path("language/", views.language_view, name="language"),
     path("topics/", views.topics_view, name="topics"),

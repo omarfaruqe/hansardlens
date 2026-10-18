@@ -1,0 +1,1 @@
+{% load hansard %}{% field d "qualifier" lang as q %}{% field d "subject_title" lang as s %}{% field d "order_title" lang as o %}{{ q|default:s|default:o }}

@@ -262,3 +262,24 @@ h3 { font-size: 1.1rem; margin: 1.5rem 0 0.5rem; }
 .role-list { padding-left: 1.1rem; max-width: var(--measure); }
 .role-list li { margin: 0.25rem 0; }
 .speaker a, .result-head strong a { color: inherit; }
+
+/* Recorded votes: results and choices stay neutral (no party or traffic-light colours) */
+.kicker { font-size: 0.85rem; color: var(--muted); margin: 0 0 0.25rem; text-transform: uppercase; letter-spacing: 0.04em; }
+.vote-result { display: inline-block; font-size: 0.8rem; font-weight: 600; padding: 0.05rem 0.5rem; border-radius: 3px; white-space: nowrap; }
+.vote-result.agreed { background: var(--data); color: #fff; }
+.vote-result.negatived { background: transparent; color: var(--ink); box-shadow: inset 0 0 0 1px var(--data); }
+.facts .result-cell { font-size: 1.1rem; padding-top: 0.35rem; }
+.vote-table .question { white-space: normal; min-width: 16rem; }
+.party-votes { max-width: 32rem; }
+@media (max-width: 40rem) {
+  .vote-table .question { min-width: 11rem; }
+  .vote-table .num-col { display: none; }
+  .vote-table td, .vote-table th { padding-right: 0.45rem; }
+}
+.vote-columns { display: grid; grid-template-columns: 1fr; gap: 0 2rem; }
+@media (min-width: 50rem) { .vote-columns { grid-template-columns: repeat(3, 1fr); } }
+.vote-names { list-style: none; padding: 0; margin: 0; font-size: 0.92rem; columns: 2 12rem; column-gap: 1.5rem; }
+@media (min-width: 50rem) { .vote-names { columns: 1; } }
+.vote-names li { padding: 0.15rem 0; break-inside: avoid; }
+.sitting-votes { list-style: none; padding: 0; margin: 0.5rem 0 1.5rem; max-width: var(--measure); }
+.sitting-votes li { padding: 0.35rem 0; border-bottom: 1px solid var(--rule); }

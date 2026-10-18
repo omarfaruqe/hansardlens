@@ -119,6 +119,7 @@ def sitting_detail(request, parliament: int, session: int, number: int):
     context = {
         "sitting": sitting,
         "sections": sections,
+        "divisions": sitting.divisions.all(),
         "lang": lang,
         "other_lang": "fr" if lang == "en" else "en",
         "previous": neighbours.filter(number__lt=number).order_by("-number").first(),
@@ -427,6 +428,22 @@ def member_detail(request, slug: str):
     )
     page = Paginator(speeches, 10).get_page(request.GET.get("page"))
     kinds = profile["by_kind"]
+    from django.db.models import Q
+
+    from .models import Vote
+
+    member_votes = Vote.objects.filter(person=person)
+    vote_summary = member_votes.aggregate(
+        total=Count("id"),
+        yea=Count("id", filter=Q(choice="yea")),
+        nay=Count("id", filter=Q(choice="nay")),
+        paired=Count("id", filter=Q(choice="paired")),
+        with_line=Count("id", filter=Q(against_party__isnull=False)),
+        against=Count("id", filter=Q(against_party=True)),
+    )
+    recent_votes = member_votes.select_related("division__sitting").order_by(
+        "-division__sitting__date", "-division__number"
+    )[:8]
     context = {
         "lang": lang,
         "person": person,
@@ -438,6 +455,8 @@ def member_detail(request, slug: str):
             (_("Members' statements"), kinds["statements"]),
         ],
         "topics": analysis.member_topics(person, model) if model else None,
+        "vote_summary": vote_summary,
+        "recent_votes": recent_votes,
         "model": model,
         "page": page,
         "min_language_words": analysis.MIN_MEMBER_LANGUAGE_WORDS,
@@ -452,3 +471,111 @@ def member_detail(request, slug: str):
         ),
     }
     return render(request, "member_detail.html", context)
+
+
+# -- recorded votes ----------------------------------------------------------------------
+
+VOTE_PAGE_SIZE = 50
+
+
+def _session(request):
+    """?session=44-1 -> (44, 1)"""
+    value = request.GET.get("session", "")
+    parts = value.split("-")
+    if len(parts) == 2 and all(p.isdigit() for p in parts):
+        return int(parts[0]), int(parts[1])
+    return None
+
+
+def votes_view(request):
+    from django.db.models import Q
+
+    from .models import Division, Vote
+
+    lang = content_lang(request)
+    session = _session(request)
+    result = request.GET.get("result", "")
+    q = " ".join(request.GET.get("q", "").split())[:100]
+    member = None
+    if request.GET.get("member"):
+        member = Person.objects.filter(slug=request.GET["member"][:180]).first()
+
+    divisions = Division.objects.select_related("sitting").order_by("-sitting__date", "-number")
+    if session:
+        divisions = divisions.filter(sitting__parliament=session[0], sitting__session=session[1])
+    if result in ("agreed", "negatived"):
+        divisions = divisions.filter(result=result)
+    if q:
+        text = Q()
+        for field in ("subject_title", "qualifier", "order_title", "object"):
+            text |= Q(**{f"{field}_en__icontains": q}) | Q(**{f"{field}_fr__icontains": q})
+        divisions = divisions.filter(text)
+    if member:
+        divisions = divisions.filter(votes__person=member)
+    page = Paginator(divisions, VOTE_PAGE_SIZE).get_page(request.GET.get("page"))
+    if member:
+        choices = dict(
+            Vote.objects.filter(person=member, division__in=list(page.object_list)).values_list(
+                "division", "choice"
+            )
+        )
+        for d in page.object_list:
+            d.member_choice = choices.get(d.id)
+    query = request.GET.copy()
+    query.pop("page", None)
+    query.pop("lang", None)
+    context = {
+        "lang": lang,
+        "page": page,
+        "total": page.paginator.count,
+        "session": f"{session[0]}-{session[1]}" if session else "",
+        "sessions": [
+            f"{p}-{s}"
+            for p, s in Sitting.objects.filter(divisions__isnull=False)
+            .values_list("parliament", "session")
+            .distinct()
+            .order_by("-parliament", "-session")
+        ],
+        "result": result,
+        "q": q,
+        "member": member,
+        "querystring": query.urlencode(),
+    }
+    return render(request, "votes.html", context)
+
+
+def division_detail(request, parliament: int, session: int, number: int):
+    from .models import Division
+
+    division = get_object_or_404(
+        Division.objects.select_related("sitting"),
+        sitting__parliament=parliament,
+        sitting__session=session,
+        number=number,
+    )
+    lang = content_lang(request)
+    votes = list(division.votes.select_related("person").order_by("label"))
+    parties: dict[str, dict] = {}
+    for v in votes:
+        row = parties.setdefault(v.party, {"party": v.party, "yea": 0, "nay": 0, "paired": 0})
+        row[v.choice] += 1
+    party_rows = sorted(
+        parties.values(), key=lambda r: (r["party"] == "", -(r["yea"] + r["nay"] + r["paired"]))
+    )
+    groups = [
+        ("yea", _("Yea"), [v for v in votes if v.choice == "yea"]),
+        ("nay", _("Nay"), [v for v in votes if v.choice == "nay"]),
+        ("paired", _("Paired"), [v for v in votes if v.choice == "paired"]),
+    ]
+    others = type(division).objects.filter(sitting__parliament=parliament, sitting__session=session)
+    context = {
+        "lang": lang,
+        "division": division,
+        "party_rows": party_rows,
+        "groups": groups,
+        "against": [v for v in votes if v.against_party],
+        "unmatched": sum(1 for v in votes if v.person_id is None),
+        "previous": others.filter(number__lt=number).order_by("-number").first(),
+        "next": others.filter(number__gt=number).order_by("number").first(),
+    }
+    return render(request, "division_detail.html", context)

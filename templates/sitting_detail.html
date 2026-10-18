@@ -4,6 +4,14 @@
 <h1>{{ sitting.date|ldate:"long" }}</h1>
 <p class="lede">{% blocktranslate with n=sitting.number parl=sitting.parliament|ordinal_parliament s=sitting.session %}Sitting {{ n }} of the {{ parl }}, session {{ s }}{% endblocktranslate %}{% if sitting.speaker_of_house %}. {% blocktranslate with name=sitting.speaker_of_house %}Speaker: {{ name }}{% endblocktranslate %}{% endif %}</p>
 <p class="small"><a href="{% with_text other_lang %}">{% if other_lang == "fr" %}{% translate "Show the French text" %}{% else %}{% translate "Show the English text" %}{% endif %}</a></p>
+{% if divisions %}
+  <h2>{% translate "Recorded votes" %}</h2>
+  <ul class="sitting-votes">
+    {% for d in divisions %}{% field d "object" lang as obj %}
+      <li>{% include "_vote_result.html" %} <a href="{{ d.get_absolute_url }}?text={{ lang }}" lang="{{ lang }}">{% include "_division_title.html" %}</a>{% if obj %} <span class="muted" lang="{{ lang }}">· {{ obj }}</span>{% endif %} <span class="muted small">{% blocktranslate with n=d.number y=d.yeas na=d.nays %}No. {{ n }}: {{ y }} yea, {{ na }} nay{% endblocktranslate %}</span></li>
+    {% endfor %}
+  </ul>
+{% endif %}
 
 {% for section in sections %}
   {% ifchanged section.order %}{% if section.order %}<h2 class="agenda-order" lang="{{ lang }}">{{ section.order }}</h2>{% endif %}{% endifchanged %}

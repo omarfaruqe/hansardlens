@@ -72,6 +72,28 @@
   <p class="small muted">{% blocktranslate with n=min_topic_speeches %}Main topics are shown from {{ n }} analysed speeches.{% endblocktranslate %}</p>
 {% endif %}
 
+{% if vote_summary.total %}
+  <h2>{% translate "Recorded votes" %}</h2>
+  <p>{% blocktranslate count counter=vote_summary.total with n=vote_summary.total|intcomma yea=vote_summary.yea|intcomma nay=vote_summary.nay|intcomma paired=vote_summary.paired|intcomma %}{{ n }} recorded vote in the loaded debates: {{ yea }} yea, {{ nay }} nay, {{ paired }} paired.{% plural %}{{ n }} recorded votes in the loaded debates: {{ yea }} yea, {{ nay }} nay, {{ paired }} paired.{% endblocktranslate %}
+  {% if vote_summary.with_line %}{% blocktranslate with k=vote_summary.against|intcomma m=vote_summary.with_line|intcomma %}Voted differently from most of their party in {{ k }} of {{ m }} votes where the party had a clear majority.{% endblocktranslate %}{% endif %}</p>
+  <div class="table-wide">
+    <table class="data-table vote-table">
+      <thead><tr><th>{% translate "Date" %}</th><th class="text">{% translate "Question" %}</th><th class="text">{% translate "Vote" %}</th><th class="text">{% translate "Result" %}</th></tr></thead>
+      <tbody>
+        {% for v in recent_votes %}{% with d=v.division %}
+          <tr>
+            <td>{{ d.sitting.date|ldate:"short" }}</td>
+            <td class="text question">{% field d "object" lang as obj %}<a href="{{ d.get_absolute_url }}?text={{ lang }}" lang="{{ lang }}">{% include "_division_title.html" %}</a>{% if obj %} <span class="muted" lang="{{ lang }}">· {{ obj }}</span>{% endif %}</td>
+            <td class="text"><strong>{% include "_vote_choice.html" with choice=v.choice %}</strong>{% if v.against_party %} <span class="tag">{% translate "differs from party" %}</span>{% endif %}</td>
+            <td class="text">{% include "_vote_result.html" %}</td>
+          </tr>
+        {% endwith %}{% endfor %}
+      </tbody>
+    </table>
+  </div>
+  <p class="small"><a href="{% url 'votes' %}?member={{ person.slug }}">{% translate "All of this member's recorded votes" %}</a></p>
+{% endif %}
+
 {% if profile.speeches %}
   <h2>{% translate "Search this member's speeches" %}</h2>
   <form class="searchbar" method="get" action="{% url 'search' %}" role="search">
