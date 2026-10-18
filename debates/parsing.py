@@ -13,7 +13,8 @@ Structure confirmed on real sittings (44-1 #1, 44-1 #50, 45-1 #10):
               Intervention[@Type,@id]/PersonSpeaking/Affiliation[@DbId,@Type]
                                      /Content/(ParaText|ProceduralText|FloorLanguage|Timestamp)
               ParaText | ProceduralText              loose procedural text
-              Division                               recorded vote (skipped for now)
+              Division[@DivisionNumber]/DivisionType[@vote-type]/Affiliation[@DbId]
+                                                     recorded vote (names as printed)
 
 FloorLanguage and Timestamp are switches: they apply to everything after them in
 document order until the next one, across interventions.
@@ -23,6 +24,7 @@ from __future__ import annotations
 
 import datetime as dt
 import hashlib
+import re
 from dataclasses import dataclass, field
 
 from defusedxml import ElementTree as ET
@@ -60,6 +62,25 @@ class Intervention:
 
 
 @dataclass
+class Division:
+    """One recorded vote ("division") as printed in Hansard."""
+
+    number: int
+    house_id: str
+    rubric: str
+    order_title: str
+    subject_title: str
+    qualifier: str  # e.g. "Opposition Motion—Carbon Tax on Farmers"
+    time: dt.time | None
+    position: int  # index of the intervention holding "(The House divided on ...)"
+    heading: str  # that sentence, e.g. "(The House divided on Motion No. 3, which was ...)"
+    votes: dict[str, list[tuple[str, str]]]  # yea/nay/paired -> [(House id, name)]
+
+
+VOTE_TYPES = {"yeas": "yea", "nays": "nay", "paired": "paired"}
+
+
+@dataclass
 class Document:
     lang: str
     house_doc_id: str
@@ -71,6 +92,7 @@ class Document:
     speaker_of_house: str  # e.g. "Anthony Rota", from the masthead
     checksum: str
     interventions: list[Intervention]
+    divisions: list[Division] = field(default_factory=list)
 
 
 def _metadata(root) -> dict[str, str]:
@@ -96,9 +118,12 @@ class _Walker:
         self.rubric = ""
         self.order_title = ""
         self.subject_title = ""
+        self.last_subject = ""  # latest non-empty subject in this order of business
+        self.last_qualifier = ""  # and its qualifier ("Opposition Motion—...")
         self.time: dt.time | None = None
         self.floor = ""
         self.interventions: list[Intervention] = []
+        self.divisions: list[Division] = []
         self._loose: Intervention | None = None  # open block of loose procedural text
 
     # -- state switches -------------------------------------------------------
@@ -119,12 +144,18 @@ class _Walker:
             self.rubric = el.get("Rubric") or ""
             title = el.find("OrderOfBusinessTitle")
             self.order_title = clean_text(title) if title is not None else ""
-            self.subject_title = ""
+            self.subject_title = self.last_subject = self.last_qualifier = ""
             self._children(el)
         elif tag == "SubjectOfBusiness":
             self._close_loose()
             title = el.find("SubjectOfBusinessTitle")
             self.subject_title = clean_text(title) if title is not None else ""
+            qualifier = el.find("SubjectOfBusinessQualifier")
+            qualifier = clean_text(qualifier) if qualifier is not None else ""
+            if self.subject_title:
+                self.last_subject, self.last_qualifier = self.subject_title, qualifier
+            elif qualifier:  # e.g. each estimates vote: "Concurrence in Vote 5b—..."
+                self.last_qualifier = qualifier
             self._children(el)
         elif tag in ("HansardBody", "SubjectOfBusinessContent", "Intro"):
             self._children(el)
@@ -137,7 +168,45 @@ class _Walker:
             self._floor_language(el)
         elif tag == "Timestamp":
             self._timestamp(el)
-        # Division (recorded votes), titles and catchlines are not speech: skipped.
+        elif tag == "Division":
+            self._division(el)
+        # Titles and catchlines are not speech: skipped.
+
+    def _division(self, el):
+        try:
+            number = int(el.get("DivisionNumber") or "")
+        except ValueError:
+            return
+        # The sentence announcing the vote is the last loose paragraph before it.
+        if self._loose is not None and self._loose.paragraphs:
+            position, heading = len(self.interventions), self._loose.paragraphs[-1].text
+        else:
+            position, heading = len(self.interventions) - 1, ""
+        votes: dict[str, list[tuple[str, str]]] = {"yea": [], "nay": [], "paired": []}
+        for group in el.findall("DivisionType"):
+            choice = VOTE_TYPES.get((group.get("vote-type") or "").lower())
+            if choice:
+                votes[choice] += [
+                    (a.get("DbId") or "", clean_text(a)) for a in group.findall("Affiliation")
+                ]
+        self.divisions.append(
+            Division(
+                number=number,
+                house_id=el.get("id") or "",
+                rubric=self.rubric,
+                order_title=self.order_title,
+                # A vote often sits in an untitled continuation of the debate's subject.
+                subject_title=self.subject_title or self.last_subject,
+                qualifier=self.last_qualifier,
+                time=self.time,
+                position=max(position, 0),
+                heading=heading,
+                votes=votes,
+            )
+        )
+        # A qualifier names one question; later votes in the same subject (bill
+        # stages after estimates, say) must not inherit it.
+        self.last_qualifier = ""
 
     def _children(self, el):
         for child in el:
@@ -228,7 +297,32 @@ def parse_document(xml_bytes: bytes) -> Document:
         speaker_of_house=_speaker_of_house(meta),
         checksum=hashlib.sha256(xml_bytes).hexdigest(),
         interventions=walker.finish(),
+        divisions=walker.divisions,
     )
+
+
+# What was put to the vote and the outcome, from the sentence before the vote list:
+#   (The House divided on Motion No. 3, which was agreed to on the following division:)
+#   (La motion no 3, mise aux voix, est adoptée par le vote suivant :)
+HEADING_EN = re.compile(
+    r"divided on (?P<object>.+?),\s+which was (?P<result>agreed to|negatived|carried|defeated)",
+    re.IGNORECASE,
+)
+HEADING_FR = re.compile(
+    r"^\(?(?P<object>.+?),\s+mise?s? aux voix,\s+(?:est|sont)\s+(?P<result>adopt|rejet)",
+    re.IGNORECASE,
+)
+
+
+def read_heading(text: str, lang: str) -> tuple[str, str]:
+    """-> (object, result) with result "agreed", "negatived" or "" when not stated."""
+    match = (HEADING_EN if lang == "en" else HEADING_FR).search(text or "")
+    if not match:
+        return "", ""
+    obj = match.group("object").strip()
+    obj = obj[:1].upper() + obj[1:]
+    word = match.group("result").lower()
+    return obj, "agreed" if word in ("agreed to", "carried", "adopt") else "negatived"
 
 
 # ---------------------------------------------------------------------------------
@@ -264,6 +358,25 @@ class MergedIntervention:
 
 
 @dataclass
+class MergedDivision:
+    number: int
+    house_id: str
+    rubric: str
+    order_title_en: str
+    order_title_fr: str
+    subject_title_en: str
+    subject_title_fr: str
+    qualifier_en: str
+    qualifier_fr: str
+    object_en: str
+    object_fr: str
+    result: str  # "agreed", "negatived" or "" (not stated)
+    time: dt.time | None
+    position: int  # index into MergedSitting.interventions
+    votes: dict[str, list[tuple[str, str]]]
+
+
+@dataclass
 class MergedSitting:
     parliament: int
     session: int
@@ -277,6 +390,7 @@ class MergedSitting:
     has_french: bool
     interventions: list[MergedIntervention]
     issues: list[str]
+    divisions: list[MergedDivision] = field(default_factory=list)
 
 
 def _merge_paragraphs(en: Intervention, fr: Intervention | None, issues: list[str]):
@@ -393,4 +507,38 @@ def merge(en: Document, fr: Document | None) -> MergedSitting:
         has_french=fr is not None,
         interventions=merged,
         issues=issues,
+        divisions=_merge_divisions(en, fr),
     )
+
+
+def _merge_divisions(en: Document, fr: Document | None) -> list[MergedDivision]:
+    """Vote lists and structure come from English; French adds titles and the object."""
+    fr_by_number = {d.number: d for d in fr.divisions} if fr else {}
+    out = []
+    for d in en.divisions:
+        other = fr_by_number.get(d.number)
+        object_en, result = read_heading(d.heading, "en")
+        object_fr, result_fr = read_heading(other.heading, "fr") if other else ("", "")
+        yeas, nays = len(d.votes["yea"]), len(d.votes["nay"])
+        if not result:
+            result = result_fr or ("agreed" if yeas > nays else "negatived" if nays > yeas else "")
+        out.append(
+            MergedDivision(
+                number=d.number,
+                house_id=d.house_id,
+                rubric=d.rubric,
+                order_title_en=d.order_title,
+                order_title_fr=other.order_title if other else "",
+                subject_title_en=d.subject_title,
+                subject_title_fr=other.subject_title if other else "",
+                qualifier_en=d.qualifier,
+                qualifier_fr=other.qualifier if other else "",
+                object_en=object_en,
+                object_fr=object_fr,
+                result=result,
+                time=d.time,
+                position=d.position,
+                votes=d.votes,
+            )
+        )
+    return out

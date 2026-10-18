@@ -29,8 +29,11 @@ def raw_path(parliament: int, session: int, number: int, lang: str) -> Path:
     return Path(settings.DATA_DIR) / "raw" / f"P{parliament}S{session}-{number:03d}-{lang}.xml"
 
 
-def get_xml(parliament: int, session: int, number: int, lang: str, refresh: bool = False) -> bytes:
-    """Return the XML for one language, from the cache in data/raw or the House website."""
+def get_xml(
+    parliament: int, session: int, number: int, lang: str, refresh: bool = False, keep: bool = True
+) -> bytes:
+    """Return the XML for one language, from the cache in data/raw or the House website.
+    `keep=False` does not save a download in the cache (to spare disk space)."""
     path = raw_path(parliament, session, number, lang)
     if path.exists() and not refresh:
         return path.read_bytes()
@@ -43,8 +46,9 @@ def get_xml(parliament: int, session: int, number: int, lang: str, refresh: bool
         raise
     if not content.lstrip().startswith(b"<?xml") and b"<Hansard" not in content[:2000]:
         raise SittingNotFound(url)  # an HTML page instead of XML
-    path.parent.mkdir(parents=True, exist_ok=True)
-    path.write_bytes(content)
+    if keep:
+        path.parent.mkdir(parents=True, exist_ok=True)
+        path.write_bytes(content)
     return content
 
 
@@ -158,6 +162,9 @@ def store(merged: MergedSitting) -> LoadResult:
         for pseq, p in enumerate(paras, start=1)
     ]
     Paragraph.objects.bulk_create(paragraphs, batch_size=1000)
+    from .votes import store_divisions
+
+    store_divisions(sitting, merged)
     return LoadResult(
         sitting=sitting, interventions=len(rows), paragraphs=len(paragraphs), created=created
     )

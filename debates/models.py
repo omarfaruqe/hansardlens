@@ -293,3 +293,93 @@ class TermShift(models.Model):
 
     class Meta:
         ordering = ["-created_at"]
+
+
+class Division(models.Model):
+    """One recorded vote of the House, as printed at the end of its debate in Hansard."""
+
+    class Result(models.TextChoices):
+        AGREED = "agreed"
+        NEGATIVED = "negatived"
+        UNKNOWN = ""
+
+    sitting = models.ForeignKey(Sitting, on_delete=models.CASCADE, related_name="divisions")
+    number = models.PositiveIntegerField()  # "Division No. 481", numbered within a session
+    house_id = models.CharField(max_length=20, blank=True)
+    # Sequence of the intervention holding "(The House divided on ...)", for links.
+    sequence = models.PositiveIntegerField(default=0)
+    rubric = models.CharField(max_length=40, blank=True)
+    order_title_en = models.CharField(max_length=300, blank=True)
+    order_title_fr = models.CharField(max_length=300, blank=True)
+    subject_title_en = models.CharField(max_length=500, blank=True)
+    subject_title_fr = models.CharField(max_length=500, blank=True)
+    qualifier_en = models.CharField(max_length=500, blank=True)
+    qualifier_fr = models.CharField(max_length=500, blank=True)
+    object_en = models.CharField(max_length=300, blank=True)  # "Motion No. 3", "The amendment"
+    object_fr = models.CharField(max_length=300, blank=True)
+    result = models.CharField(max_length=10, choices=Result.choices, blank=True)
+    time = models.TimeField(null=True, blank=True)
+    yeas = models.PositiveSmallIntegerField(default=0)
+    nays = models.PositiveSmallIntegerField(default=0)
+    paired = models.PositiveSmallIntegerField(default=0)
+
+    class Meta:
+        ordering = ["sitting", "number"]
+        constraints = [
+            models.UniqueConstraint(fields=["sitting", "number"], name="unique_division_number")
+        ]
+
+    def __str__(self):
+        return f"{self.sitting.parliament}-{self.sitting.session} Division No. {self.number}"
+
+    def get_absolute_url(self):
+        from django.urls import reverse
+
+        s = self.sitting
+        return reverse("division_detail", args=[(s.parliament, s.session), self.number])
+
+    @property
+    def official_url_en(self) -> str:
+        return self.official_url("en")
+
+    @property
+    def official_url_fr(self) -> str:
+        return self.official_url("fr")
+
+    def official_url(self, lang: str = "en") -> str:
+        """The House of Commons page for this vote (motion text, sponsor)."""
+        s = self.sitting
+        lang = "fr" if lang == "fr" else "en"
+        return (
+            f"https://www.ourcommons.ca/members/{lang}/votes/{s.parliament}/{s.session}/"
+            f"{self.number}"
+        )
+
+
+class Vote(models.Model):
+    """How one member voted in one division. `label` is the name as printed in the vote
+    list ("Falk (Provencher)"); `person` is filled when it can be matched."""
+
+    class Choice(models.TextChoices):
+        YEA = "yea"
+        NAY = "nay"
+        PAIRED = "paired"
+
+    division = models.ForeignKey(Division, on_delete=models.CASCADE, related_name="votes")
+    person = models.ForeignKey(
+        Person, null=True, blank=True, on_delete=models.SET_NULL, related_name="votes"
+    )
+    house_db_id = models.CharField(max_length=20, blank=True)
+    label = models.CharField(max_length=200)
+    choice = models.CharField(max_length=6, choices=Choice.choices)
+    party = models.CharField(max_length=20, blank=True)
+    # Did the member vote differently from most of their party's members in this vote?
+    # Null when it does not apply (paired, unknown party, independents, small groups).
+    against_party = models.BooleanField(null=True)
+
+    class Meta:
+        ordering = ["division", "label"]
+        indexes = [models.Index(fields=["person", "division"], name="vote_person_idx")]
+
+    def __str__(self):
+        return f"{self.division}: {self.label} {self.choice}"

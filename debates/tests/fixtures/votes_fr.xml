@@ -1,0 +1,112 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- Invented test sitting with recorded votes. It copies the STRUCTURE of real Hansard
+     divisions (44-1 #264, 45-1 #12) but every name, riding and sentence is made up.
+     Sam Okafor speaks under a role id (503) and votes under his member id (600). -->
+<Hansard xml:lang="FR" id="900051">
+  <ExtractedInformation>
+    <ExtractedItem Name="SpeakerName">Présidence de l'honorable Pat Example</ExtractedItem>
+    <ExtractedItem Name="MetaVolumeNumber">Volume 151</ExtractedItem>
+    <ExtractedItem Name="MetaNumberNumber">051</ExtractedItem>
+    <ExtractedItem Name="MetaDateNumDay">01</ExtractedItem>
+    <ExtractedItem Name="MetaDateNumMonth">04</ExtractedItem>
+    <ExtractedItem Name="MetaDateNumYear">2022</ExtractedItem>
+    <ExtractedItem Name="SessionNumber">1</ExtractedItem>
+    <ExtractedItem Name="ParliamentNumber">44</ExtractedItem>
+  </ExtractedInformation>
+  <HansardBody>
+    <OrderOfBusiness id="950" Rubric="GovernmentOrders">
+      <OrderOfBusinessTitle>Ordres émanant du gouvernement</OrderOfBusinessTitle>
+      <SubjectOfBusiness id="951">
+        <SubjectOfBusinessTitle>Travaux des subsides</SubjectOfBusinessTitle>
+        <SubjectOfBusinessQualifier>Motion de l'opposition — Les loyers exemple</SubjectOfBusinessQualifier>
+        <SubjectOfBusinessContent>
+          <Timestamp Hr="17" Mn="15">(1715)</Timestamp>
+          <Intervention Type="Debate" ToC="Yes" id="1100">
+            <PersonSpeaking><Affiliation DbId="501" Type="2">Mme Jane Alder (Riverbend—North Shore, PCC)</Affiliation>: </PersonSpeaking>
+            <Content><ParaText id="2100">Monsieur le Président, un court discours d'exemple.</ParaText></Content>
+          </Intervention>
+          <Intervention Type="Debate" ToC="Yes" id="1101">
+            <PersonSpeaking><Affiliation DbId="502" Type="2">M. Luc Martel (Lac-Bleu, BQ)</Affiliation>: </PersonSpeaking>
+            <Content><ParaText id="2101">Monsieur le Président, un court discours d'exemple.</ParaText></Content>
+          </Intervention>
+          <Intervention Type="Debate" ToC="Yes" id="1102">
+            <PersonSpeaking><Affiliation DbId="503" Type="5">L'hon. Sam Okafor (secrétaire d'État (Logement), Lib.)</Affiliation>: </PersonSpeaking>
+            <Content><ParaText id="2102">Monsieur le Président, un court discours d'exemple.</ParaText></Content>
+          </Intervention>
+          <Intervention Type="Debate" ToC="Yes" id="1103">
+            <PersonSpeaking><Affiliation DbId="506" Type="2">M. Tom Reed (Westvale, Lib.)</Affiliation>: </PersonSpeaking>
+            <Content><ParaText id="2103">Monsieur le Président, un court discours d'exemple.</ParaText></Content>
+          </Intervention>
+          <Intervention Type="Debate" ToC="Yes" id="1104">
+            <PersonSpeaking><Affiliation DbId="507" Type="2">Mme Ana Reed (Eastport, PCC)</Affiliation>: </PersonSpeaking>
+            <Content><ParaText id="2104">Monsieur le Président, un court discours d'exemple.</ParaText></Content>
+          </Intervention>
+          <Intervention Type="Debate" ToC="Yes" id="1105">
+            <PersonSpeaking><Affiliation DbId="508" Type="2">M. Paul Bell (Northfield, Lib.)</Affiliation>: </PersonSpeaking>
+            <Content><ParaText id="2105">Monsieur le Président, un court discours d'exemple.</ParaText></Content>
+          </Intervention>
+          <Intervention Type="Debate" ToC="Yes" id="1106">
+            <PersonSpeaking><Affiliation DbId="509" Type="2">Mme Kim Ray (Southby, Lib.)</Affiliation>: </PersonSpeaking>
+            <Content><ParaText id="2106">Monsieur le Président, un court discours d'exemple.</ParaText></Content>
+          </Intervention>
+          <Intervention Type="Debate" ToC="Yes" id="1107">
+            <PersonSpeaking><Affiliation DbId="510" Type="2">M. Dan Fox (Lakeside, Lib.)</Affiliation>: </PersonSpeaking>
+            <Content><ParaText id="2107">Monsieur le Président, un court discours d'exemple.</ParaText></Content>
+          </Intervention>
+          <Intervention Type="Debate" ToC="Yes" id="1108">
+            <PersonSpeaking><Affiliation DbId="511" Type="2">Mme Eve Nash (Hillcrest, Lib.)</Affiliation>: </PersonSpeaking>
+            <Content><ParaText id="2108">Monsieur le Président, un court discours d'exemple.</ParaText></Content>
+          </Intervention>
+        </SubjectOfBusinessContent>
+      </SubjectOfBusiness>
+      <SubjectOfBusiness id="952">
+        <Timestamp Hr="17" Mn="55">(1755)</Timestamp>
+        <SubjectOfBusinessContent>
+          <ParaText id="2200">(La motion, mise aux voix, est rejetée par le vote suivant :)</ParaText>
+          <Division id="960" DivisionNumber="54">
+            <DivisionNumber>(Vote no 54)</DivisionNumber>
+            <DivisionType vote-type="Yeas"><Type>POUR</Type><Title>Députés</Title><Affiliation DbId="501">Alder</Affiliation><Affiliation DbId="502">Martel</Affiliation><Affiliation DbId="506">Reed (Westvale)</Affiliation><Total> -- 3</Total></DivisionType>
+            <DivisionType vote-type="Nays"><Type>CONTRE</Type><Title>Députés</Title><Affiliation DbId="600">Okafor</Affiliation><Affiliation DbId="508">Bell</Affiliation><Affiliation DbId="509">Ray</Affiliation><Affiliation DbId="510">Fox</Affiliation><Affiliation DbId="507">Reed (Eastport)</Affiliation><Total> -- 5</Total></DivisionType>
+            <DivisionType vote-type="Paired"><Type>PAIRÉS</Type><Title>Députés</Title><Affiliation DbId="511">Nash</Affiliation><Affiliation DbId="999">Zed</Affiliation><Total> -- 2</Total></DivisionType>
+          </Division>
+          <Intervention Type="Debate" ToC="No" id="1200">
+            <PersonSpeaking><Affiliation DbId="504" Type="96">Le Président</Affiliation>: </PersonSpeaking>
+            <Content><ParaText id="2201">Je déclare la motion rejetée.</ParaText></Content>
+          </Intervention>
+        </SubjectOfBusinessContent>
+      </SubjectOfBusiness>
+      <SubjectOfBusiness id="953">
+        <SubjectOfBusinessTitle>Le Budget principal des dépenses 2022-2023</SubjectOfBusinessTitle>
+        <SubjectOfBusinessQualifier>Adoption du crédit 1 — Agence exemple</SubjectOfBusinessQualifier>
+        <SubjectOfBusinessContent>
+          <Intervention Type="Debate" ToC="No" id="1201">
+            <PersonSpeaking><Affiliation DbId="503" Type="5">L'hon. Sam Okafor</Affiliation>: </PersonSpeaking>
+            <Content><ParaText id="2202">Motion no 1 proposée : Que le crédit 1 soit adopté.</ParaText></Content>
+          </Intervention>
+        </SubjectOfBusinessContent>
+      </SubjectOfBusiness>
+      <SubjectOfBusiness id="954">
+        <SubjectOfBusinessContent>
+          <ParaText id="2203">(La motion no 1, mise aux voix, est adoptée par le vote suivant :)</ParaText>
+          <Division id="961" DivisionNumber="55">
+            <DivisionNumber>(Vote no 55)</DivisionNumber>
+            <DivisionType vote-type="Yeas"><Type>POUR</Type><Title>Députés</Title><Affiliation DbId="600">Okafor</Affiliation><Affiliation DbId="508">Bell</Affiliation><Affiliation DbId="509">Ray</Affiliation><Affiliation DbId="510">Fox</Affiliation><Affiliation DbId="511">Nash</Affiliation><Affiliation DbId="506">Reed (Westvale)</Affiliation><Total> -- 6</Total></DivisionType>
+            <DivisionType vote-type="Nays"><Type>CONTRE</Type><Title>Députés</Title><Affiliation DbId="501">Alder</Affiliation><Affiliation DbId="502">Martel</Affiliation><Affiliation DbId="507">Reed (Eastport)</Affiliation><Total> -- 3</Total></DivisionType>
+            <DivisionType vote-type="Paired"><Type>PAIRÉS</Type><Nil>Aucun</Nil></DivisionType>
+          </Division>
+        </SubjectOfBusinessContent>
+      </SubjectOfBusiness>
+      <SubjectOfBusiness id="955">
+        <SubjectOfBusinessContent>
+          <ParaText id="2204">(La motion, mise aux voix, est adoptée par le vote suivant :)</ParaText>
+          <Division id="962" DivisionNumber="56">
+            <DivisionNumber>(Vote no 56)</DivisionNumber>
+            <DivisionType vote-type="Yeas"><Type>POUR</Type><Title>Députés</Title><Affiliation DbId="508">Bell</Affiliation><Total> -- 1</Total></DivisionType>
+            <DivisionType vote-type="Nays"><Type>CONTRE</Type><Nil>Aucun</Nil></DivisionType>
+            <DivisionType vote-type="Paired"><Type>PAIRÉS</Type><Nil>Aucun</Nil></DivisionType>
+          </Division>
+        </SubjectOfBusinessContent>
+      </SubjectOfBusiness>
+    </OrderOfBusiness>
+  </HansardBody>
+</Hansard>

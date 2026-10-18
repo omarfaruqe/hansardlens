@@ -1,0 +1,112 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- Invented test sitting with recorded votes. It copies the STRUCTURE of real Hansard
+     divisions (44-1 #264, 45-1 #12) but every name, riding and sentence is made up.
+     Sam Okafor speaks under a role id (503) and votes under his member id (600). -->
+<Hansard xml:lang="EN" id="900051">
+  <ExtractedInformation>
+    <ExtractedItem Name="SpeakerName">Speaker: The Honourable Pat Example</ExtractedItem>
+    <ExtractedItem Name="MetaVolumeNumber">Volume 151</ExtractedItem>
+    <ExtractedItem Name="MetaNumberNumber">051</ExtractedItem>
+    <ExtractedItem Name="MetaDateNumDay">01</ExtractedItem>
+    <ExtractedItem Name="MetaDateNumMonth">04</ExtractedItem>
+    <ExtractedItem Name="MetaDateNumYear">2022</ExtractedItem>
+    <ExtractedItem Name="SessionNumber">1</ExtractedItem>
+    <ExtractedItem Name="ParliamentNumber">44</ExtractedItem>
+  </ExtractedInformation>
+  <HansardBody>
+    <OrderOfBusiness id="950" Rubric="GovernmentOrders">
+      <OrderOfBusinessTitle>Government Orders</OrderOfBusinessTitle>
+      <SubjectOfBusiness id="951">
+        <SubjectOfBusinessTitle>Business of Supply</SubjectOfBusinessTitle>
+        <SubjectOfBusinessQualifier>Opposition Motion—Example Rents</SubjectOfBusinessQualifier>
+        <SubjectOfBusinessContent>
+          <Timestamp Hr="17" Mn="15">(1715)</Timestamp>
+          <Intervention Type="Debate" ToC="Yes" id="1100">
+            <PersonSpeaking><Affiliation DbId="501" Type="2">Ms. Jane Alder (Riverbend—North Shore, CPC)</Affiliation>: </PersonSpeaking>
+            <Content><ParaText id="2100">Mr. Speaker, a short example speech.</ParaText></Content>
+          </Intervention>
+          <Intervention Type="Debate" ToC="Yes" id="1101">
+            <PersonSpeaking><Affiliation DbId="502" Type="2">Mr. Luc Martel (Lac-Bleu, BQ)</Affiliation>: </PersonSpeaking>
+            <Content><ParaText id="2101">Mr. Speaker, a short example speech.</ParaText></Content>
+          </Intervention>
+          <Intervention Type="Debate" ToC="Yes" id="1102">
+            <PersonSpeaking><Affiliation DbId="503" Type="5">Hon. Sam Okafor (Secretary of State (Housing), Lib.)</Affiliation>: </PersonSpeaking>
+            <Content><ParaText id="2102">Mr. Speaker, a short example speech.</ParaText></Content>
+          </Intervention>
+          <Intervention Type="Debate" ToC="Yes" id="1103">
+            <PersonSpeaking><Affiliation DbId="506" Type="2">Mr. Tom Reed (Westvale, Lib.)</Affiliation>: </PersonSpeaking>
+            <Content><ParaText id="2103">Mr. Speaker, a short example speech.</ParaText></Content>
+          </Intervention>
+          <Intervention Type="Debate" ToC="Yes" id="1104">
+            <PersonSpeaking><Affiliation DbId="507" Type="2">Ms. Ana Reed (Eastport, CPC)</Affiliation>: </PersonSpeaking>
+            <Content><ParaText id="2104">Mr. Speaker, a short example speech.</ParaText></Content>
+          </Intervention>
+          <Intervention Type="Debate" ToC="Yes" id="1105">
+            <PersonSpeaking><Affiliation DbId="508" Type="2">Mr. Paul Bell (Northfield, Lib.)</Affiliation>: </PersonSpeaking>
+            <Content><ParaText id="2105">Mr. Speaker, a short example speech.</ParaText></Content>
+          </Intervention>
+          <Intervention Type="Debate" ToC="Yes" id="1106">
+            <PersonSpeaking><Affiliation DbId="509" Type="2">Ms. Kim Ray (Southby, Lib.)</Affiliation>: </PersonSpeaking>
+            <Content><ParaText id="2106">Mr. Speaker, a short example speech.</ParaText></Content>
+          </Intervention>
+          <Intervention Type="Debate" ToC="Yes" id="1107">
+            <PersonSpeaking><Affiliation DbId="510" Type="2">Mr. Dan Fox (Lakeside, Lib.)</Affiliation>: </PersonSpeaking>
+            <Content><ParaText id="2107">Mr. Speaker, a short example speech.</ParaText></Content>
+          </Intervention>
+          <Intervention Type="Debate" ToC="Yes" id="1108">
+            <PersonSpeaking><Affiliation DbId="511" Type="2">Ms. Eve Nash (Hillcrest, Lib.)</Affiliation>: </PersonSpeaking>
+            <Content><ParaText id="2108">Mr. Speaker, a short example speech.</ParaText></Content>
+          </Intervention>
+        </SubjectOfBusinessContent>
+      </SubjectOfBusiness>
+      <SubjectOfBusiness id="952">
+        <Timestamp Hr="17" Mn="55">(1755)</Timestamp>
+        <SubjectOfBusinessContent>
+          <ParaText id="2200">(The House divided on the motion, which was negatived on the following division:)</ParaText>
+          <Division id="960" DivisionNumber="54">
+            <DivisionNumber>(Division No. 54)</DivisionNumber>
+            <DivisionType vote-type="Yeas"><Type>YEAS</Type><Title>Members</Title><Affiliation DbId="501">Alder</Affiliation><Affiliation DbId="502">Martel</Affiliation><Affiliation DbId="506">Reed (Westvale)</Affiliation><Total> -- 3</Total></DivisionType>
+            <DivisionType vote-type="Nays"><Type>NAYS</Type><Title>Members</Title><Affiliation DbId="600">Okafor</Affiliation><Affiliation DbId="508">Bell</Affiliation><Affiliation DbId="509">Ray</Affiliation><Affiliation DbId="510">Fox</Affiliation><Affiliation DbId="507">Reed (Eastport)</Affiliation><Total> -- 5</Total></DivisionType>
+            <DivisionType vote-type="Paired"><Type>PAIRED</Type><Title>Members</Title><Affiliation DbId="511">Nash</Affiliation><Affiliation DbId="999">Zed</Affiliation><Total> -- 2</Total></DivisionType>
+          </Division>
+          <Intervention Type="Debate" ToC="No" id="1200">
+            <PersonSpeaking><Affiliation DbId="504" Type="96">The Speaker</Affiliation>: </PersonSpeaking>
+            <Content><ParaText id="2201">I declare the motion lost.</ParaText></Content>
+          </Intervention>
+        </SubjectOfBusinessContent>
+      </SubjectOfBusiness>
+      <SubjectOfBusiness id="953">
+        <SubjectOfBusinessTitle>Main Estimates, 2022-23</SubjectOfBusinessTitle>
+        <SubjectOfBusinessQualifier>Concurrence in Vote 1—Example Agency</SubjectOfBusinessQualifier>
+        <SubjectOfBusinessContent>
+          <Intervention Type="Debate" ToC="No" id="1201">
+            <PersonSpeaking><Affiliation DbId="503" Type="5">Hon. Sam Okafor</Affiliation>: </PersonSpeaking>
+            <Content><ParaText id="2202">Motion No. 1 moved: That Vote 1 be concurred in.</ParaText></Content>
+          </Intervention>
+        </SubjectOfBusinessContent>
+      </SubjectOfBusiness>
+      <SubjectOfBusiness id="954">
+        <SubjectOfBusinessContent>
+          <ParaText id="2203">(The House divided on Motion No. 1, which was agreed to on the following division:)</ParaText>
+          <Division id="961" DivisionNumber="55">
+            <DivisionNumber>(Division No. 55)</DivisionNumber>
+            <DivisionType vote-type="Yeas"><Type>YEAS</Type><Title>Members</Title><Affiliation DbId="600">Okafor</Affiliation><Affiliation DbId="508">Bell</Affiliation><Affiliation DbId="509">Ray</Affiliation><Affiliation DbId="510">Fox</Affiliation><Affiliation DbId="511">Nash</Affiliation><Affiliation DbId="506">Reed (Westvale)</Affiliation><Total> -- 6</Total></DivisionType>
+            <DivisionType vote-type="Nays"><Type>NAYS</Type><Title>Members</Title><Affiliation DbId="501">Alder</Affiliation><Affiliation DbId="502">Martel</Affiliation><Affiliation DbId="507">Reed (Eastport)</Affiliation><Total> -- 3</Total></DivisionType>
+            <DivisionType vote-type="Paired"><Type>PAIRED</Type><Nil>Nil</Nil></DivisionType>
+          </Division>
+        </SubjectOfBusinessContent>
+      </SubjectOfBusiness>
+      <SubjectOfBusiness id="955">
+        <SubjectOfBusinessContent>
+          <ParaText id="2204">(The House divided on the motion, which was agreed to on the following division:)</ParaText>
+          <Division id="962" DivisionNumber="56">
+            <DivisionNumber>(Division No. 56)</DivisionNumber>
+            <DivisionType vote-type="Yeas"><Type>YEAS</Type><Title>Members</Title><Affiliation DbId="508">Bell</Affiliation><Total> -- 1</Total></DivisionType>
+            <DivisionType vote-type="Nays"><Type>NAYS</Type><Nil>Nil</Nil></DivisionType>
+            <DivisionType vote-type="Paired"><Type>PAIRED</Type><Nil>Nil</Nil></DivisionType>
+          </Division>
+        </SubjectOfBusinessContent>
+      </SubjectOfBusiness>
+    </OrderOfBusiness>
+  </HansardBody>
+</Hansard>

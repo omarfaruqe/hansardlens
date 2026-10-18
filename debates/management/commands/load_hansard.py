@@ -101,6 +101,11 @@ class Command(BaseCommand):
             fixed = backfill_missing_parties()
             if fixed:
                 self.stdout.write(f"Filled the party for {fixed} short-label intervention(s).")
+            from debates.votes import link_votes
+
+            linked = link_votes()
+            if linked:
+                self.stdout.write(f"Matched {linked} earlier vote(s) to members.")
 
         style = self.style.SUCCESS if not errors else self.style.WARNING
         self.stdout.write(style(f"Done: {loaded} sitting(s) loaded, {errors} error(s)."))
