@@ -715,3 +715,14 @@ def bill_detail(request, parliament: int, session: int, code: str):
         "search_url": f"{reverse('search')}?text=en&q=%22Bill+{bill.code}%22",
     }
     return render(request, "bill_detail.html", context)
+
+
+ACCESSIBILITY_REVIEWED = dt.date(2026, 10, 18)
+
+
+def accessibility(request):
+    return render(
+        request,
+        "accessibility.html",
+        {"lang": ui_lang(), "reviewed": ACCESSIBILITY_REVIEWED},
+    )

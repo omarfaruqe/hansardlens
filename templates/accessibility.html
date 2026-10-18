@@ -1,0 +1,35 @@
+{% extends "base.html" %}{% load i18n hansard %}
+{% block title %}{% translate "Accessibility" %} – HansardLens{% endblock %}
+{% block content %}
+<div class="prose">
+<h1>{% translate "Accessibility" %}</h1>
+<p class="lede">{% translate "HansardLens aims to be usable by everyone, including people who use a keyboard, a screen reader, magnification or a phone. The target is the Web Content Accessibility Guidelines (WCAG) 2.1, level AA, the standard that applies to Government of Canada websites." %}</p>
+
+<h2>{% translate "Status" %}</h2>
+<p>{% blocktranslate with date=reviewed|ldate:"date" %}Reviewed on {{ date }}: the site’s own pages meet WCAG 2.1 AA in the checks described below, with the exceptions listed under “Known limitations”. It has not yet been tested by people who use assistive technology every day.{% endblocktranslate %}</p>
+
+<h2>{% translate "What has been done" %}</h2>
+<ul>
+  <li>{% translate "The whole interface is available in English and French, and every passage of debate is marked with its language, so screen readers pronounce it correctly." %}</li>
+  <li>{% translate "Every page can be used with a keyboard alone. A “Skip to content” link comes first, and the keyboard focus is always visible." %}</li>
+  <li>{% translate "Text has a contrast of at least 5.7:1 with its background; form fields, chart lines and bars at least 3:1." %}</li>
+  <li>{% translate "Pages reflow to a width of 320 pixels without sideways scrolling, and text can be enlarged to twice its size." %}</li>
+  <li>{% translate "Each chart has a written title, a table with the same figures, and keyboard access: the arrow keys move between months and the values are read out." %}</li>
+  <li>{% translate "Colour never carries meaning on its own: results, votes and parties are written out, and the language actually spoken is marked by a line and a label." %}</li>
+  <li>{% translate "Pages use headings, landmarks and labelled form fields, and every page has its own title." %}</li>
+</ul>
+
+<h2>{% translate "Known limitations" %}</h2>
+<ul>
+  <li>{% translate "The API documentation page uses a third-party interface (Swagger UI), available in English only, which does not fully meet WCAG 2.1 AA. The same information is in the README on GitHub." %}</li>
+  <li>{% translate "Debate text is reproduced from Hansard as published, including its abbreviations and the House’s own headings." %}</li>
+  <li>{% translate "Party abbreviations (Lib., CPC, BQ, NDP, GP) are not expanded." %}</li>
+</ul>
+
+<h2>{% translate "How it was checked" %}</h2>
+<p>{% translate "Automated testing with axe-core on every type of page in both languages, at desktop and phone widths; keyboard testing of every page; reflow at 320 pixels; contrast computed for every colour pair; and automated tests in the code that check language, headings, landmarks and form labels on each release. The full report is in the project’s documentation (docs/ACCESSIBILITY.md)." %}</p>
+
+<h2>{% translate "Report a problem" %}</h2>
+<p>{% blocktranslate %}If something on HansardLens is hard to use, please describe it in an issue on <a href="https://github.com/omarfaruqe/hansardlens/issues" rel="external">GitHub</a>, with the page address and what you were trying to do.{% endblocktranslate %}</p>
+</div>
+{% endblock %}

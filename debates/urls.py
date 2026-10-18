@@ -63,6 +63,7 @@ urlpatterns = [
     path("topics/", views.topics_view, name="topics"),
     path("topics/<int:number>/", views.topic_detail, name="topic_detail"),
     path("new/", views.whats_new, name="whats_new"),
+    path("accessibility/", views.accessibility, name="accessibility"),
     path("health/", views.health, name="health"),
     path("robots.txt", views.robots_txt, name="robots"),
 ]

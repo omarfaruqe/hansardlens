@@ -17,7 +17,7 @@ msgstr "Page introuvable"
 msgid "There is nothing at this address. The sitting or speech may not be loaded yet, or the link may be mistyped."
 msgstr "Il n'y a rien à cette adresse. La séance ou l'intervention n'est peut-être pas encore chargée, ou le lien contient une erreur."
 
-#: templates/404.html
+#: templates/404.html templates/search.html
 msgid "Search the debates"
 msgstr "Chercher dans les débats"
 
@@ -1141,3 +1141,84 @@ msgstr "Troisième lecture"
 #, python-format
 msgid "Debate on Bill %(code)s"
 msgstr "Débat sur le projet de loi %(code)s"
+
+#: templates/accessibility.html templates/base.html
+msgid "Accessibility"
+msgstr "Accessibilité"
+
+#: templates/accessibility.html
+msgid "HansardLens aims to be usable by everyone, including people who use a keyboard, a screen reader, magnification or a phone. The target is the Web Content Accessibility Guidelines (WCAG) 2.1, level AA, the standard that applies to Government of Canada websites."
+msgstr "HansardLens vise à être utilisable par tous, y compris les personnes qui naviguent au clavier, avec un lecteur d'écran, un agrandisseur ou un téléphone. La cible est le niveau AA des Règles pour l'accessibilité des contenus Web (WCAG) 2.1, la norme qui s'applique aux sites Web du gouvernement du Canada."
+
+#: templates/accessibility.html
+msgid "Status"
+msgstr "État"
+
+#: templates/accessibility.html
+#, python-format
+msgid "Reviewed on %(date)s: the site’s own pages meet WCAG 2.1 AA in the checks described below, with the exceptions listed under “Known limitations”. It has not yet been tested by people who use assistive technology every day."
+msgstr "Examiné le %(date)s : les pages du site satisfont aux WCAG 2.1 AA selon les vérifications décrites ci-dessous, sauf les exceptions énumérées sous « Limites connues ». Le site n'a pas encore été testé par des personnes qui utilisent des technologies d'assistance au quotidien."
+
+#: templates/accessibility.html
+msgid "What has been done"
+msgstr "Ce qui a été fait"
+
+#: templates/accessibility.html
+msgid "The whole interface is available in English and French, and every passage of debate is marked with its language, so screen readers pronounce it correctly."
+msgstr "Toute l'interface est offerte en français et en anglais, et chaque passage des débats est marqué de sa langue, pour que les lecteurs d'écran le prononcent correctement."
+
+#: templates/accessibility.html
+msgid "Every page can be used with a keyboard alone. A “Skip to content” link comes first, and the keyboard focus is always visible."
+msgstr "Chaque page peut être utilisée au clavier seulement. Un lien « Passer au contenu » vient en premier, et le focus clavier est toujours visible."
+
+#: templates/accessibility.html
+msgid "Text has a contrast of at least 5.7:1 with its background; form fields, chart lines and bars at least 3:1."
+msgstr "Le texte a un contraste d'au moins 5,7:1 avec son arrière-plan; les champs de formulaire, les lignes et les barres des graphiques, d'au moins 3:1."
+
+#: templates/accessibility.html
+msgid "Pages reflow to a width of 320 pixels without sideways scrolling, and text can be enlarged to twice its size."
+msgstr "Les pages s'adaptent à une largeur de 320 pixels sans défilement horizontal, et le texte peut être agrandi au double de sa taille."
+
+#: templates/accessibility.html
+msgid "Each chart has a written title, a table with the same figures, and keyboard access: the arrow keys move between months and the values are read out."
+msgstr "Chaque graphique a un titre écrit, un tableau des mêmes chiffres et un accès au clavier : les flèches passent d'un mois à l'autre et les valeurs sont lues."
+
+#: templates/accessibility.html
+msgid "Colour never carries meaning on its own: results, votes and parties are written out, and the language actually spoken is marked by a line and a label."
+msgstr "La couleur ne porte jamais seule le sens : résultats, votes et partis sont écrits en toutes lettres, et la langue réellement parlée est indiquée par un trait et une étiquette."
+
+#: templates/accessibility.html
+msgid "Pages use headings, landmarks and labelled form fields, and every page has its own title."
+msgstr "Les pages utilisent des titres, des repères de navigation et des champs de formulaire étiquetés, et chaque page a son propre titre."
+
+#: templates/accessibility.html
+msgid "Known limitations"
+msgstr "Limites connues"
+
+#: templates/accessibility.html
+msgid "The API documentation page uses a third-party interface (Swagger UI), available in English only, which does not fully meet WCAG 2.1 AA. The same information is in the README on GitHub."
+msgstr "La page de documentation de l'API utilise une interface tierce (Swagger UI), offerte en anglais seulement, qui ne satisfait pas entièrement aux WCAG 2.1 AA. La même information figure dans le README sur GitHub."
+
+#: templates/accessibility.html
+msgid "Debate text is reproduced from Hansard as published, including its abbreviations and the House’s own headings."
+msgstr "Le texte des débats est reproduit tel que publié dans le Hansard, y compris ses abréviations et les intitulés de la Chambre."
+
+#: templates/accessibility.html
+msgid "Party abbreviations (Lib., CPC, BQ, NDP, GP) are not expanded."
+msgstr "Les abréviations des partis (Lib., PCC, BQ, NPD, PV) ne sont pas développées."
+
+#: templates/accessibility.html
+msgid "How it was checked"
+msgstr "Comment cela a été vérifié"
+
+#: templates/accessibility.html
+msgid "Automated testing with axe-core on every type of page in both languages, at desktop and phone widths; keyboard testing of every page; reflow at 320 pixels; contrast computed for every colour pair; and automated tests in the code that check language, headings, landmarks and form labels on each release. The full report is in the project’s documentation (docs/ACCESSIBILITY.md)."
+msgstr "Tests automatisés avec axe-core sur chaque type de page dans les deux langues, en largeur de bureau et de téléphone; test au clavier de chaque page; adaptation à 320 pixels; contraste calculé pour chaque paire de couleurs; et tests automatisés dans le code qui vérifient la langue, les titres, les repères et les étiquettes de formulaire à chaque version. Le rapport complet se trouve dans la documentation du projet (docs/ACCESSIBILITY.md)."
+
+#: templates/accessibility.html
+msgid "Report a problem"
+msgstr "Signaler un problème"
+
+#: templates/accessibility.html
+msgid "If something on HansardLens is hard to use, please describe it in an issue on <a href=\"https://github.com/omarfaruqe/hansardlens/issues\" rel=\"external\">GitHub</a>, with the page address and what you were trying to do."
+msgstr "Si quelque chose est difficile à utiliser dans HansardLens, décrivez-le dans un ticket sur <a href=\"https://github.com/omarfaruqe/hansardlens/issues\" rel=\"external\">GitHub</a>, avec l'adresse de la page et ce que vous cherchiez à faire."
