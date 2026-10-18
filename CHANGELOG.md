@@ -1,5 +1,12 @@
 # Changelog
 
+## 1.7.1 – 2026-10-18
+
+- **Topics:** courtesy around questions ("I thank my colleague for his speech; I
+  wonder…") is left out of the topic model, so it no longer forms a topic of its own.
+- **Docs:** figures for all three Parliaments (709 sittings, 840,469 paragraphs, 1,317
+  recorded votes, 699 bills).
+
 ## 1.7.0 – 2026-10-18
 
 - **43rd Parliament:** checked on 19 sittings across both sessions (December 2019 to

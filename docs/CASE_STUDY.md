@@ -19,7 +19,7 @@ denominator; the site describes what was said and does not rate parties or membe
 
 | | |
 | --- | --- |
-| Data | 540 sittings (44th and 45th Parliaments), about 184,000 interventions and 640,000 paragraphs, each in English and French; 1,106 recorded votes with 356,327 individual votes |
+| Data | 709 sittings from December 2019 (43rd, 44th and 45th Parliaments): 237,383 interventions and 840,469 paragraphs, each in English and French; 1,317 recorded votes with 422,392 individual votes; 699 bills; 550 people |
 | Stack | Python 3.12, Django 5.2 LTS, PostgreSQL 16, scikit-learn, Django REST Framework, Docker Compose, Caddy, GitHub Actions |
 | Quality | 238 automated tests on PostgreSQL in CI; data-quality report; checks against real sittings |
 | Operations | Daily automatic refresh, nightly verified backups, failure alerts, pinned and hashed dependencies, weekly update proposals |
@@ -45,8 +45,7 @@ denominator; the site describes what was said and does not rate parties or membe
   (real Hansard text is never committed).
 - **Aligning the languages:** the two files of a sitting share paragraph ids, so they
   are paired by position when every id matches and by id otherwise, with any mismatch
-  recorded. Across 540 sittings, one sitting has a mismatch (one speech split
-  differently in French); no paragraph lost its translation.
+  recorded. Across 709 sittings, three have a mismatch, each limited to one speech.
 - **Who spoke:** speaker labels are full only on a member's first intervention of the
   day. Within a sitting, the House's speaker id carries party and riding to the short
   labels; across sittings, people are matched by name, because House ids belong to a
@@ -54,7 +53,7 @@ denominator; the site describes what was said and does not rate parties or membe
 - **Language actually spoken:** Hansard marks passages as spoken in English or French;
   the marker applies until the next one, across speeches. Each paragraph stores it.
 - **Recorded votes:** vote lists print surnames only ("Falk (Provencher)"). Each name
-  carries the member id, which matches 98.75% of the 356,327 votes through speeches or
+  carries the member id, which matches 98.8% of the 422,392 votes through speeches or
   by surname and riding; the rest keep their printed label and are retried after each
   load.
 - **Data-quality report:** a command reports coverage, alignment issues, missing
@@ -74,6 +73,7 @@ and deployed before the next began.
 | 1.4 | Member pages: activity, roles over time, language spoken, main topics |
 | 1.5 | Recorded votes: parsing, member matching, party lines, vote pages and API |
 | 1.6 | Bill pages: stages in the House, votes, debates and speakers, linked to LEGISinfo |
+| 1.7 | The 43rd Parliament (2019–2021), including the reduced-attendance and hybrid sittings of the pandemic |
 
 ## Decisions and trade-offs
 

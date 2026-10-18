@@ -41,9 +41,10 @@ The structure was established from real files before any parser was written
 **Aligning English and French.** The two files of a sitting use the same House ids in
 the same order for interventions and paragraphs. HansardLens pairs them by position
 when every id matches (the normal case) and by id otherwise; any mismatch is recorded on
-the sitting. Across 540 sittings, one sitting (44-1 No. 285) has a mismatch: one
-speech whose French version splits four paragraphs that English keeps whole. Every
-English paragraph there still has its French text. The intervention type is taken from
+the sitting. Across 709 sittings, three have a mismatch, each in a single speech: in
+44-1 No. 285 and 43-1 No. 22 the French version splits paragraphs that English keeps
+whole, and in 43-2 No. 49 the two versions number one speech's paragraphs differently.
+Those paragraphs are paired by id. The intervention type is taken from
 the English file, because the French file sometimes types the same intervention
 differently.
 
@@ -110,7 +111,8 @@ procedural text are excluded; months under 5,000 words are gaps; parties need at
   terms in fewer than 20 speeches or more than 40% of speeches are dropped; at most
   20,000 terms.
 - **Stop words:** standard English (or French) function words, parliamentary
-  boilerplate (*Mr. Speaker*, *hon. member*, *motion*), common verbs, month names and
+  boilerplate (*Mr. Speaker*, *hon. member*, *motion*), courtesy around questions
+  (*I thank my colleague for his speech; I wonder…*), common verbs, month names and
   **party names**. Party names are removed so that topics group speeches by subject
   rather than by who is being addressed or criticized.
 - **Model:** non-negative matrix factorization (scikit-learn `NMF`, `nndsvda`
