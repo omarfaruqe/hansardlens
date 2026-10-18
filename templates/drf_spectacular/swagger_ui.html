@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+{% comment %}drf-spectacular's Swagger UI page with a language, a main landmark, a level-one
+heading and a way back to the site (the generated interface itself is in English).{% endcomment %}
+<html lang="en">
+  <head>
+    {% block head %}
+    <title>{{ title|default:"API" }} – HansardLens</title>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    {% if favicon_href %}<link rel="icon" href="{{ favicon_href }}">{% endif %}
+    <link rel="stylesheet" href="{{ swagger_ui_css }}">
+    <style>
+      html { box-sizing: border-box; overflow-y: scroll; }
+      *, *:after, *:before { box-sizing: inherit; }
+      body { background: #fafafa; margin: 0; font-family: system-ui, sans-serif; }
+      .api-head { max-width: 1460px; margin: 0 auto; padding: 1rem 20px 0; }
+      .api-head h1 { font-size: 1.5rem; margin: 0 0 0.25rem; color: #1e1f23; }
+      .api-head p { margin: 0; color: #5e6268; }
+      .api-head a { color: #b5121b; }
+      :focus-visible { outline: 3px solid #b5121b; outline-offset: 2px; }
+    </style>
+    {% endblock head %}
+  </head>
+  <body>
+    {% block body %}
+    <main>
+      <div class="api-head">
+        <h1>HansardLens open data API</h1>
+        <p>Read-only, anonymous and documented below. <a href="../../">Back to HansardLens</a> · <a href="../../accessibility/">Accessibility</a></p>
+      </div>
+      <div id="swagger-ui"></div>
+    </main>
+    <script src="{{ swagger_ui_bundle }}"></script>
+    <script src="{{ swagger_ui_standalone }}"></script>
+    {% if script_url %}
+    <script src="{{ script_url }}"></script>
+    {% else %}
+    <script>
+    {% include template_name_js %}
+    </script>
+    {% endif %}
+    {% endblock %}
+  </body>
+</html>

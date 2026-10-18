@@ -18,6 +18,10 @@
   var monthFmt = new Intl.DateTimeFormat(lang, { month: "long", year: "numeric", timeZone: "UTC" });
   var numFmt = new Intl.NumberFormat(lang, { maximumFractionDigits: 1 });
   var intFmt = new Intl.NumberFormat(lang);
+  // Spoken with the chart's name; the same figures are in the table below each chart.
+  var KEY_HINT = lang.indexOf("fr") === 0
+    ? "Flèches gauche et droite pour parcourir les mois, Début et Fin pour le premier et le dernier, Échap pour fermer"
+    : "Left and right arrow keys move between months, Home and End go to the first and last, Escape closes";
 
   function el(name, attrs, parent) {
     var node = document.createElementNS(SVG, name);
@@ -63,7 +67,8 @@
 
     var svg = el("svg", {
       viewBox: "0 0 " + width + " " + height, width: width, height: height,
-      role: "img", "aria-label": fig.dataset.label || "", tabindex: "0", class: "chart-svg"
+      role: "img", "aria-label": (fig.dataset.label || "") + ". " + KEY_HINT, tabindex: "0",
+      class: "chart-svg"
     }, plot);
 
     // Grid and y axis (recessive)
@@ -123,7 +128,13 @@
     var tip = document.createElement("div");
     tip.className = "chart-tip";
     tip.hidden = true;
+    tip.setAttribute("aria-hidden", "true");  // read out through `live` instead
     plot.appendChild(tip);
+    // Screen readers hear the month under the keyboard crosshair through a live region.
+    var live = document.createElement("div");
+    live.className = "sr-only";
+    live.setAttribute("aria-live", "polite");
+    plot.appendChild(live);
     var current = null;
 
     function show(i) {
@@ -167,6 +178,9 @@
         tip.appendChild(row);
       });
       tip.hidden = false;
+      live.textContent = Array.prototype.map.call(tip.children, function (c) {
+        return c.textContent.trim();
+      }).join(". ");
       var left = x(i) + 12;
       if (left + tip.offsetWidth > width) left = x(i) - tip.offsetWidth - 12;
       tip.style.left = Math.max(0, left) + "px";
@@ -187,11 +201,20 @@
       show(Math.max(0, Math.min(n - 1, i)));
     });
     svg.addEventListener("pointerleave", hide);
+    // A tooltip opened by hovering can be dismissed without moving the pointer.
+    document.addEventListener("keydown", function (ev) {
+      if (ev.key === "Escape" && current != null) hide();
+    });
     svg.addEventListener("blur", hide);
     svg.addEventListener("keydown", function (ev) {
-      if (ev.key !== "ArrowLeft" && ev.key !== "ArrowRight") return;
+      var i;
+      if (ev.key === "Escape") { hide(); return; }
+      if (ev.key === "Home") i = 0;
+      else if (ev.key === "End") i = n - 1;
+      else if (ev.key === "ArrowLeft" || ev.key === "ArrowRight") {
+        i = current == null ? n - 1 : current + (ev.key === "ArrowRight" ? 1 : -1);
+      } else return;
       ev.preventDefault();
-      var i = current == null ? n - 1 : current + (ev.key === "ArrowRight" ? 1 : -1);
       show(Math.max(0, Math.min(n - 1, i)));
     });
   }

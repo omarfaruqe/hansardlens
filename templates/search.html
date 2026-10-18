@@ -1,6 +1,7 @@
 {% extends "base.html" %}{% load i18n hansard humanize %}
 {% block title %}{% if params.q %}{{ params.q }} – {% endif %}{% translate "Search" %} – HansardLens{% endblock %}
 {% block content %}
+<h1 class="sr-only">{% translate "Search the debates" %}</h1>
 <form action="{% url 'search' %}" method="get" role="search">
   <div class="searchbar">
     <input type="search" name="q" value="{{ params.q }}" aria-label="{% translate 'Search debates' %}" placeholder="{% translate 'housing, “carbon tax”, souveraineté…' %}">
@@ -12,7 +13,7 @@
   </div>
 
   <div class="search-layout">
-    <aside class="filters" aria-label="{% translate 'Filters' %}">
+    <section class="filters" aria-label="{% translate 'Filters' %}">
       <fieldset>
         <label for="party">{% translate "Party" %}</label>
         <select id="party" name="party">
@@ -55,7 +56,7 @@
       <button class="button" type="submit">{% translate "Apply filters" %}</button>
 
       {% if party_counts %}
-        <h3>{% translate "Matching paragraphs by party" %}</h3>
+        <h2 class="h3">{% translate "Matching paragraphs by party" %}</h2>
         <ul class="breakdown">
           {% for p, n in party_counts %}
             <li><span>{{ p|party }}</span><span class="bar"><span style="width: {{ n|pct_of:total }}%"></span></span><span class="n">{{ n|intcomma }}</span></li>
@@ -63,7 +64,7 @@
         </ul>
         <p class="small muted">{% translate "Raw counts. Parties with more seats speak more often, so compare with care." %}</p>
       {% endif %}
-    </aside>
+    </section>
 
     <section aria-live="polite">
       {% if params.errors %}

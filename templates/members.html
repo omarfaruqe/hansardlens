@@ -28,7 +28,7 @@
 <div class="sort-links">
   <span>{% translate "Sort by" %}</span>
   {% for key, label in sorts %}
-    {% if sort == key %}<strong>{{ label }}</strong>{% else %}<a href="?{% if querystring %}{{ querystring }}&amp;{% endif %}sort={{ key }}">{{ label }}</a>{% endif %}
+    {% if sort == key %}<strong aria-current="true">{{ label }}</strong>{% else %}<a href="?{% if querystring %}{{ querystring }}&amp;{% endif %}sort={{ key }}">{{ label }}</a>{% endif %}
   {% endfor %}
 </div>
 

@@ -6,12 +6,12 @@
 
 <form method="get" class="filter-row">
   <label>{% translate "Parliament" %}
-    <select name="parliament" onchange="this.form.submit()">
+    <select name="parliament">
       <option value="">{% translate "All loaded debates" %}</option>
       {% for p in parliaments %}<option value="{{ p }}" {% if parliament == p %}selected{% endif %}>{{ p|ordinal_parliament }}</option>{% endfor %}
     </select>
   </label>
-  <noscript><button class="button" type="submit">{% translate "Show" %}</button></noscript>
+  <button class="button" type="submit">{% translate "Show" %}</button>
 </form>
 
 {% if overall.total %}
@@ -46,7 +46,7 @@
   <div class="sort-links">
     <span>{% translate "Sort by" %}</span>
     {% for key, label in member_sorts %}
-      {% if sort == key %}<strong>{{ label }}</strong>{% else %}<a href="?sort={{ key }}{% if parliament %}&amp;parliament={{ parliament }}{% endif %}">{{ label }}</a>{% endif %}
+      {% if sort == key %}<strong aria-current="true">{{ label }}</strong>{% else %}<a href="?sort={{ key }}{% if parliament %}&amp;parliament={{ parliament }}{% endif %}">{{ label }}</a>{% endif %}
     {% endfor %}
   </div>
   <div class="table-scroll" style="max-height: 32rem">
