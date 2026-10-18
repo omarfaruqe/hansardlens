@@ -9,6 +9,9 @@ trends, the share of debate held in French, topics found by NMF, and the words r
 or fading in recent debate. Everything is available through a documented REST API.
 Every figure is a descriptive share with a stated denominator.
 
+**Live site:** http://103.99.176.180/hansardlens/ (English and French, updated every
+sitting day). **API docs:** http://103.99.176.180/hansardlens/api/docs/
+
 ![Search results for "clean water", with highlighted matches and filters](docs/screenshots/search.png)
 
 | Bilingual reading view | French interface |
