@@ -4,7 +4,7 @@ import pytest
 
 from debates.loader import store
 from debates.models import Division, Person, Vote
-from debates.parsing import merge, parse_document, read_heading
+from debates.parsing import merge, parse_document, read_heading, read_outcome
 from debates.votes import fold, link_votes
 
 FIXTURES = Path(__file__).parent / "fixtures"
@@ -43,6 +43,9 @@ def merged_votes():
             "fr",
             ("L'amendement", "negatived"),
         ),
+        # 2020 reduced-attendance sittings state no outcome before the list
+        ("(The House divided on the motion:)", "en", ("The motion", "")),
+        ("(La motion est mise aux voix.)", "fr", ("La motion", "")),
         ("Something else entirely", "en", ("", "")),
     ],
 )
@@ -197,3 +200,60 @@ def test_load_divisions_adds_votes_without_touching_speeches(monkeypatch, settin
     assert len(served) == 2 and not (tmp_path / "raw").exists()  # nothing cached
     call_command("load_divisions", sleep=0)  # again, now caching the downloads
     assert Division.objects.count() == 3 and (tmp_path / "raw").exists()
+
+
+@pytest.mark.parametrize(
+    "text, expected",
+    [
+        ("Motion negatived I declare the motion defeated.", "negatived"),
+        ("I declare the motion carried.", "agreed"),
+        ("Amendment agreed to", "agreed"),
+        ("Je déclare la motion rejetée.", "negatived"),
+        ("Order. The hon. member for Calgary.", ""),
+    ],
+)
+def test_read_outcome(text, expected):
+    assert read_outcome(text) == expected
+
+
+def test_tie_decided_after_the_vote():
+    """Real 43-1 sitting 38 (May 2020): 23 to 23, the Speaker declares it defeated."""
+    path = RAW / "P43S1-038-en.xml"
+    if not path.exists():
+        pytest.skip("P43S1-038 not downloaded")
+    m = merge(
+        parse_document(path.read_bytes()), parse_document((RAW / "P43S1-038-fr.xml").read_bytes())
+    )
+    tie = next(d for d in m.divisions if d.number == 24)
+    assert (len(tie.votes["yea"]), len(tie.votes["nay"])) == (23, 23)
+    assert (tie.object_en, tie.object_fr, tie.result) == ("The motion", "La motion", "negatived")
+
+
+def test_outcome_announced_after_the_vote_is_used():
+    """A heading without an outcome takes the Speaker's announcement that follows."""
+
+    def variant(lang, heading, announcement):
+        xml = (FIXTURES / f"votes_{lang}.xml").read_text(encoding="utf-8")
+        old = (
+            "(The House divided on the motion, which was agreed to on the following division:)"
+            if lang == "en"
+            else "(La motion, mise aux voix, est adoptée par le vote suivant :)"
+        )
+        start = xml.index('<SubjectOfBusiness id="955">')
+        head, tail = xml[:start], xml[start:].replace(old, heading, 1)
+        reply = (
+            '<Intervention Type="Debate" id="1300"><PersonSpeaking><Affiliation DbId="504" '
+            f'Type="96">Speaker</Affiliation></PersonSpeaking><Content><ParaText id="2300">'
+            f"{announcement}</ParaText></Content></Intervention>"
+        )
+        tail = tail.replace("</Division>", "</Division>" + reply, 1)
+        return parse_document((head + tail).encode("utf-8"))
+
+    m = merge(
+        variant("en", "(The House divided on the motion:)", "Motion negatived"),
+        variant("fr", "(La motion est mise aux voix.)", "Je déclare la motion rejetée."),
+    )
+    last = m.divisions[-1]
+    assert last.number == 56 and (len(last.votes["yea"]), len(last.votes["nay"])) == (1, 0)
+    # the counts alone would say "agreed"; the announcement decides
+    assert (last.object_en, last.object_fr, last.result) == ("The motion", "La motion", "negatived")

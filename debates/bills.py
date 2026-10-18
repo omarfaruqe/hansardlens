@@ -236,11 +236,14 @@ def find_bills():
     by_title: dict[tuple, set[str]] = defaultdict(set)
     for (parl, sess, code), info in found.items():
         for (title_en, _), _n in info["titles"].items():
-            by_title[(parl, sess, title_en)].add(code)
+            # A generic heading ("Main Estimates, 2021-22" for an appropriation bill)
+            # links only the debate where the bill is moved, not every debate under it.
+            if not NOT_A_BILL.search(title_en):
+                by_title[(parl, sess, title_en)].add(code)
 
     assignment: dict[tuple, str] = {}
     for key, s in sections.items():
-        options = by_title.get((s.parliament, s.session, s.subject_en), set())
+        options = by_title.get((s.parliament, s.session, s.subject_en), set()) | s.moved
         if not options:
             continue
         if s.moved & options:
@@ -276,6 +279,9 @@ def build_bills() -> dict:
     keep = []
     for (parl, sess, code), info in found.items():
         (title_en, title_fr), _ = info["titles"].most_common(1)[0]
+        if NOT_A_BILL.search(title_en):
+            # the heading is not the bill's title: use the long title instead
+            title_en, title_fr = info["long_en"] or title_en, info["long_fr"] or title_fr
         bill, _ = Bill.objects.update_or_create(
             parliament=parl,
             session=sess,

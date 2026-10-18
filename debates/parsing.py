@@ -75,6 +75,7 @@ class Division:
     position: int  # index of the intervention holding "(The House divided on ...)"
     heading: str  # that sentence, e.g. "(The House divided on Motion No. 3, which was ...)"
     votes: dict[str, list[tuple[str, str]]]  # yea/nay/paired -> [(House id, name)]
+    after: str = ""  # text of the next intervention ("Motion negatived. I declare ...")
 
 
 VOTE_TYPES = {"yeas": "yea", "nays": "nay", "paired": "paired"}
@@ -124,6 +125,7 @@ class _Walker:
         self.floor = ""
         self.interventions: list[Intervention] = []
         self.divisions: list[Division] = []
+        self._awaiting: Division | None = None  # division whose outcome comes next
         self._loose: Intervention | None = None  # open block of loose procedural text
 
     # -- state switches -------------------------------------------------------
@@ -207,6 +209,7 @@ class _Walker:
         # A qualifier names one question; later votes in the same subject (bill
         # stages after estimates, say) must not inherit it.
         self.last_qualifier = ""
+        self._awaiting = self.divisions[-1]
 
     def _children(self, el):
         for child in el:
@@ -240,6 +243,9 @@ class _Walker:
             elif child.tag == "Timestamp":
                 self._timestamp(child)
         self.interventions.append(iv)
+        if self._awaiting is not None:
+            self._awaiting.after = " ".join(p.text for p in iv.paragraphs)[:500]
+            self._awaiting = None
 
     def _add(self, iv: Intervention, el, kind: str):
         text = clean_text(el)
@@ -304,12 +310,24 @@ def parse_document(xml_bytes: bytes) -> Document:
 # What was put to the vote and the outcome, from the sentence before the vote list:
 #   (The House divided on Motion No. 3, which was agreed to on the following division:)
 #   (La motion no 3, mise aux voix, est adoptée par le vote suivant :)
+#   Some sittings (2020) state no outcome there: "(The House divided on the motion:)"
+#   and "(La motion est mise aux voix.)"; the Speaker announces it just after.
 HEADING_EN = re.compile(
-    r"divided on (?P<object>.+?),\s+which was (?P<result>agreed to|negatived|carried|defeated)",
+    r"divided on (?P<object>.+?)(?:,\s+which was (?P<result>agreed to|negatived|carried|"
+    r"defeated)|\s*:)",
     re.IGNORECASE,
 )
 HEADING_FR = re.compile(
-    r"^\(?(?P<object>.+?),\s+mise?s? aux voix,\s+(?:est|sont)\s+(?P<result>adopt|rejet)",
+    r"^\(?(?P<object>.+?),\s+mise?s? aux voix,\s+(?:est|sont)\s+(?P<result>adopt|rejet)"
+    r"|^\(?(?P<object2>.+?)\s+(?:est|sont)\s+mise?s? aux voix",
+    re.IGNORECASE,
+)
+# The Speaker's announcement after the vote: "Motion negatived. I declare the motion
+# defeated." / "Je déclare la motion adoptée."
+OUTCOME = re.compile(
+    r"(?P<agreed>(?:motion|amendment|bill)s? agreed to|declare the (?:motion|amendment)s? "
+    r"carried|motion adoptée|déclare la motion adoptée)|(?P<negatived>(?:motion|amendment)s? "
+    r"negatived|declare the (?:motion|amendment)s? (?:defeated|lost)|déclare la motion rejetée)",
     re.IGNORECASE,
 )
 
@@ -319,10 +337,21 @@ def read_heading(text: str, lang: str) -> tuple[str, str]:
     match = (HEADING_EN if lang == "en" else HEADING_FR).search(text or "")
     if not match:
         return "", ""
-    obj = match.group("object").strip()
+    groups = match.groupdict()
+    obj = (groups.get("object") or groups.get("object2") or "").strip()
     obj = obj[:1].upper() + obj[1:]
-    word = match.group("result").lower()
+    word = (groups.get("result") or "").lower()
+    if not word:
+        return obj, ""
     return obj, "agreed" if word in ("agreed to", "carried", "adopt") else "negatived"
+
+
+def read_outcome(text: str) -> str:
+    """Outcome announced after a vote, or "" when the text does not state one."""
+    match = OUTCOME.search(text or "")
+    if not match:
+        return ""
+    return "agreed" if match.group("agreed") else "negatived"
 
 
 # ---------------------------------------------------------------------------------
@@ -521,7 +550,13 @@ def _merge_divisions(en: Document, fr: Document | None) -> list[MergedDivision]:
         object_fr, result_fr = read_heading(other.heading, "fr") if other else ("", "")
         yeas, nays = len(d.votes["yea"]), len(d.votes["nay"])
         if not result:
-            result = result_fr or ("agreed" if yeas > nays else "negatived" if nays > yeas else "")
+            # stated in French, announced after the vote (a tie decided by the Speaker's
+            # casting vote, say), or else from the counts
+            result = (
+                result_fr
+                or read_outcome(d.after)
+                or ("agreed" if yeas > nays else "negatived" if nays > yeas else "")
+            )
         out.append(
             MergedDivision(
                 number=d.number,

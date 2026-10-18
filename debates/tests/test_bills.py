@@ -205,3 +205,19 @@ def test_rebuild_is_idempotent_and_drops_stale_bills():
     build_bills()
     assert Bill.objects.count() == 0
     assert Intervention.objects.filter(bill__isnull=False).count() == 0
+
+
+def test_bill_moved_under_a_generic_heading():
+    d = Day(40, dt.date(2021, 6, 17), parliament=43, session=2)
+    d.say(
+        "Main Estimates, 2021-22",
+        "moved that Bill C-33, An Act for granting to Her Majesty "
+        "certain sums of money, be read the second time and referred to a committee.",
+    )
+    d.say("Main Estimates, 2021-22", "(Bill read the second time)", procedural=True)
+    later = Day(41, dt.date(2021, 6, 18), parliament=43, session=2)
+    later.say("Main Estimates, 2021-22", "Mr. Speaker, about the estimates in general.")
+    build_bills()
+    bill = Bill.objects.get()
+    assert bill.short_title_en == "An Act for granting to Her Majesty certain sums of money"
+    assert bill.interventions.count() == 2  # not the later debate on the estimates
