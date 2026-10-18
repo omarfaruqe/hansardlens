@@ -1,5 +1,13 @@
 # Changelog
 
+## 1.2.0 – 2026-10-18
+
+- **New look:** Canadian red frame (header, links, buttons, the spoken-text marker) with
+  an original maple leaf in the header and as the browser icon. Data marks stay neutral
+  grey, since red is also a party colour. Text contrast meets WCAG AA (6.4:1 or more).
+- **Phone navigation:** the header menu wraps instead of running off narrow screens.
+- **Live site** linked from the README.
+
 ## 1.1.0 – 2026-10-18
 
 - **Automatic refresh:** a `scheduler` service in both Docker stacks runs
