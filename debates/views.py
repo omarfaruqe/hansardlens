@@ -134,13 +134,28 @@ def not_found(request, exception=None):
 def server_error(request):
     # Rendered without context processors or database access.
     from django.template import loader
+    from django.urls import get_script_prefix
 
-    return HttpResponseServerError(loader.get_template("500.html").render())
+    return HttpResponseServerError(
+        loader.get_template("500.html").render({"home": get_script_prefix()})
+    )
 
 
 def robots_txt(request):
-    lines = ["User-agent: *", "Disallow: /admin/", "Disallow: /api/", "Allow: /", ""]
+    from django.urls import get_script_prefix
+
+    prefix = get_script_prefix()
+    lines = ["User-agent: *", f"Disallow: {prefix}admin/", f"Disallow: {prefix}api/", ""]
     return HttpResponse("\n".join(lines), content_type="text/plain")
+
+
+def _refresh_status() -> dict:
+    """Last scheduled refresh, from the scheduler service's state file."""
+    from .management.commands.run_scheduler import load_state
+
+    state = load_state()
+    keys = ("status", "last_success", "last_attempt", "last_error")
+    return {k: state.get(k) for k in keys} if state else {"status": "never run"}
 
 
 def health(request):
@@ -159,6 +174,7 @@ def health(request):
             "database": db_ok,
             "vendor": connection.vendor,
             "version": __version__,
+            "refresh": _refresh_status(),
         },
         status=status,
     )

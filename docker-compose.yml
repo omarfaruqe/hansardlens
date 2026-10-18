@@ -1,6 +1,7 @@
 services:
   db:
     image: postgres:16
+    restart: unless-stopped
     environment:
       POSTGRES_DB: ${POSTGRES_DB:-hansardlens}
       POSTGRES_USER: ${POSTGRES_USER:-hansardlens}
@@ -15,6 +16,7 @@ services:
 
   web:
     build: .
+    restart: unless-stopped
     env_file: .env
     ports:
       - "8000:8000"
@@ -26,6 +28,19 @@ services:
     command: >
       sh -c "python manage.py migrate --noinput &&
              python manage.py runserver 0.0.0.0:8000"
+
+  # Downloads new sittings and updates the analysis on a timetable.
+  # Logs: docker compose logs -f scheduler
+  scheduler:
+    build: .
+    restart: unless-stopped
+    env_file: .env
+    volumes:
+      - .:/app
+    depends_on:
+      db:
+        condition: service_healthy
+    command: python manage.py run_scheduler --at 06:30 --days tue,wed,thu,fri,sat
 
 volumes:
   pgdata:
