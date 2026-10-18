@@ -4,6 +4,8 @@
  *   <div class="chart-plot"></div>
  * </figure>
  *
+ * data-integer="1" keeps the axis on whole numbers (for counts).
+ *
  * JSON: {months: ["2022-01", ...], denominators: [...], series: [{name, values, counts?}], unit}
  * Null values are months without sittings and are drawn as gaps, never as zeros.
  * All text goes in through textContent (series names come from user input).
@@ -53,6 +55,8 @@
       s.values.forEach(function (v) { if (v != null && v > maxV) maxV = v; });
     });
     var yMax = fig.dataset.yMax ? +fig.dataset.yMax : niceMax(maxV * 1.05);
+    // Counts (data-integer): four gridlines at whole numbers.
+    if (fig.dataset.integer) yMax = 4 * Math.max(1, Math.ceil(maxV / 4));
     var step = n > 1 ? w / (n - 1) : 0;
     var x = function (i) { return m.left + (n > 1 ? i * step : w / 2); };
     var y = function (v) { return m.top + h - (v / yMax) * h; };

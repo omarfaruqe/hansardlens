@@ -54,7 +54,7 @@
       <thead><tr><th>{% translate "Member" %}</th><th class="text">{% translate "Party" %}</th><th>{% translate "Words measured" %}</th><th>{% translate "French" %}</th></tr></thead>
       <tbody>
         {% for row in members %}
-          <tr><td>{{ row.name }}</td><td class="text">{{ row.party|party|default:"–" }}</td><td>{{ row.total|intcomma }}</td><td>{{ row.share }}%</td></tr>
+          <tr><td><a href="{% url 'member_detail' row.slug %}">{{ row.name }}</a></td><td class="text">{{ row.party|party|default:"–" }}</td><td>{{ row.total|intcomma }}</td><td>{{ row.share }}%</td></tr>
         {% endfor %}
       </tbody>
     </table>

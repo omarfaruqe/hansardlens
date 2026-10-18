@@ -83,7 +83,7 @@
           {% for p in results %}{% with iv=p.intervention %}
             <li class="result">
               <div class="result-head">
-                <strong>{{ iv.speaker_display }}</strong>{% if iv.party %}, {{ iv.party|party }}{% endif %}{% if iv.riding %}, {{ iv.riding }}{% endif %}
+                <strong>{% if iv.person and not iv.is_chair %}<a href="{{ iv.person.get_absolute_url }}">{{ iv.speaker_display }}</a>{% else %}{{ iv.speaker_display }}{% endif %}</strong>{% if iv.party %}, {{ iv.party|party }}{% endif %}{% if iv.riding %}, {{ iv.riding }}{% endif %}
                 <br><a href="{{ iv.sitting.get_absolute_url }}?text={{ params.lang }}">{{ iv.sitting.date|ldate:"date" }}</a>
                 {% if p.floor_language and p.floor_language != params.lang and p.floor_language != "text" %}
                   <span class="tag">{% if p.floor_language == "fr" %}{% translate "spoken in French" %}{% else %}{% translate "spoken in English" %}{% endif %}</span>

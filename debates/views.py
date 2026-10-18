@@ -356,3 +356,99 @@ def whats_new(request):
             (_("Used less"), shift.fading, "down"),
         ]
     return render(request, "whats_new.html", {"lang": lang, "shift": shift, "shift_lists": lists})
+
+
+def _fold(text: str) -> str:
+    """Lower case without accents, so 'genereux' finds 'Généreux'."""
+    import unicodedata
+
+    decomposed = unicodedata.normalize("NFKD", text.casefold())
+    return "".join(c for c in decomposed if not unicodedata.combining(c))
+
+
+def members_view(request):
+    from . import analysis
+
+    parliament = _parliament(request)
+    q = " ".join(request.GET.get("q", "").split())[:100]
+    party = request.GET.get("party", "")[:20]
+    sort = request.GET.get("sort", "name")
+    if sort not in analysis.MEMBER_LIST_SORTS:
+        sort = "name"
+    everyone = analysis.member_list(parliament)
+    rows = everyone
+    if q:
+        needle = _fold(q)
+        rows = [r for r in rows if needle in _fold(r["name"]) or needle in _fold(r["riding"])]
+    if party:
+        rows = [r for r in rows if r["party"] == party]
+    if sort == "speeches":
+        rows = sorted(rows, key=lambda r: (-r["speeches"], _fold(r["name"])))
+    elif sort == "recent":
+        rows = sorted(rows, key=lambda r: (r["last"], -r["speeches"]), reverse=True)
+    else:
+        rows = sorted(rows, key=lambda r: _fold(r["name"]))
+    query = request.GET.copy()
+    query.pop("sort", None)
+    query.pop("lang", None)
+    context = {
+        "lang": content_lang(request),
+        "rows": rows,
+        "total": len(everyone),
+        "q": q,
+        "party": party,
+        "parliament": parliament,
+        "sort": sort,
+        "sorts": [("name", _("Name")), ("speeches", _("Speeches")), ("recent", _("Most recent"))],
+        "querystring": query.urlencode(),
+        "parties": sorted({r["party"] for r in everyone if r["party"]}),
+        "parliaments": Sitting.objects.values_list("parliament", flat=True)
+        .distinct()
+        .order_by("parliament"),
+    }
+    return render(request, "members.html", context)
+
+
+def member_detail(request, slug: str):
+    from . import analysis
+
+    person = get_object_or_404(Person, slug=slug)
+    lang, model = _model_for(request)
+    profile = analysis.member_profile(person)
+    # The chart legend in the interface language (the cached profile is shared).
+    profile = {**profile, "by_month": {**profile["by_month"]}}
+    profile["by_month"]["series"] = [
+        {**profile["by_month"]["series"][0], "name": str(_("Speeches"))}
+    ]
+    speeches = (
+        analysis.member_speeches(person)
+        .select_related("sitting")
+        .order_by("-sitting__date", "-sequence")
+    )
+    page = Paginator(speeches, 10).get_page(request.GET.get("page"))
+    kinds = profile["by_kind"]
+    context = {
+        "lang": lang,
+        "person": person,
+        "profile": profile,
+        "kind_rows": [
+            (_("Debate"), kinds["debate"]),
+            (_("Questions"), kinds["questions"]),
+            (_("Answers"), kinds["answers"]),
+            (_("Members' statements"), kinds["statements"]),
+        ],
+        "topics": analysis.member_topics(person, model) if model else None,
+        "model": model,
+        "page": page,
+        "min_language_words": analysis.MIN_MEMBER_LANGUAGE_WORDS,
+        "min_topic_speeches": analysis.MIN_MEMBER_TOPIC_SPEECHES,
+        "month_table": list(
+            zip(
+                profile["by_month"]["months"],
+                profile["by_month"]["series"][0]["values"],
+                profile["by_month"]["denominators"],
+                strict=True,
+            )
+        ),
+    }
+    return render(request, "member_detail.html", context)

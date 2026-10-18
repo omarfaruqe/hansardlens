@@ -228,6 +228,7 @@ def language_by_member(
         return [
             {
                 "name": people[r["intervention__person"]].name,
+                "slug": people[r["intervention__person"]].slug,
                 "party": people[r["intervention__person"]].latest_party,
                 "fr": r["fr"] or 0,
                 "total": r["total"],
@@ -236,7 +237,7 @@ def language_by_member(
             for r in rows
         ]
 
-    rows = cached("lang_member", {"parl": parliament, "min": min_words}, compute)
+    rows = cached("lang_member2", {"parl": parliament, "min": min_words}, compute)
     key = MEMBER_SORTS.get(sort, "-share")
     reverse = key.startswith("-")
     field = key.lstrip("-")
@@ -309,3 +310,188 @@ def topic_by_party(topic) -> list[dict]:
         return sorted(out, key=lambda r: -r["share"])
 
     return cached("topic_party", {"model": topic.model_id, "topic": topic.number}, compute)
+
+
+# ------------------------------------------------------------------------------------
+# Members
+# ------------------------------------------------------------------------------------
+
+# What counts as a member's speech: everything they say on the floor except
+# interjections and procedural text, and nothing said while in the chair.
+SPEECH_KINDS = [
+    "Debate",
+    "Question",
+    "QuestionSupplemental",
+    "QuestionComment",
+    "Answer",
+    "AnswerSupplemental",
+    "Statement",
+]
+KIND_GROUPS = {
+    "debate": ["Debate"],
+    "questions": ["Question", "QuestionSupplemental", "QuestionComment"],
+    "answers": ["Answer", "AnswerSupplemental"],
+    "statements": ["Statement"],
+}
+MIN_MEMBER_LANGUAGE_WORDS = 1_000
+MIN_MEMBER_TOPIC_SPEECHES = 10
+MEMBER_LIST_SORTS = ("name", "speeches", "recent")
+
+
+def member_speeches(person):
+    from .models import Intervention
+
+    return Intervention.objects.filter(person=person, is_chair=False, kind__in=SPEECH_KINDS)
+
+
+def _spans(qs, field: str) -> list[dict]:
+    """Each distinct value of `field` with the first and last sitting date it was used."""
+    rows = (
+        qs.exclude(**{field: ""})
+        .values(field)
+        .annotate(first=Min("sitting__date"), last=Max("sitting__date"), n=Count("id"))
+        .order_by("first", field)
+    )
+    return [{"value": r[field], "first": r["first"], "last": r["last"], "n": r["n"]} for r in rows]
+
+
+def member_profile(person) -> dict:
+    """Descriptive facts about one person's speeches: counts, parties, ridings, roles,
+    speeches by month and the language they speak on the floor."""
+    from .models import Intervention
+
+    def compute():
+        speeches = member_speeches(person)
+        totals = speeches.aggregate(
+            n=Count("id"),
+            sittings=Count("sitting", distinct=True),
+            first=Min("sitting__date"),
+            last=Max("sitting__date"),
+        )
+        kinds = dict(speeches.values_list("kind").annotate(n=Count("id")))
+        mine = Intervention.objects.filter(person=person)
+        as_member = mine.filter(is_chair=False)
+
+        # Speeches per month, from the member's first speech to the latest sitting;
+        # months without sittings are gaps, months with sittings but no speech are 0.
+        months, values, denominators = [], [], []
+        if totals["first"]:
+            last = Sitting.objects.aggregate(m=Max("date"))["m"]
+            months = month_range(totals["first"], last)
+            sittings = {
+                r["m"]: r["n"]
+                for r in Sitting.objects.annotate(m=TruncMonth("date"))
+                .values("m")
+                .annotate(n=Count("id"))
+            }
+            spoken = {
+                r["m"]: r["n"]
+                for r in speeches.annotate(m=TruncMonth("sitting__date"))
+                .values("m")
+                .annotate(n=Count("id"))
+            }
+            for m in months:
+                denominators.append(sittings.get(m))
+                values.append(spoken.get(m, 0) if m in sittings else None)
+
+        language = Paragraph.objects.filter(
+            kind="speech",
+            intervention__person=person,
+            intervention__is_chair=False,
+            floor_language__in=["en", "fr"],
+        ).aggregate(**_LANG_AGG)
+        lang_total = language["total"] or 0
+        return {
+            "speeches": totals["n"],
+            "sittings": totals["sittings"],
+            "first": totals["first"],
+            "last": totals["last"],
+            "by_kind": {k: sum(kinds.get(x, 0) for x in xs) for k, xs in KIND_GROUPS.items()},
+            "chair": mine.filter(is_chair=True).count(),
+            "parties": _spans(as_member, "party"),
+            "ridings": _spans(as_member, "riding"),
+            "roles": sorted(
+                _spans(as_member, "speaker_role"), key=lambda r: r["last"], reverse=True
+            ),
+            "chair_roles": _spans(mine.filter(is_chair=True), "speaker_role"),
+            "language": {
+                "fr": language["fr"] or 0,
+                "total": lang_total,
+                "share": _share(language["fr"] or 0, lang_total)
+                if lang_total >= MIN_MEMBER_LANGUAGE_WORDS
+                else None,
+            },
+            "by_month": {
+                "months": [m.strftime("%Y-%m") for m in months],
+                "denominators": denominators,
+                "series": [{"name": "Speeches", "values": values}],
+                "unit": "speeches",
+            },
+        }
+
+    return cached("member", {"id": person.id}, compute)
+
+
+def member_topics(person, model, limit: int = 6) -> dict:
+    """The topics a member's speeches are most often about, next to the House share."""
+    from .models import InterventionTopic
+
+    def compute():
+        rows = list(
+            InterventionTopic.objects.filter(
+                topic__model=model, intervention__person=person, intervention__is_chair=False
+            )
+            .values("topic")
+            .annotate(n=Count("id"))
+            .order_by("-n", "topic")
+        )
+        total = sum(r["n"] for r in rows)
+        if total < MIN_MEMBER_TOPIC_SPEECHES:
+            return {"total": total, "topics": []}
+        topics = model.topics.in_bulk([r["topic"] for r in rows[:limit]])
+        return {
+            "total": total,
+            "topics": [
+                {
+                    "number": topics[r["topic"]].number,
+                    "label": topics[r["topic"]].label,
+                    "n": r["n"],
+                    "share": round(100 * r["n"] / total, 1),
+                    "house": round(100 * topics[r["topic"]].share, 1),
+                }
+                for r in rows[:limit]
+            ],
+        }
+
+    return cached("member_topics", {"id": person.id, "model": model.id}, compute)
+
+
+def member_list(parliament: int | None = None) -> list[dict]:
+    """Everyone who has spoken (in one Parliament, if given), with speech counts."""
+    from .models import Intervention
+
+    def compute():
+        qs = Intervention.objects.filter(person__isnull=False)
+        if parliament:
+            qs = qs.filter(sitting__parliament=parliament)
+        rows = qs.values("person").annotate(
+            speeches=Count("id", filter=Q(is_chair=False, kind__in=SPEECH_KINDS)),
+            chair=Count("id", filter=Q(is_chair=True)),
+            last=Max("sitting__date"),
+        )
+        people = Person.objects.in_bulk([r["person"] for r in rows])
+        return [
+            {
+                "name": people[r["person"]].name,
+                "slug": people[r["person"]].slug,
+                "party": people[r["person"]].latest_party,
+                "riding": people[r["person"]].latest_riding,
+                "speeches": r["speeches"],
+                "chair": r["chair"],
+                "last": r["last"],
+            }
+            for r in rows
+            if r["speeches"] or r["chair"]
+        ]
+
+    return cached("members", {"parl": parliament}, compute)

@@ -1,0 +1,58 @@
+{% extends "base.html" %}{% load i18n humanize hansard %}
+{% block title %}{% translate "Members" %} – HansardLens{% endblock %}
+{% block content %}
+<h1>{% translate "Members" %}</h1>
+<p class="lede">{% translate "Everyone who has spoken in the loaded debates, with their most recent party and riding. Each page shows what a member said, how often, and on which topics." %}</p>
+
+<form method="get" class="filter-row member-filters" role="search">
+  <label>{% translate "Name or riding" %}
+    <input type="search" name="q" value="{{ q }}" placeholder="{% translate 'e.g. Fortin, Halifax' %}">
+  </label>
+  <label>{% translate "Party" %}
+    <select name="party">
+      <option value="">{% translate "All parties" %}</option>
+      {% for p in parties %}<option value="{{ p }}" {% if party == p %}selected{% endif %}>{{ p|party }}</option>{% endfor %}
+    </select>
+  </label>
+  <label>{% translate "Parliament" %}
+    <select name="parliament">
+      <option value="">{% translate "All loaded debates" %}</option>
+      {% for p in parliaments %}<option value="{{ p }}" {% if parliament == p %}selected{% endif %}>{{ p|ordinal_parliament }}</option>{% endfor %}
+    </select>
+  </label>
+  <input type="hidden" name="sort" value="{{ sort }}">
+  <button class="button" type="submit">{% translate "Show" %}</button>
+</form>
+
+<p class="result-count" aria-live="polite">{% blocktranslate count counter=rows|length with n=rows|length|intcomma total=total|intcomma %}{{ n }} person of {{ total }}{% plural %}{{ n }} people of {{ total }}{% endblocktranslate %}</p>
+<div class="sort-links">
+  <span>{% translate "Sort by" %}</span>
+  {% for key, label in sorts %}
+    {% if sort == key %}<strong>{{ label }}</strong>{% else %}<a href="?{% if querystring %}{{ querystring }}&amp;{% endif %}sort={{ key }}">{{ label }}</a>{% endif %}
+  {% endfor %}
+</div>
+
+{% if rows %}
+  <div class="table-wide">
+    <table class="data-table member-table">
+      <thead><tr><th>{% translate "Name" %}</th><th class="text">{% translate "Party" %}</th><th class="text riding">{% translate "Riding" %}</th><th>{% translate "Speeches" %}</th><th>{% translate "Last spoke" %}</th></tr></thead>
+      <tbody>
+        {% for r in rows %}
+          <tr>
+            <td><a href="{% url 'member_detail' r.slug %}">{{ r.name }}</a>{% if r.chair %} <span class="tag">{% translate "chair" %}</span>{% endif %}</td>
+            <td class="text">{{ r.party|party|default:"–" }}</td>
+            <td class="text riding">{{ r.riding|default:"–" }}</td>
+            <td>{{ r.speeches|intcomma }}</td>
+            <td>{{ r.last|ldate:"short" }}</td>
+          </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+{% else %}
+  <div class="notice"><p>{% translate "No one matches these filters." %}</p></div>
+{% endif %}
+
+<h2>{% translate "About these figures" %}</h2>
+<p class="method">{% translate "Speeches are a member's own interventions: debate, questions, answers and members' statements, without interjections and without anything said while presiding (people who have presided are marked “chair”). Party and riding are the most recent ones printed with the member's name in Hansard. More speeches means more time on the floor, which also depends on a member's role and party size; it is not a measure of work done." %}</p>
+{% endblock %}

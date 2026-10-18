@@ -20,6 +20,7 @@
       <nav class="site-nav" aria-label="{% translate 'Main' %}">
         {% with name=request.resolver_match.url_name %}
         <a href="{% url 'search' %}" {% if name == 'search' %}aria-current="page"{% endif %}>{% translate "Search" %}</a>
+        <a href="{% url 'members' %}" {% if name == 'members' or name == 'member_detail' %}aria-current="page"{% endif %}>{% translate "Members" %}</a>
         <a href="{% url 'trends' %}" {% if name == 'trends' %}aria-current="page"{% endif %}>{% translate "Trends" %}</a>
         <a href="{% url 'topics' %}" {% if name == 'topics' or name == 'topic_detail' %}aria-current="page"{% endif %}>{% translate "Topics" %}</a>
         <a href="{% url 'whats_new' %}" {% if name == 'whats_new' %}aria-current="page"{% endif %}>{% translate "What's new" %}</a>

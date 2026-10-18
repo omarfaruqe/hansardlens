@@ -42,11 +42,26 @@ class Sitting(models.Model):
         return reverse("sitting_detail", args=[(self.parliament, self.session), self.number])
 
 
+def person_slug(name: str, taken=None) -> str:
+    """URL name for a person: 'Rhéal Éloi Fortin' -> 'rheal-eloi-fortin'. `taken(slug)`
+    says whether a slug is already used; a clash gets -2, -3, ..."""
+    from django.utils.text import slugify
+
+    base = slugify(name)[:170] or "member"
+    slug, n = base, 1
+    while taken is not None and taken(slug):
+        n += 1
+        slug = f"{base}-{n}"
+    return slug
+
+
 class Person(models.Model):
     """A person who spoke, identified by name without honorific (House speaker ids
     are tied to a role, so one person can have several)."""
 
     name = models.CharField(max_length=160, unique=True)
+    # Stable address of the member page (/members/<slug>/); set once from the name.
+    slug = models.SlugField(max_length=180, unique=True)
     latest_party = models.CharField(max_length=20, blank=True)
     latest_riding = models.CharField(max_length=160, blank=True)
     latest_seen = models.DateField(null=True, blank=True)
@@ -56,6 +71,17 @@ class Person(models.Model):
 
     def __str__(self):
         return self.name
+
+    def save(self, *args, **kwargs):
+        if not self.slug:
+            others = Person.objects.exclude(pk=self.pk)
+            self.slug = person_slug(self.name, lambda s: others.filter(slug=s).exists())
+        super().save(*args, **kwargs)
+
+    def get_absolute_url(self):
+        from django.urls import reverse
+
+        return reverse("member_detail", args=[self.slug])
 
 
 class Intervention(models.Model):

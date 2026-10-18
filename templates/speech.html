@@ -4,7 +4,7 @@
 <p class="small"><a href="{{ iv.sitting.get_absolute_url }}?text={{ lang }}#iv-{{ iv.sequence }}">{{ iv.sitting.date|ldate:"long" }}</a></p>
 {% field iv "order_title" lang as order %}{% field iv "subject_title" lang as subject %}
 <h1 lang="{{ lang }}">{{ subject|default:order|default:iv.kind }}</h1>
-<p class="speaker">{{ iv.speaker_display }}</p>
+<p class="speaker">{% if iv.person and not iv.is_chair %}<a href="{{ iv.person.get_absolute_url }}">{{ iv.speaker_display }}</a>{% else %}{{ iv.speaker_display }}{% endif %}</p>
 <p class="speech-meta">
   {% if iv.party %}{{ iv.party|party }}{% endif %}{% if iv.riding %}, {{ iv.riding }}{% endif %}{% if iv.speaker_role and not iv.is_chair %}{% if iv.party %}, {% endif %}<span lang="en">{{ iv.speaker_role }}</span>{% endif %}
   {% if order and subject %}<br><span lang="{{ lang }}">{{ order }}</span>{% endif %}

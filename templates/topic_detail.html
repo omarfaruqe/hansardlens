@@ -44,7 +44,7 @@
   <ol class="results">
     {% for a in examples %}{% with iv=a.intervention %}
       <li class="result">
-        <div class="result-head"><strong>{{ iv.speaker_display }}</strong>{% if iv.party %}, {{ iv.party|party }}{% endif %}<br>{{ iv.sitting.date|ldate:"date" }}</div>
+        <div class="result-head"><strong>{% if iv.person and not iv.is_chair %}<a href="{{ iv.person.get_absolute_url }}">{{ iv.speaker_display }}</a>{% else %}{{ iv.speaker_display }}{% endif %}</strong>{% if iv.party %}, {{ iv.party|party }}{% endif %}<br>{{ iv.sitting.date|ldate:"date" }}</div>
         {% field iv "subject_title" lang as subject %}{% field iv "text" lang as text %}
         <p class="result-subject"><a href="{{ iv.get_absolute_url }}?text={{ lang }}" lang="{{ lang }}">{{ subject|default:iv.kind }}</a></p>
         <p class="snippet" lang="{{ lang }}">{{ text|truncatewords:45 }}</p>

@@ -1,0 +1,107 @@
+{% extends "base.html" %}{% load i18n static humanize hansard %}
+{% block title %}{{ person.name }} – HansardLens{% endblock %}
+{% block content %}
+<p class="small"><a href="{% url 'members' %}">{% translate "All members" %}</a></p>
+<h1>{{ person.name }}</h1>
+<p class="lede">
+  {% if person.latest_party %}{{ person.latest_party|party }}{% endif %}{% if person.latest_party and person.latest_riding %}, {% endif %}{{ person.latest_riding }}
+  {% if profile.last %}<br><span class="small">{% blocktranslate with first=profile.first|ldate:"date" last=profile.last|ldate:"date" %}Spoke from {{ first }} to {{ last }} in the loaded debates.{% endblocktranslate %}</span>{% endif %}
+</p>
+
+{% if profile.speeches %}
+  <dl class="facts">
+    <div><dt>{% translate "Speeches" %}</dt><dd>{{ profile.speeches|intcomma }}</dd></div>
+    <div><dt>{% translate "Sittings spoken in" %}</dt><dd>{{ profile.sittings|intcomma }}</dd></div>
+    {% for label, n in kind_rows %}{% if n %}<div><dt>{{ label }}</dt><dd>{{ n|intcomma }}</dd></div>{% endif %}{% endfor %}
+    <div><dt>{% translate "Spoken in French" %}</dt><dd>{% if profile.language.share is not None %}{{ profile.language.share }}%{% else %}–{% endif %}</dd></div>
+  </dl>
+  {% if profile.language.share is None %}<p class="small muted">{% blocktranslate with n=min_language_words|intcomma %}The language share is shown from {{ n }} words of speech.{% endblocktranslate %}</p>{% endif %}
+{% elif profile.chair %}
+  <div class="notice"><p>{% translate "This person has spoken only while presiding over the House." %}</p></div>
+{% endif %}
+
+{% if profile.roles or profile.chair_roles %}
+  <h2>{% translate "Roles in the record" %}</h2>
+  <ul class="role-list">
+    {% for r in profile.roles %}<li><span lang="en">{{ r.value }}</span> <span class="muted small">{{ r.first|ldate:"month" }} – {{ r.last|ldate:"month" }}</span></li>{% endfor %}
+    {% for r in profile.chair_roles %}<li><span lang="en">{{ r.value }}</span> <span class="tag">{% translate "presiding" %}</span> <span class="muted small">{{ r.first|ldate:"month" }} – {{ r.last|ldate:"month" }}</span></li>{% endfor %}
+  </ul>
+  <p class="small muted">{% translate "Titles as printed in Hansard next to the member's name (in English)." %}</p>
+{% endif %}
+
+{% if profile.parties|length > 1 or profile.ridings|length > 1 %}
+  <h2>{% translate "Party and riding over time" %}</h2>
+  <ul class="role-list">
+    {% for r in profile.parties %}<li>{{ r.value|party }} <span class="muted small">{{ r.first|ldate:"date" }} – {{ r.last|ldate:"date" }}</span></li>{% endfor %}
+    {% if profile.ridings|length > 1 %}{% for r in profile.ridings %}<li>{{ r.value }} <span class="muted small">{{ r.first|ldate:"date" }} – {{ r.last|ldate:"date" }}</span></li>{% endfor %}{% endif %}
+  </ul>
+{% endif %}
+
+{% if profile.speeches %}
+  <figure class="chart" data-source="member-month" data-integer="1" data-denominator-label="{% translate 'sittings' %}" data-no-sittings="{% translate 'No sittings this month' %}" data-label="{% translate 'Speeches by month' %}">
+    <figcaption>{% translate "Speeches by month" %}</figcaption>
+    <p class="chart-sub">{% translate "Gaps are months without sittings." %}</p>
+    <div class="chart-plot"></div>
+    <details class="table-view">
+      <summary>{% translate "Show the numbers as a table" %}</summary>
+      <div class="table-scroll">
+        <table class="data-table">
+          <thead><tr><th>{% translate "Month" %}</th><th>{% translate "Speeches" %}</th><th>{% translate "Sittings" %}</th></tr></thead>
+          <tbody>{% for m, v, d in month_table %}<tr><td>{{ m }}</td><td>{{ v|default_if_none:"–" }}</td><td>{{ d|default_if_none:"–" }}</td></tr>{% endfor %}</tbody>
+        </table>
+      </div>
+    </details>
+  </figure>
+  {{ profile.by_month|json_script:"member-month" }}
+{% endif %}
+
+{% if topics and topics.topics %}
+  <h2>{% translate "Main topics" %}</h2>
+  <ol class="topic-list">
+    {% for t in topics.topics %}
+      <li>
+        <a class="topic-name" href="{% url 'topic_detail' t.number %}" lang="{{ model.lang }}">{{ t.label }}</a>
+        <span class="track" aria-hidden="true"><span class="fill" style="width: {% widthratio t.share topics.topics.0.share 100 %}%"></span></span>
+        <span class="val">{{ t.share }}%</span>
+        <span class="topic-words">{% blocktranslate count counter=t.n with n=t.n|intcomma house=t.house %}{{ n }} speech; {{ house }}% of all speeches in the House{% plural %}{{ n }} speeches; {{ house }}% of all speeches in the House{% endblocktranslate %}</span>
+      </li>
+    {% endfor %}
+  </ol>
+  <p class="small muted">{% blocktranslate with n=topics.total|intcomma %}Share of this member's {{ n }} analysed speeches whose main topic it is. Bars are scaled to the largest value.{% endblocktranslate %}</p>
+{% elif topics %}
+  <p class="small muted">{% blocktranslate with n=min_topic_speeches %}Main topics are shown from {{ n }} analysed speeches.{% endblocktranslate %}</p>
+{% endif %}
+
+{% if profile.speeches %}
+  <h2>{% translate "Search this member's speeches" %}</h2>
+  <form class="searchbar" method="get" action="{% url 'search' %}" role="search">
+    <input type="hidden" name="person" value="{{ person.name }}">
+    <input type="hidden" name="text" value="{{ lang }}">
+    <input type="search" name="q" aria-label="{% translate 'Search debates' %}" placeholder="{% translate 'housing, “carbon tax”, souveraineté…' %}">
+    <button class="button" type="submit">{% translate "Search" %}</button>
+  </form>
+
+  <h2 id="speeches">{% translate "Speeches" %}</h2>
+  <ol class="results">
+    {% for iv in page.object_list %}
+      <li class="result">
+        <div class="result-head">{{ iv.sitting.date|ldate:"date" }}{% field iv "order_title" lang as order %}{% if order %} · <span lang="{{ lang }}">{{ order }}</span>{% endif %}</div>
+        {% field iv "subject_title" lang as subject %}{% field iv "text" lang as text %}
+        <p class="result-subject"><a href="{{ iv.get_absolute_url }}?text={{ lang }}" lang="{{ lang }}">{{ subject|default:order|default:iv.kind }}</a></p>
+        <p class="snippet" lang="{{ lang }}">{{ text|truncatewords:35 }}</p>
+      </li>
+    {% endfor %}
+  </ol>
+  {% if page.has_other_pages %}
+    <nav class="pager" aria-label="{% translate 'Pages' %}">
+      {% if page.has_previous %}<a href="?{% if request.GET.text %}text={{ lang }}&amp;{% endif %}page={{ page.previous_page_number }}#speeches">{% translate "Previous" %}</a>{% endif %}
+      <span class="muted">{% blocktranslate with n=page.number of=page.paginator.num_pages %}Page {{ n }} of {{ of }}{% endblocktranslate %}</span>
+      {% if page.has_next %}<a href="?{% if request.GET.text %}text={{ lang }}&amp;{% endif %}page={{ page.next_page_number }}#speeches">{% translate "Next" %}</a>{% endif %}
+    </nav>
+  {% endif %}
+{% endif %}
+
+<h2>{% translate "About these figures" %}</h2>
+<p class="method">{% translate "Counts describe time on the floor, which depends on a member's role, party and the business of the day; they are not a measure of work done. Speeches exclude interjections and anything said while presiding. The French share uses the same yardstick as the Languages page: each paragraph is measured by the length of its English text, whichever language was spoken." %}</p>
+{% endblock %}
+{% block scripts %}<script src="{% static 'js/linechart.js' %}" defer></script>{% endblock %}
