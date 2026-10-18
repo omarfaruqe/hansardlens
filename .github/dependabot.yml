@@ -8,14 +8,28 @@ updates:
     groups:
       python-minor-and-patch:
         update-types: [minor, patch]
+    ignore:
+      # Major upgrades are planned by hand, not merged from a weekly pull request.
+      - dependency-name: django        # stay on the 5.2 LTS line (supported to April 2028)
+        versions: [">=5.3"]
+      - dependency-name: "*"
+        update-types: ["version-update:semver-major"]
   - package-ecosystem: docker       # base images in the Dockerfile
     directory: /
     schedule:
       interval: weekly
+    ignore:
+      - dependency-name: python        # Python 3.12 matches the pinned requirements
+        update-types: ["version-update:semver-major", "version-update:semver-minor"]
   - package-ecosystem: docker-compose   # postgres image in the compose files
     directory: /
     schedule:
       interval: weekly
+    ignore:
+      # A new PostgreSQL major version cannot open the existing data volume:
+      # upgrade with a dump and restore (see deploy/DEPLOY.md), never by pull request.
+      - dependency-name: postgres
+        update-types: ["version-update:semver-major"]
   - package-ecosystem: github-actions
     directory: /
     schedule:
