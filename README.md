@@ -99,17 +99,17 @@ schema at `/api/schema/`.
 
 ## Keeping it current
 
+Both Docker stacks include a `scheduler` service that runs `refresh_data` Tuesday to
+Saturday at 06:30, after the House publishes the previous day's Hansard. It catches up
+when the computer was asleep or off at that time, retries hourly after a failure, and
+reports its last run on `/health/` and in `docker compose logs scheduler`.
+
+`refresh_data` loads new sittings, follows a new session or Parliament when the current
+one ends, rebuilds term shifts when anything new arrived and refits topics weekly. Run it
+by hand at any time:
+
 ```bash
 docker compose run --rm web python manage.py refresh_data
-```
-
-Loads new sittings, follows a new session or Parliament when the current one ends,
-rebuilds term shifts when anything new arrived and refits topics weekly. It exits with
-an error status if a sitting failed to load. Example schedule (`crontab -e`), Tuesday to
-Saturday at 6:30, after the House publishes the previous day's Hansard:
-
-```cron
-30 6 * * 2-6 cd ~/Desktop/hansardlens && /usr/local/bin/docker compose run --rm web python manage.py refresh_data >> data/refresh.log 2>&1
 ```
 
 ## Production
@@ -118,6 +118,10 @@ Saturday at 6:30, after the House publishes the previous day's Hansard:
 cp .env.example .env    # set DJANGO_SECRET_KEY, DJANGO_ALLOWED_HOSTS, POSTGRES_PASSWORD
 docker compose -f docker-compose.prod.yml up -d --build
 ```
+
+The production stack listens on `127.0.0.1:8010` for a reverse proxy, and can be served
+under a sub-path (`DJANGO_SCRIPT_NAME`) next to other apps on the same server: see
+**[deploy/DEPLOY.md](deploy/DEPLOY.md)**.
 
 - gunicorn, `DEBUG` off; refuses to start with the development secret key.
 - Hashed, compressed static files served by WhiteNoise.
@@ -130,7 +134,7 @@ docker compose -f docker-compose.prod.yml up -d --build
 ## Development
 
 ```bash
-docker compose run --rm web pytest -q            # 139 tests, against PostgreSQL
+docker compose run --rm web pytest -q            # 154 tests, against PostgreSQL
 docker compose run --rm web ruff check .
 docker compose run --rm web ruff format --check .
 ```

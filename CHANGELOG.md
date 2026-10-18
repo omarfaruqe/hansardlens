@@ -1,5 +1,17 @@
 # Changelog
 
+## 1.1.0 – 2026-10-18
+
+- **Automatic refresh:** a `scheduler` service in both Docker stacks runs
+  `refresh_data` Tuesday to Saturday at 06:30, catches up after the computer was asleep
+  or off, retries hourly after a failure, and reports its last run on `/health/`.
+- **Sub-path hosting:** `DJANGO_SCRIPT_NAME` serves the app under a prefix such as
+  `/maplemetrics/hansardlens/` behind a reverse proxy, with prefixed links, static files
+  and cookie paths, and cookie names that cannot clash with another Django app.
+- **Side-by-side deployment:** the production stack has its own project name and listens
+  only on the server's loopback; `deploy/DEPLOY.md` and `deploy/nginx-hansardlens.conf`
+  describe adding it next to an existing app.
+
 ## 1.0.0 – 2026-10-14
 
 First release.
