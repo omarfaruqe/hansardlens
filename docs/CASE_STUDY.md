@@ -20,7 +20,7 @@ denominator; the site describes what was said and does not rate parties or membe
 
 | | |
 | --- | --- |
-| Data | 709 sittings from December 2019 (43rd, 44th and 45th Parliaments): 237,383 interventions and 840,469 paragraphs, each in English and French; 1,317 recorded votes with 422,392 individual votes; 699 bills; 550 people |
+| Data | 709 sittings from December 2019 (43rd, 44th and 45th Parliaments): 237,383 interventions and 840,469 paragraphs, each in English and French; 1,317 recorded votes with 422,392 individual votes; 699 bills; 550 people; 773 public meetings of three committees with 185,697 interventions and 2,247 witnesses |
 | Stack | Python 3.12, Django 5.2 LTS, PostgreSQL 16, scikit-learn, Django REST Framework, Docker Compose, Caddy, GitHub Actions |
 | Quality | 308 automated tests on PostgreSQL in CI; data-quality report; checks against real sittings |
 | Operations | Daily automatic refresh, nightly verified backups, failure alerts, pinned and hashed dependencies, weekly update proposals |
