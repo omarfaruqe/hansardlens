@@ -18,7 +18,20 @@ from rest_framework.response import Response
 from rest_framework.views import APIView
 
 from . import analysis, search
-from .models import Bill, Division, Intervention, Paragraph, Person, Sitting, TermShift, Vote
+from .models import (
+    Bill,
+    Committee,
+    Division,
+    Intervention,
+    Meeting,
+    MeetingIntervention,
+    Paragraph,
+    Person,
+    Sitting,
+    TermShift,
+    Vote,
+    Witness,
+)
 from .textmine import active_model
 
 
@@ -458,6 +471,254 @@ class BillDetail(generics.RetrieveAPIView):
             session=self.kwargs["ps"][1],
             code=self.kwargs["code"].upper(),
         )
+
+
+# -- committees ------------------------------------------------------------------------
+
+
+class CommitteeSerializer(serializers.ModelSerializer):
+    meetings = serializers.IntegerField(source="meetings_n", read_only=True)
+    first_date = serializers.DateField(read_only=True)
+    last_date = serializers.DateField(read_only=True)
+    url = serializers.SerializerMethodField()
+
+    class Meta:
+        model = Committee
+        fields = ["acronym", "name_en", "name_fr", "meetings", "first_date", "last_date", "url"]
+
+    def get_url(self, obj) -> str:
+        return obj.get_absolute_url()
+
+
+class MeetingSerializer(serializers.ModelSerializer):
+    committee = serializers.CharField(source="committee.acronym")
+    witnesses = serializers.SerializerMethodField()
+    url = serializers.SerializerMethodField()
+    evidence_url_en = serializers.CharField(read_only=True)
+    evidence_url_fr = serializers.CharField(read_only=True)
+
+    class Meta:
+        model = Meeting
+        fields = [
+            "committee",
+            "parliament",
+            "session",
+            "number",
+            "date",
+            "chair",
+            "witnesses",
+            "url",
+            "evidence_url_en",
+            "evidence_url_fr",
+        ]
+
+    def get_witnesses(self, obj) -> list[dict]:
+        seen, out = set(), []
+        for i in obj.interventions.all():
+            if i.witness_id and i.witness_id not in seen:
+                seen.add(i.witness_id)
+                out.append(
+                    {
+                        "name": i.witness.name,
+                        "slug": i.witness.slug,
+                        "title_en": i.detail_en,
+                        "title_fr": i.detail_fr,
+                    }
+                )
+        return out
+
+    def get_url(self, obj) -> str:
+        return obj.get_absolute_url()
+
+
+class MeetingInterventionSerializer(serializers.ModelSerializer):
+    person = serializers.SlugRelatedField(slug_field="slug", read_only=True)
+    witness = serializers.SlugRelatedField(slug_field="slug", read_only=True)
+    paragraphs = serializers.SerializerMethodField()
+
+    class Meta:
+        model = MeetingIntervention
+        fields = [
+            "sequence",
+            "role",
+            "name",
+            "detail_en",
+            "detail_fr",
+            "party",
+            "person",
+            "witness",
+            "time",
+            "paragraphs",
+        ]
+
+    def get_paragraphs(self, obj) -> list[dict]:
+        return [
+            {
+                "kind": p.kind,
+                "floor_language": p.floor_language,
+                "text_en": p.text_en,
+                "text_fr": p.text_fr,
+            }
+            for p in obj.paragraphs.all()
+        ]
+
+
+class MeetingDetailSerializer(MeetingSerializer):
+    committee_name_en = serializers.CharField(source="committee.name_en")
+    committee_name_fr = serializers.CharField(source="committee.name_fr")
+    interventions = MeetingInterventionSerializer(many=True, read_only=True)
+
+    class Meta(MeetingSerializer.Meta):
+        fields = MeetingSerializer.Meta.fields + [
+            "committee_name_en",
+            "committee_name_fr",
+            "interventions",
+        ]
+
+
+class WitnessSerializer(serializers.ModelSerializer):
+    meetings = serializers.IntegerField(source="meetings_n", read_only=True)
+    url = serializers.SerializerMethodField()
+
+    class Meta:
+        model = Witness
+        fields = [
+            "slug",
+            "name",
+            "title_en",
+            "title_fr",
+            "affiliation_en",
+            "affiliation_fr",
+            "as_individual",
+            "latest_date",
+            "meetings",
+            "url",
+        ]
+
+    def get_url(self, obj) -> str:
+        return obj.get_absolute_url()
+
+
+class WitnessDetailSerializer(WitnessSerializer):
+    appearances = serializers.SerializerMethodField()
+
+    class Meta(WitnessSerializer.Meta):
+        fields = WitnessSerializer.Meta.fields + ["appearances"]
+
+    def get_appearances(self, obj) -> list[dict]:
+        rows = {}
+        for i in obj.interventions.select_related("meeting__committee").order_by(
+            "-meeting__date", "meeting_id", "sequence"
+        ):
+            m = i.meeting
+            row = rows.setdefault(
+                m.id,
+                {
+                    "committee": m.committee.acronym,
+                    "parliament": m.parliament,
+                    "session": m.session,
+                    "number": m.number,
+                    "date": m.date,
+                    "title_en": i.detail_en,
+                    "title_fr": i.detail_fr,
+                    "interventions": 0,
+                    "url": m.get_absolute_url(),
+                },
+            )
+            row["interventions"] += 1
+        return list(rows.values())
+
+
+@extend_schema(tags=["Committees"])
+class CommitteeList(generics.ListAPIView):
+    """Committees whose public meeting transcripts are loaded."""
+
+    serializer_class = CommitteeSerializer
+    pagination_class = None
+
+    def get_queryset(self):
+        from django.db.models import Max, Min
+
+        return Committee.objects.annotate(
+            meetings_n=Count("meetings"),
+            first_date=Min("meetings__date"),
+            last_date=Max("meetings__date"),
+        ).order_by("acronym")
+
+
+@extend_schema(
+    tags=["Committees"],
+    parameters=[OpenApiParameter("parliament", int), OpenApiParameter("session", int)],
+)
+class MeetingList(generics.ListAPIView):
+    """Public meetings of one committee, most recent first, with the witnesses heard."""
+
+    serializer_class = MeetingSerializer
+    pagination_class = Pagination
+
+    def get_queryset(self):
+        committee = get_object_or_404(Committee, acronym=self.kwargs["acronym"].upper())
+        qs = committee.meetings.select_related("committee").prefetch_related(
+            "interventions__witness"
+        )
+        p = self.request.query_params
+        for field in ("parliament", "session"):
+            if p.get(field, "").isdigit():
+                qs = qs.filter(**{field: int(p[field])})
+        return qs.order_by("-date", "-number")
+
+
+@extend_schema(tags=["Committees"])
+class MeetingDetail(generics.RetrieveAPIView):
+    """One meeting: who spoke, in order, with the English and French text of each paragraph."""
+
+    serializer_class = MeetingDetailSerializer
+
+    def get_object(self):
+        return get_object_or_404(
+            Meeting.objects.select_related("committee").prefetch_related(
+                "interventions__person", "interventions__witness", "interventions__paragraphs"
+            ),
+            committee__acronym=self.kwargs["acronym"].upper(),
+            parliament=self.kwargs["ps"][0],
+            session=self.kwargs["ps"][1],
+            number=self.kwargs["number"],
+        )
+
+
+@extend_schema(
+    tags=["Committees"],
+    parameters=[
+        OpenApiParameter("q", str, description="Part of a name, title or organisation"),
+        OpenApiParameter("committee", str, description="Committee acronym, e.g. FINA"),
+    ],
+)
+class WitnessList(generics.ListAPIView):
+    """Witnesses heard by the loaded committees, most recently heard first."""
+
+    serializer_class = WitnessSerializer
+    pagination_class = Pagination
+
+    def get_queryset(self):
+        from .committee_views import find_witnesses
+
+        p = self.request.query_params
+        q = " ".join(p.get("q", "").split())[:100]
+        return find_witnesses(q, p.get("committee", "").upper()[:8]).order_by(
+            "-latest_date", "name"
+        )
+
+
+@extend_schema(tags=["Committees"])
+class WitnessDetail(generics.RetrieveAPIView):
+    """One witness and every meeting at which they gave evidence."""
+
+    serializer_class = WitnessDetailSerializer
+
+    def get_object(self):
+        from .committee_views import find_witnesses
+
+        return get_object_or_404(find_witnesses(), slug=self.kwargs["slug"])
 
 
 SEARCH_PARAMS = [

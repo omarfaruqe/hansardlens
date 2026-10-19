@@ -13,6 +13,8 @@ flowchart LR
     S & A & DB --> W["Django views<br/>EN/FR pages"]
     S & A & DB --> R["REST API /api/v1<br/>OpenAPI docs"]
     A -.->|cached until next load| C[("file cache")]
+    H2["ourcommons.ca<br/>committee evidence XML"] -->|meeting page → XML link| K["committees.py<br/>speakers, witnesses"]
+    K -->|one transaction per meeting| DB
 ```
 
 ## Components
@@ -27,6 +29,8 @@ flowchart LR
 | `debates/analysis.py` | Monthly term rates, language shares, topic shares, member profiles; cached by data version |
 | `debates/textmine.py` | TF-IDF + NMF topics; log-odds term shifts |
 | `debates/bills.py` | Find bills from the motions that move them; link debates, stages and votes |
+| `debates/committees.py` | Find a committee meeting's evidence XML, read speaker roles, store meetings and witnesses |
+| `debates/committee_views.py` | Committee, meeting, witness and committee search pages |
 | `debates/votes.py` | Store recorded votes, match printed names to members, mark party lines |
 | `debates/api.py` | Read-only DRF endpoints and OpenAPI schema |
 | `debates/middleware.py` | Interface language from `?lang=`, remembered in a cookie |
@@ -48,6 +52,11 @@ erDiagram
     Person |o--o{ Vote : casts
     Bill |o--o{ Intervention : "debated in"
     Bill |o--o{ Division : "voted in"
+    Committee ||--o{ Meeting : holds
+    Meeting ||--o{ MeetingIntervention : has
+    MeetingIntervention ||--o{ MeetingParagraph : has
+    Person |o--o{ MeetingIntervention : speaks
+    Witness |o--o{ MeetingIntervention : "gives evidence"
 ```
 
 - `Paragraph.search_en`, `search_fr` and `words_en` are PostgreSQL generated columns,
@@ -55,7 +64,9 @@ erDiagram
 - A sitting is replaced as a whole in one transaction, so reloading is idempotent.
 - Speeches are addressed by the House's own id (`/speeches/12601257/`), sittings by
   number (`/sittings/44-1/50/`) and members by a name-based slug set once
-  (`/members/bernard-genereux/`), so links survive reloads.
+  (`/members/bernard-genereux/`), so links survive reloads. Committee meetings are
+  addressed by committee, session and number (`/committees/FINA/44-1/100/`) and
+  witnesses by a slug set once from the House's witness id.
 
 ## Commands
 
@@ -68,13 +79,15 @@ erDiagram
 | `build_term_shifts` | Compute rising and fading terms |
 | `build_bills` | Find bills and link them to their debates and recorded votes |
 | `load_divisions` | Add recorded votes to sittings loaded before version 1.5 |
-| `refresh_data` | Daily: load new sittings (following a new session or Parliament), then update the analysis and bills |
+| `load_committees` | Load the public meetings of the chosen committees, continuing from the last one loaded |
+| `refresh_data` | Daily: load new sittings (following a new session or Parliament) and committee meetings, then update the analysis and bills |
 
 ## Testing
 
-- 274 tests with pytest against PostgreSQL (CI uses a PostgreSQL service).
+- 307 tests with pytest against PostgreSQL (CI uses a PostgreSQL service).
 - The parser is tested on invented XML with the real structure (real Hansard text is
   never committed), and on real sittings when they have been downloaded locally.
 - The ingestion commands are tested against a fake House website: missing sittings,
-  network failures, missing French versions, new sessions and new Parliaments.
+  network failures, missing French versions, new sessions and new Parliaments; the
+  committee loader against meetings in camera and meeting numbers that do not exist.
 - The text-mining methods are tested on a synthetic corpus with two known subjects.

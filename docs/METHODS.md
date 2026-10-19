@@ -225,10 +225,41 @@ uses. Each term is shown with its rate per 10,000 words in both windows.
   section 8); "paragraphs naming it" counts paragraphs anywhere in the session that
   name the bill's number.
 
-## 11. Limits
+## 11. Committees
+
+- **Source:** the evidence (transcript) of each public meeting, published by the House
+  in the same XML format as Hansard, in English and French. Each meeting's page on
+  ourcommons.ca links to its XML. Meetings are numbered within a session; HansardLens
+  tries each number in turn and stops after 15 numbers in a row without a meeting.
+- **Which committees:** the Standing Committees on Finance (FINA), on Government
+  Operations and Estimates (OGGO) and on Access to Information, Privacy and Ethics
+  (ETHI), in every session loaded for the House. `HANSARD_COMMITTEES` sets others.
+- **Meetings without a transcript:** meetings held in camera (in private), and parts of
+  meetings that move in camera, have no evidence and are not shown. A committee's
+  meeting count is its public meetings with a transcript.
+- **Who spoke:** each intervention's label says whether the speaker is the chair, a
+  member, a minister, a witness or the clerk. Members and ministers are matched to the
+  members of the House as in section 8 (by the House's id, else by name); a minister who
+  never spoke in the House keeps the printed name. The chair's own party and riding come
+  from the label.
+- **Witnesses:** one record per House witness id, so the same person appearing for
+  different organisations, or under a new title, is one witness. The title and
+  organisation are as printed in that meeting's label, split at the first comma
+  ("Chief Economist, Example Bank of Canada"); the witness list shows the latest.
+  "As an individual" marks a witness speaking for themselves.
+- **Organisations heard most often:** the organisation printed with each witness, counted
+  once per meeting. Names are not merged across spellings, translations or reorganised
+  departments.
+- **Search:** paragraphs of committee transcripts, with the search rules of section 3,
+  filtered by committee and by the speaker's role.
+- **Language:** each paragraph's floor language is read as in section 2. Committee
+  transcripts include short interjections ("Some hon. members: Agreed") within
+  interventions; they are kept as printed.
+
+## 12. Limits
 
 - **Coverage:** three Parliaments from December 2019. Earlier Parliaments are not loaded
-  or checked.
+  or checked. Committees: three of the House's standing committees, public meetings only.
 - **Translation:** English and French are translations of each other, not independent
   corpora. A term trend in French text partly reflects translators' choices.
 - **Counting is not meaning:** a rising term means a subject took more of the

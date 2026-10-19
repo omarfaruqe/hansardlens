@@ -2,19 +2,20 @@
 
 - **Standard:** WCAG 2.1, levels A and AA (the level required of Government of Canada
   websites by the Standard on Web Accessibility).
-- **Reviewed:** 18 October 2026, version 1.8.0.
+- **Reviewed:** 18 October 2026, version 1.8.0; committee pages added and checked in
+  version 1.9.0.
 - **Scope:** every type of page, in English and French, at desktop (1280 px) and phone
   (375 px) widths: home, search and results, sittings, a sitting, a speech, members, a
-  member, recorded votes, a vote, bills, a bill, trends, languages, topics, a topic,
-  what's new, the accessibility statement, the API documentation and the error page.
+  member, recorded votes, a vote, bills, a bill, committees, a committee, a meeting,
+  witnesses, a witness, committee search, trends, languages, topics, a topic, what's new, the accessibility statement, the API documentation and the error page.
 - **Statement for users:** `/accessibility/` on the site (English and French).
 
 ## Method
 
 | Check | How |
 | ----- | --- |
-| Automated rules | axe-core 4.10.2 in Chromium, WCAG 2.0/2.1 A and AA rules and best practices, 21 pages × 2 widths (`tools/a11y_audit.js`) |
-| Structure on every release | `debates/tests/test_accessibility.py`: page language, title, one level-one heading, main landmark, skip link first, labelled form fields, text alternatives, language of parts; 17 pages × 2 languages |
+| Automated rules | axe-core 4.10.2 in Chromium, WCAG 2.0/2.1 A and AA rules and best practices, 28 pages × 2 widths (`tools/a11y_audit.js`) |
+| Structure on every release | `debates/tests/test_accessibility.py`: page language, title, one level-one heading, main landmark, skip link first, labelled form fields, text alternatives, language of parts; 23 pages × 2 languages |
 | Keyboard | Tabbing through every page type: order, visible focus, no traps; chart keys |
 | Reflow | Every page at 320 CSS px: no horizontal scrolling outside data tables |
 | Contrast | Computed for every text and component colour pair in the style sheet |
@@ -38,7 +39,8 @@
 | 12 | The current sort order was shown only in bold | 1.3.1 | `aria-current` on the current sort |
 | 13 | Changing the Parliament list on the Languages page reloaded the page at once | 3.2.2 | A "Show" button applies the choice, as on the other pages |
 
-After the fixes, axe-core reports no failures on any page at either width. It flags
+After the fixes, axe-core reports no failures on any page at either width. The
+committee pages added in version 1.9.0 use the same components and also report none. It flags
 the small axis numbers in charts for review because it cannot read the SVG background;
 they are dark grey on white, 6.1:1.
 

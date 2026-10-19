@@ -1,5 +1,25 @@
 # Changelog
 
+## 1.9.0 – 2026-10-18
+
+- **Committees:** the public meetings of the Standing Committees on Finance (FINA),
+  Government Operations and Estimates (OGGO) and Access to Information, Privacy and
+  Ethics (ETHI), in English and French, for every loaded session. Pages for each
+  committee (meetings with the witnesses heard and the organisations heard most
+  often), each meeting (witness list and side-by-side transcript with the language
+  spoken), witnesses (searchable by name, title or organisation) and each witness, and
+  a search of committee transcripts filtered by committee and by who spoke.
+- **Members:** each member's page lists the committee meetings where they spoke.
+- **Loading:** `load_committees` finds each meeting's evidence XML from its page on
+  ourcommons.ca, skips meetings held in camera, and continues from the last meeting
+  loaded; `refresh_data` loads new meetings of the current session.
+  `HANSARD_COMMITTEES` chooses the committees.
+- **API:** `/api/v1/committees/`, a committee's meetings, one meeting with its
+  transcript, `/api/v1/witnesses/` and one witness.
+- **French** interface text for every new page; accessibility checks (axe-core and the
+  structural tests) extended to the committee pages, with no failures.
+- **Docs:** methods note section 11 (committees), README, architecture and case study.
+
 ## 1.8.0 – 2026-10-18
 
 - **Accessibility audit** against WCAG 2.1 AA: axe-core on every page type in English

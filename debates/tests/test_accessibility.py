@@ -76,6 +76,13 @@ def data():
     from debates.bills import build_bills
 
     build_bills()
+    from debates.committees import store_meeting
+
+    store_meeting(
+        (FIXTURES / "committee_en.xml").read_bytes(),
+        (FIXTURES / "committee_fr.xml").read_bytes(),
+        "https://www.ourcommons.ca/DocumentViewer/en/44-1/EXMP/meeting-12/evidence",
+    )
 
 
 PAGES = [
@@ -90,6 +97,12 @@ PAGES = [
     "/votes/",
     "/votes/44-1/54/",
     "/bills/",
+    "/committees/",
+    "/committees/EXMP/",
+    "/committees/EXMP/44-1/12/",
+    "/committees/witnesses/",
+    "/committees/witnesses/lena-park/",
+    "/committees/search/?q=interest",
     "/trends/?t1=bridge",
     "/language/",
     "/topics/",

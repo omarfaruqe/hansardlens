@@ -1222,3 +1222,211 @@ msgstr "Signaler un problème"
 #: templates/accessibility.html
 msgid "If something on HansardLens is hard to use, please describe it in an issue on <a href=\"https://github.com/omarfaruqe/hansardlens/issues\" rel=\"external\">GitHub</a>, with the page address and what you were trying to do."
 msgstr "Si quelque chose est difficile à utiliser dans HansardLens, décrivez-le dans un ticket sur <a href=\"https://github.com/omarfaruqe/hansardlens/issues\" rel=\"external\">GitHub</a>, avec l'adresse de la page et ce que vous cherchiez à faire."
+
+#: templates/base.html templates/committees.html templates/witnesses.html
+msgid "Committees"
+msgstr "Comités"
+
+#: templates/committees.html
+msgid "Committees study bills, spending and issues in detail, and hear from ministers, officials and outside experts. These are the transcripts (evidence) of their public meetings, in English and French."
+msgstr "Les comités étudient en détail les projets de loi, les dépenses et diverses questions, et entendent des ministres, des fonctionnaires et des experts de l'extérieur. Voici les transcriptions (témoignages) de leurs séances publiques, en anglais et en français."
+
+#: templates/committees.html templates/committee_search.html
+msgid "Search committee transcripts"
+msgstr "Chercher dans les témoignages des comités"
+
+#: templates/committees.html
+msgid "Public meetings"
+msgstr "Réunions publiques"
+
+#: templates/committees.html
+msgid "No committee meetings are loaded yet. Run the load_committees command."
+msgstr "Aucune réunion de comité n'est encore chargée. Lancez la commande load_committees."
+
+#: templates/committees.html
+msgid "About committee evidence"
+msgstr "À propos des témoignages en comité"
+
+#: templates/committees.html
+msgid "Only public meetings have a transcript; meetings held in camera (in private) do not. Witnesses are listed with the title and organisation printed in the transcript at the time. HansardLens loads a selection of committees; the House of Commons website has all of them."
+msgstr "Seules les réunions publiques ont une transcription; les réunions à huis clos n'en ont pas. Les témoins sont présentés avec le titre et l'organisation imprimés dans la transcription de l'époque. HansardLens charge une sélection de comités; le site de la Chambre des communes les contient tous."
+
+#: templates/committees.html
+msgid "All %(n)s witnesses"
+msgstr "Les %(n)s témoins"
+
+#: templates/committee_detail.html
+msgid "Search this committee's transcripts"
+msgstr "Chercher dans les témoignages de ce comité"
+
+#: templates/committee_detail.html
+msgid "Witnesses heard"
+msgstr "Témoins entendus"
+
+#: templates/committee_detail.html
+msgid "Committee business"
+msgstr "Travaux du comité"
+
+#: templates/committee_detail.html
+msgid "Organisations heard most often"
+msgstr "Organisations entendues le plus souvent"
+
+#: templates/committee_detail.html
+msgid "Organisations as printed with each witness's name; a unit of a department is listed with its department."
+msgstr "Organisations telles qu'imprimées avec le nom de chaque témoin; une unité d'un ministère figure avec son ministère."
+
+#: templates/committee_detail.html
+msgid "Meeting %(n)s"
+msgstr "Réunion n° %(n)s"
+
+#: templates/committee_detail.html
+msgid "%(n)s public meeting"
+msgid_plural "%(n)s public meetings"
+msgstr[0] "%(n)s réunion publique"
+msgstr[1] "%(n)s réunions publiques"
+
+#: templates/committee_detail.html
+msgid "%(counter)s meeting"
+msgid_plural "%(counter)s meetings"
+msgstr[0] "%(counter)s réunion"
+msgstr[1] "%(counter)s réunions"
+
+#: templates/committee_search.html
+msgid "Search what witnesses, ministers and members said in committee. Results are paragraphs, each linked to its place in the meeting transcript."
+msgstr "Cherchez ce que les témoins, les ministres et les députés ont dit en comité. Les résultats sont des paragraphes, chacun lié à sa place dans la transcription de la réunion."
+
+#: templates/committee_search.html
+msgid "Who spoke"
+msgstr "Qui a parlé"
+
+#: templates/committee_search.html
+msgid "Anyone"
+msgstr "Tout le monde"
+
+#: templates/committee_search.html
+msgid "Ministers"
+msgstr "Ministres"
+
+#: templates/committee_search.html
+msgid "Chair"
+msgstr "Présidence"
+
+#: templates/committee_search.html
+msgid "Text"
+msgstr "Texte"
+
+#: templates/meeting_detail.html
+msgid "%(acr)s · Meeting %(n)s · %(p)s-%(s)s"
+msgstr "%(acr)s · Réunion n° %(n)s · %(p)s-%(s)s"
+
+#: templates/meeting_detail.html
+msgid "Chair: %(name)s"
+msgstr "Présidence : %(name)s"
+
+#: templates/meeting_detail.html
+msgid "Official transcript on the House of Commons website"
+msgstr "Transcription officielle sur le site de la Chambre des communes"
+
+#: templates/meeting_detail.html
+msgid "Transcript"
+msgstr "Transcription"
+
+#: templates/meeting_detail.html
+msgid "The marked text is what was actually said; the other column is the official translation."
+msgstr "Le texte marqué est ce qui a réellement été dit; l'autre colonne est la traduction officielle."
+
+#: templates/meeting_detail.html
+msgid "Other meetings"
+msgstr "Autres réunions"
+
+#: templates/meeting_detail.html
+msgid "Previous: meeting %(n)s"
+msgstr "Précédente : réunion n° %(n)s"
+
+#: templates/meeting_detail.html
+msgid "Next: meeting %(n)s"
+msgstr "Suivante : réunion n° %(n)s"
+
+#: templates/member_detail.html
+msgid "In committee"
+msgstr "En comité"
+
+#: templates/member_detail.html
+msgid "Spoke at %(counter)s public meeting of the loaded committees"
+msgid_plural "Spoke at %(counter)s public meetings of the loaded committees"
+msgstr[0] "A pris la parole à %(counter)s réunion publique des comités chargés"
+msgstr[1] "A pris la parole à %(counter)s réunions publiques des comités chargés"
+
+#: templates/member_detail.html
+msgid "%(counter)s intervention"
+msgid_plural "%(counter)s interventions"
+msgstr[0] "%(counter)s intervention"
+msgstr[1] "%(counter)s interventions"
+
+#: templates/meeting_detail.html templates/witnesses.html
+msgid "Witnesses"
+msgstr "Témoins"
+
+#: templates/witnesses.html
+msgid "People invited to give evidence to the loaded committees: officials, experts, organisations and individuals."
+msgstr "Personnes invitées à témoigner devant les comités chargés : fonctionnaires, experts, organisations et particuliers."
+
+#: templates/witnesses.html
+msgid "Name, title or organisation"
+msgstr "Nom, titre ou organisation"
+
+#: templates/witnesses.html
+msgid "e.g. Auditor General, Bank of Canada"
+msgstr "p. ex. vérificatrice générale, Banque du Canada"
+
+#: templates/witnesses.html
+msgid "Committee"
+msgstr "Comité"
+
+#: templates/witnesses.html
+msgid "All committees"
+msgstr "Tous les comités"
+
+#: templates/witnesses.html
+msgid "Meetings"
+msgstr "Réunions"
+
+#: templates/witnesses.html
+msgid "Title and organisation"
+msgstr "Titre et organisation"
+
+#: templates/witnesses.html
+msgid "Last heard"
+msgstr "Dernière comparution"
+
+#: templates/witnesses.html
+msgid "as an individual"
+msgstr "à titre personnel"
+
+#: templates/witnesses.html
+msgid "%(n)s witness"
+msgid_plural "%(n)s witnesses"
+msgstr[0] "%(n)s témoin"
+msgstr[1] "%(n)s témoins"
+
+#: templates/witness_detail.html
+msgid "All witnesses"
+msgstr "Tous les témoins"
+
+#: templates/witness_detail.html
+msgid "Also listed as:"
+msgstr "Aussi présenté comme :"
+
+#: templates/witness_detail.html
+msgid "Meeting"
+msgstr "Réunion"
+
+#: templates/witness_detail.html
+msgid "Search the transcripts for this name"
+msgstr "Chercher ce nom dans les transcriptions"
+
+#: templates/witness_detail.html
+msgid "Heard at %(counter)s meeting"
+msgid_plural "Heard at %(counter)s meetings"
+msgstr[0] "Entendu à %(counter)s réunion"
+msgstr[1] "Entendu à %(counter)s réunions"

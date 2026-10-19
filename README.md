@@ -6,7 +6,9 @@ HansardLens loads the official Hansard every sitting day, pairs every paragraph 
 its translation, and records which language was actually spoken on the floor. On top of
 that record it offers bilingual full-text search, a side-by-side reading view, term
 trends, the share of debate held in French, topics found by NMF, and the words rising
-or fading in recent debate, bills, recorded votes, and a page for every member. Everything is available through a documented REST API.
+or fading in recent debate, bills, recorded votes, a page for every member, and the
+transcripts of three committees with the witnesses they heard. Everything is available
+through a documented REST API.
 Every figure is a descriptive share with a stated denominator.
 
 **Live site:** http://103.99.176.180/hansardlens/ (English and French, updated every
@@ -47,6 +49,10 @@ sitting day). **API docs:** http://103.99.176.180/hansardlens/api/docs/
 - **Bills:** each bill debated in the House, found from the motions that move it, with
   its titles in both languages, stages moved and completed, recorded votes, debate days
   and who spoke most, linked to LEGISinfo for status and text.
+- **Committees:** the public meetings of the finance (FINA), government operations
+  (OGGO) and ethics (ETHI) committees in English and French, with the witnesses heard,
+  their titles and organisations, a page for each witness, the committee work of each
+  member, and a search of what was said in committee.
 - **Languages:** share of speech given in French, overall, by month, party and member,
   measured with one yardstick for both languages.
 - **Topics:** 30 topics from TF-IDF and NMF, with each topic's share over time and
@@ -81,6 +87,10 @@ docker compose run --rm web python manage.py load_hansard --parliament 43 --sess
 docker compose run --rm web python manage.py load_hansard --parliament 44 --session 1
 docker compose run --rm web python manage.py load_hansard --parliament 45 --session 1
 
+# Committee transcripts for the same sessions (about two hours; HANSARD_COMMITTEES
+# chooses the committees, FINA,OGGO,ETHI by default)
+docker compose run --rm web python manage.py load_committees
+
 # Build the analysis (a few minutes)
 docker compose run --rm web python manage.py build_topics
 docker compose run --rm web python manage.py build_term_shifts
@@ -97,6 +107,9 @@ Open http://localhost:8000/ (or http://localhost:8000/?lang=fr for French).
 | Members | `/members/`, `/members/<name>/` |
 | Recorded votes | `/votes/`, `/votes/44-1/481/` |
 | Bills | `/bills/`, `/bills/45-1/C-4/` |
+| Committees | `/committees/`, `/committees/FINA/`, `/committees/FINA/44-1/100/` |
+| Witnesses | `/committees/witnesses/`, `/committees/witnesses/<name>/` |
+| Committee search | `/committees/search/` |
 | Trends | `/trends/` |
 | Topics | `/topics/` |
 | What's new | `/new/` |
@@ -127,6 +140,11 @@ schema at `/api/schema/`.
 | `GET /api/v1/bills/45-1/C-4/` | One bill: titles, stages in the House, recorded votes |
 | `GET /api/v1/votes/` | Recorded votes, newest first; filters `parliament`, `session`, `result`, `member` |
 | `GET /api/v1/votes/44-1/481/` | One vote with every member's vote, party and whether it differed from their party |
+| `GET /api/v1/committees/` | Loaded committees with their meeting counts and dates |
+| `GET /api/v1/committees/FINA/meetings/` | One committee's public meetings, newest first, with the witnesses; filters `parliament`, `session` |
+| `GET /api/v1/committees/FINA/44-1/100/` | One meeting: every intervention with role, speaker and paragraphs in English and French |
+| `GET /api/v1/witnesses/` | Witnesses, most recently heard first; filters `q` (name, title or organisation), `committee` |
+| `GET /api/v1/witnesses/{slug}/` | One witness and every meeting where they gave evidence |
 | `GET /api/v1/search/?q=…&text=en` | Paragraph search with highlighted snippets |
 | `GET /api/v1/trends/?term=a&term=b` | Mentions per 1,000 paragraphs by month |
 | `GET /api/v1/language/` | French share overall, by month, party and member |
@@ -153,6 +171,13 @@ Recorded votes are stored as sittings load. A database loaded with version 1.4 o
 earlier gets them once with `python manage.py load_divisions` (reads the cached XML in
 `data/raw`, downloading what is missing; speeches are left untouched). Bill pages are
 built with `python manage.py build_bills` (also run by `refresh_data`).
+
+Committee meetings of the current session are loaded by `refresh_data` too. The first
+load, for every session already in the database, is `python manage.py load_committees`;
+it carries on from the last meeting loaded, so it can be stopped and restarted. Use
+`--committee FINA --parliament 44 --session 1` to load one committee and session, and set
+`HANSARD_COMMITTEES` in `.env` (comma-separated acronyms) to choose others. Meetings held
+in camera have no transcript and are skipped.
 
 ## Production
 
