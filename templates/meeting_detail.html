@@ -1,0 +1,55 @@
+{% extends "base.html" %}{% load i18n humanize hansard %}
+{% block title %}{{ meeting.committee.acronym }} {{ meeting.number }}, {{ meeting.date|ldate:"date" }} – HansardLens{% endblock %}
+{% block content %}{% with committee=meeting.committee %}
+<p class="small"><a href="{{ committee.get_absolute_url }}?text={{ lang }}">{% include "_committee_name.html" %}</a></p>
+<p class="kicker">{% blocktranslate with acr=committee.acronym n=meeting.number p=meeting.parliament s=meeting.session %}{{ acr }} · Meeting {{ n }} · {{ p }}-{{ s }}{% endblocktranslate %}</p>
+<h1>{{ meeting.date|ldate:"long" }}</h1>
+<p class="lede">{% if meeting.chair %}{% blocktranslate with name=meeting.chair %}Chair: {{ name }}{% endblocktranslate %}{% endif %}</p>
+<p class="small"><a href="{% with_text other_lang %}">{% if other_lang == "fr" %}{% translate "Show the French text first" %}{% else %}{% translate "Show the English text first" %}{% endif %}</a> · <a href="{% if LANGUAGE_CODE == 'fr' %}{{ meeting.evidence_url_fr }}{% else %}{{ meeting.evidence_url_en }}{% endif %}" rel="external">{% translate "Official transcript on the House of Commons website" %}</a></p>
+
+{% if witnesses %}
+  <h2>{% translate "Witnesses" %}</h2>
+  <ul class="role-list">
+    {% for iv in witnesses %}{% field iv "detail" lang as detail %}
+      <li><a href="{{ iv.witness.get_absolute_url }}?text={{ lang }}">{{ iv.witness.name }}</a>{% if detail %} <span class="muted" lang="{{ lang }}">({{ detail }})</span>{% endif %}</li>
+    {% endfor %}
+  </ul>
+{% endif %}
+
+<h2>{% translate "Transcript" %}</h2>
+<p class="legend">{% translate "The marked text is what was actually said; the other column is the official translation." %}</p>
+<div class="parallel">
+  <div class="parallel-head" aria-hidden="true">
+    <span>{% if lang == "en" %}English{% else %}Français{% endif %}</span>
+    <span class="secondary">{% if lang == "en" %}Français{% else %}English{% endif %}</span>
+  </div>
+  {% for iv in interventions %}{% field iv "detail" lang as detail %}
+    <div class="meeting-turn" id="ci-{{ iv.sequence }}">
+      {% if iv.name or detail %}
+        <p class="turn-speaker">
+          {% if iv.witness %}<a href="{{ iv.witness.get_absolute_url }}?text={{ lang }}">{{ iv.name }}</a>
+          {% elif iv.person %}<a href="{{ iv.person.get_absolute_url }}">{{ iv.name }}</a>
+          {% else %}{{ iv.name }}{% endif %}
+          {% if iv.role == "chair" or iv.role == "clerk" %}<span class="muted" lang="{{ lang }}">{{ detail }}</span>{% elif iv.party %}<span class="muted">{{ iv.party|party }}</span>{% endif %}
+          {% if iv.time %}<span class="muted small">{{ iv.time|time:"H:i" }}</span>{% endif %}
+        </p>
+      {% endif %}
+      {% for p in iv.paragraphs.all %}
+        {% field p "text" lang as primary %}{% field p "text" other_lang as secondary %}
+        <div class="para-row">
+          <p class="para {% if p.kind == 'procedural' %}procedural{% endif %} {% if p.floor_language == lang %}original{% endif %}" lang="{{ lang }}">
+            {% if p.floor_language == other_lang %}<span class="para-label">{% if other_lang == "fr" %}{% translate "Translated from French" %}{% else %}{% translate "Translated from English" %}{% endif %}</span>{% endif %}
+            {{ primary }}
+          </p>
+          <p class="para secondary {% if p.kind == 'procedural' %}procedural{% endif %} {% if p.floor_language == other_lang %}original{% endif %}" lang="{{ other_lang }}">{{ secondary }}</p>
+        </div>
+      {% endfor %}
+    </div>
+  {% endfor %}
+</div>
+
+<nav class="neighbours" aria-label="{% translate 'Other meetings' %}">
+  <span>{% if previous %}<a href="{{ previous.get_absolute_url }}?text={{ lang }}">{% blocktranslate with n=previous.number %}Previous: meeting {{ n }}{% endblocktranslate %}</a>{% endif %}</span>
+  <span>{% if next %}<a href="{{ next.get_absolute_url }}?text={{ lang }}">{% blocktranslate with n=next.number %}Next: meeting {{ n }}{% endblocktranslate %}</a>{% endif %}</span>
+</nav>
+{% endwith %}{% endblock %}

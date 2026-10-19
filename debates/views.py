@@ -450,6 +450,25 @@ def member_detail(request, slug: str):
     recent_votes = member_votes.select_related("division__sitting").order_by(
         "-division__sitting__date", "-division__number"
     )[:8]
+    from .models import Meeting
+
+    committee_meetings = (
+        Meeting.objects.filter(interventions__person=person)
+        .distinct()
+        .select_related("committee")
+        .annotate(
+            n=Count("interventions", filter=Q(interventions__person=person)),
+            first=Min("interventions__sequence", filter=Q(interventions__person=person)),
+        )
+        .order_by("-date")
+    )
+    committee_total = committee_meetings.count()
+    committee_by = list(
+        committee_meetings.order_by()
+        .values("committee__acronym")
+        .annotate(meetings=Count("id", distinct=True))
+        .order_by("-meetings")
+    )
     context = {
         "lang": lang,
         "person": person,
@@ -462,6 +481,9 @@ def member_detail(request, slug: str):
         ],
         "topics": analysis.member_topics(person, model) if model else None,
         "vote_summary": vote_summary,
+        "committee_meetings": committee_meetings[:8],
+        "committee_total": committee_total,
+        "committee_by": committee_by,
         "recent_votes": recent_votes,
         "model": model,
         "page": page,

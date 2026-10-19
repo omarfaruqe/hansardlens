@@ -1,0 +1,58 @@
+{% extends "base.html" %}{% load i18n humanize hansard %}
+{% block title %}{% if q %}{{ q }} – {% endif %}{% translate "Search committee transcripts" %} – HansardLens{% endblock %}
+{% block content %}
+<p class="small"><a href="{% url 'committees' %}">{% translate "Committees" %}</a></p>
+<h1>{% translate "Search committee transcripts" %}</h1>
+<form method="get" role="search">
+  <div class="searchbar">
+    <input type="search" name="q" value="{{ q }}" aria-label="{% translate 'Search committee transcripts' %}" placeholder="{% translate 'housing, “carbon tax”, souveraineté…' %}">
+    <button class="button" type="submit">{% translate "Search" %}</button>
+  </div>
+  <div class="filter-row member-filters">
+    <label>{% translate "Committee" %}
+      <select name="committee">
+        <option value="">{% translate "All committees" %}</option>
+        {% for c in committees %}<option value="{{ c.acronym }}" {% if committee == c.acronym %}selected{% endif %}>{{ c.acronym }}</option>{% endfor %}
+      </select>
+    </label>
+    <label>{% translate "Who spoke" %}
+      <select name="role">
+        <option value="">{% translate "Anyone" %}</option>
+        <option value="witness" {% if role == "witness" %}selected{% endif %}>{% translate "Witnesses" %}</option>
+        <option value="member" {% if role == "member" %}selected{% endif %}>{% translate "Members" %}</option>
+        <option value="minister" {% if role == "minister" %}selected{% endif %}>{% translate "Ministers" %}</option>
+        <option value="chair" {% if role == "chair" %}selected{% endif %}>{% translate "Chair" %}</option>
+      </select>
+    </label>
+    <label>{% translate "Text" %}
+      <select name="text">
+        <option value="en" {% if lang == "en" %}selected{% endif %}>{% translate "English text" %}</option>
+        <option value="fr" {% if lang == "fr" %}selected{% endif %}>{% translate "French text" %}</option>
+      </select>
+    </label>
+  </div>
+</form>
+
+<section aria-live="polite">
+{% if q %}
+  <p class="result-count">{% blocktranslate count counter=total with n=total|intcomma %}{{ n }} matching paragraph{% plural %}{{ n }} matching paragraphs{% endblocktranslate %}</p>
+  <ol class="results">
+    {% for p in results %}{% with iv=p.intervention %}{% with m=iv.meeting %}
+      <li class="result">
+        <div class="result-head"><strong>{% if iv.witness %}<a href="{{ iv.witness.get_absolute_url }}?text={{ lang }}">{{ iv.name }}</a>{% elif iv.person %}<a href="{{ iv.person.get_absolute_url }}">{{ iv.name }}</a>{% else %}{{ iv.name }}{% endif %}</strong>{% field iv "detail" lang as detail %}{% if iv.party %}, {{ iv.party|party }}{% elif detail and iv.role == "witness" %}, <span lang="{{ lang }}">{{ detail }}</span>{% endif %}<br>{{ m.committee.acronym }} · {{ m.date|ldate:"date" }}</div>
+        <p class="snippet" lang="{{ lang }}"><a href="{{ m.get_absolute_url }}?text={{ lang }}#ci-{{ iv.sequence }}" class="snippet-link">{{ p.snippet_html }}</a></p>
+      </li>
+    {% endwith %}{% endwith %}{% endfor %}
+  </ol>
+  {% if page.has_other_pages %}
+    <nav class="pager" aria-label="{% translate 'Pages' %}">
+      {% if page.has_previous %}<a href="?{{ querystring }}&amp;page={{ page.previous_page_number }}">{% translate "Previous" %}</a>{% endif %}
+      <span class="muted">{% blocktranslate with n=page.number of=page.paginator.num_pages %}Page {{ n }} of {{ of }}{% endblocktranslate %}</span>
+      {% if page.has_next %}<a href="?{{ querystring }}&amp;page={{ page.next_page_number }}">{% translate "Next" %}</a>{% endif %}
+    </nav>
+  {% endif %}
+{% else %}
+  <div class="notice"><p>{% translate "Search what witnesses, ministers and members said in committee. Results are paragraphs, each linked to its place in the meeting transcript." %}</p></div>
+{% endif %}
+</section>
+{% endblock %}

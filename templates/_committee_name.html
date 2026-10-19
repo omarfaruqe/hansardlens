@@ -1,0 +1,1 @@
+{% load hansard %}{% field committee "name" lang as n %}{{ n|default:committee.name_en|default:committee.acronym }}

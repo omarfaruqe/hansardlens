@@ -303,3 +303,12 @@ h3 { font-size: 1.1rem; margin: 1.5rem 0 0.5rem; }
 .prose { max-width: var(--measure); }
 .prose li { margin: 0.35rem 0; }
 ::placeholder { color: var(--muted); opacity: 1; }  /* browser default is too light */
+
+/* Committees */
+.meeting-turn { scroll-margin-top: 1rem; }
+.meeting-turn:target .turn-speaker { background: var(--red-soft); }
+.turn-speaker { font: 600 1rem var(--serif); margin: 1.25rem 0 0; display: flex; flex-wrap: wrap; gap: 0 0.6rem; align-items: baseline; }
+.turn-speaker .muted { font: 400 0.875rem var(--sans); }
+.breakdown li.wide-label { grid-template-columns: 1fr auto; }
+.snippet-link { color: inherit; text-decoration: none; }
+.snippet-link:hover { text-decoration: underline; }

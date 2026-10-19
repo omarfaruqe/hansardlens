@@ -15,6 +15,8 @@ const pages = [
   "/", "/?lang=fr", "/search/?q=housing", "/search/?q=logement&text=fr&lang=fr",
   "/sittings/", "/members/", "/votes/", "/bills/", "/trends/?t1=housing&t2=inflation",
   "/language/", "/topics/", "/new/", "/accessibility/", "/accessibility/?lang=fr",
+  "/committees/", "/committees/FINA/", "/committees/witnesses/", "/committees/search/?q=housing",
+  "/committees/search/?q=logement&text=fr&lang=fr",
   "/api/docs/", "/no-such-page/",
 ];
 
@@ -23,13 +25,15 @@ const pages = [
   // Also one page of each kind with data: the first link of each list page.
   const probe = await browser.newPage();
   for (const [list, pattern] of [["/sittings/", "/sittings/"], ["/members/", "/members/"],
-    ["/votes/", "/votes/"], ["/bills/", "/bills/"], ["/topics/", "/topics/"]]) {
+    ["/votes/", "/votes/"], ["/bills/", "/bills/"], ["/topics/", "/topics/"],
+    ["/committees/FINA/", "/committees/FINA/"],
+    ["/committees/witnesses/", "/committees/witnesses/"]]) {
     await probe.goto(base + list);
     const href = await probe.evaluate((p) => {
-      const a = [...document.querySelectorAll("main a")].find((x) => x.pathname.includes(p) && x.pathname.split("/").filter(Boolean).length > 1);
+      const a = [...document.querySelectorAll("main a")].find((x) => x.pathname.includes(p) && x.pathname !== location.pathname && x.pathname.split("/").filter(Boolean).length > 1);
       return a ? a.pathname : null;
     }, pattern);
-    if (href) pages.push(href.replace(/^.*?(\/(sittings|members|votes|bills|topics)\/)/, "$1"));
+    if (href) pages.push(href.replace(/^.*?(\/(sittings|members|votes|bills|topics|committees)\/)/, "$1"));
   }
   await probe.close();
 

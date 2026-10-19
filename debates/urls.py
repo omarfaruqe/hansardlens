@@ -1,6 +1,6 @@
 from django.urls import path, register_converter
 
-from . import views
+from . import committee_views, views
 
 
 class SessionConverter:
@@ -34,12 +34,31 @@ class BillCodeConverter:
 register_converter(BillCodeConverter, "billcode")
 
 
+class CommitteeConverter:
+    """'FINA' (or 'fina', redirected to 'FINA')"""
+
+    regex = r"[A-Za-z]{4}"
+
+    def to_python(self, value):
+        return value
+
+    def to_url(self, value):
+        return value
+
+
+register_converter(CommitteeConverter, "committee")
+
+
 def sitting_detail(request, ps, number):
     return views.sitting_detail(request, ps[0], ps[1], number)
 
 
 def division_detail(request, ps, number):
     return views.division_detail(request, ps[0], ps[1], number)
+
+
+def meeting_detail(request, acronym, ps, number):
+    return committee_views.meeting_detail(request, acronym, ps[0], ps[1], number)
 
 
 def bill_detail(request, ps, code):
@@ -58,6 +77,24 @@ urlpatterns = [
     path("votes/<session:ps>/<int:number>/", division_detail, name="division_detail"),
     path("bills/", views.bills_view, name="bills"),
     path("bills/<session:ps>/<billcode:code>/", bill_detail, name="bill_detail"),
+    path("committees/", committee_views.committees_view, name="committees"),
+    path("committees/search/", committee_views.committee_search, name="committee_search"),
+    path("committees/witnesses/", committee_views.witnesses_view, name="witnesses"),
+    path(
+        "committees/witnesses/<slug:slug>/",
+        committee_views.witness_detail,
+        name="witness_detail",
+    ),
+    path(
+        "committees/<committee:acronym>/",
+        committee_views.committee_detail,
+        name="committee_detail",
+    ),
+    path(
+        "committees/<committee:acronym>/<session:ps>/<int:number>/",
+        meeting_detail,
+        name="meeting_detail",
+    ),
     path("trends/", views.trends_view, name="trends"),
     path("language/", views.language_view, name="language"),
     path("topics/", views.topics_view, name="topics"),

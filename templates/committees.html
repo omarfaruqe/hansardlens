@@ -1,0 +1,31 @@
+{% extends "base.html" %}{% load i18n humanize hansard %}
+{% block title %}{% translate "Committees" %} – HansardLens{% endblock %}
+{% block content %}
+<h1>{% translate "Committees" %}</h1>
+<p class="lede">{% translate "Committees study bills, spending and issues in detail, and hear from ministers, officials and outside experts. These are the transcripts (evidence) of their public meetings, in English and French." %}</p>
+<p class="small"><a href="{% url 'committee_search' %}">{% translate "Search committee transcripts" %}</a> · <a href="{% url 'witnesses' %}">{% blocktranslate with n=witnesses_total|intcomma %}All {{ n }} witnesses{% endblocktranslate %}</a></p>
+
+{% if committees %}
+  <div class="table-wide">
+    <table class="data-table vote-table">
+      <thead><tr><th class="text">{% translate "Committee" %}</th><th>{% translate "Public meetings" %}</th><th>{% translate "Witnesses" %}</th><th>{% translate "From" %}</th><th>{% translate "To" %}</th></tr></thead>
+      <tbody>
+        {% for committee in committees %}
+          <tr>
+            <td class="text question"><a href="{{ committee.get_absolute_url }}?text={{ lang }}">{% include "_committee_name.html" %}</a> <span class="muted small">{{ committee.acronym }}</span></td>
+            <td>{{ committee.meetings_n|intcomma }}</td>
+            <td>{{ committee.witnesses_n|intcomma }}</td>
+            <td>{{ committee.first|ldate:"short" }}</td>
+            <td>{{ committee.last|ldate:"short" }}</td>
+          </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+{% else %}
+  <div class="notice"><p>{% translate "No committee meetings are loaded yet. Run the load_committees command." %}</p></div>
+{% endif %}
+
+<h2>{% translate "About committee evidence" %}</h2>
+<p class="method">{% translate "Only public meetings have a transcript; meetings held in camera (in private) do not. Witnesses are listed with the title and organisation printed in the transcript at the time. HansardLens loads a selection of committees; the House of Commons website has all of them." %}</p>
+{% endblock %}

@@ -1,0 +1,55 @@
+{% extends "base.html" %}{% load i18n humanize hansard %}
+{% block title %}{% translate "Witnesses" %} – HansardLens{% endblock %}
+{% block content %}
+<p class="small"><a href="{% url 'committees' %}">{% translate "Committees" %}</a></p>
+<h1>{% translate "Witnesses" %}</h1>
+<p class="lede">{% translate "People invited to give evidence to the loaded committees: officials, experts, organisations and individuals." %}</p>
+
+<form method="get" class="filter-row member-filters" role="search">
+  <label>{% translate "Name, title or organisation" %}
+    <input type="search" name="q" value="{{ q }}" placeholder="{% translate 'e.g. Auditor General, Bank of Canada' %}">
+  </label>
+  <label>{% translate "Committee" %}
+    <select name="committee">
+      <option value="">{% translate "All committees" %}</option>
+      {% for c in committees %}<option value="{{ c.acronym }}" {% if committee == c.acronym %}selected{% endif %}>{{ c.acronym }}</option>{% endfor %}
+    </select>
+  </label>
+  <input type="hidden" name="sort" value="{{ sort }}">
+  <button class="button" type="submit">{% translate "Show" %}</button>
+</form>
+
+<p class="result-count" aria-live="polite">{% blocktranslate count counter=total with n=total|intcomma %}{{ n }} witness{% plural %}{{ n }} witnesses{% endblocktranslate %}</p>
+<div class="sort-links">
+  <span>{% translate "Sort by" %}</span>
+  {% if sort == "recent" %}<strong aria-current="true">{% translate "Most recent" %}</strong>{% else %}<a href="?{% if querystring %}{{ querystring }}&amp;{% endif %}sort=recent">{% translate "Most recent" %}</a>{% endif %}
+  {% if sort == "meetings" %}<strong aria-current="true">{% translate "Meetings" %}</strong>{% else %}<a href="?{% if querystring %}{{ querystring }}&amp;{% endif %}sort=meetings">{% translate "Meetings" %}</a>{% endif %}
+  {% if sort == "name" %}<strong aria-current="true">{% translate "Name" %}</strong>{% else %}<a href="?{% if querystring %}{{ querystring }}&amp;{% endif %}sort=name">{% translate "Name" %}</a>{% endif %}
+</div>
+{% if page.object_list %}
+  <div class="table-wide">
+    <table class="data-table member-table">
+      <thead><tr><th class="text">{% translate "Name" %}</th><th class="text riding">{% translate "Title and organisation" %}</th><th>{% translate "Meetings" %}</th><th>{% translate "Last heard" %}</th></tr></thead>
+      <tbody>
+        {% for w in page.object_list %}{% field w "title" lang as title %}{% field w "affiliation" lang as aff %}
+          <tr>
+            <td><a href="{{ w.get_absolute_url }}?text={{ lang }}">{{ w.name }}</a></td>
+            <td class="text riding" lang="{{ lang }}">{{ title }}{% if title and aff %}, {% endif %}{{ aff }}{% if w.as_individual %}{% if title or aff %}, {% endif %}{% translate "as an individual" %}{% endif %}</td>
+            <td>{{ w.meetings_n }}</td>
+            <td>{{ w.latest_date|ldate:"short" }}</td>
+          </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+  {% if page.has_other_pages %}
+    <nav class="pager" aria-label="{% translate 'Pages' %}">
+      {% if page.has_previous %}<a href="?{% if querystring %}{{ querystring }}&amp;{% endif %}page={{ page.previous_page_number }}">{% translate "Previous" %}</a>{% endif %}
+      <span class="muted">{% blocktranslate with n=page.number of=page.paginator.num_pages %}Page {{ n }} of {{ of }}{% endblocktranslate %}</span>
+      {% if page.has_next %}<a href="?{% if querystring %}{{ querystring }}&amp;{% endif %}page={{ page.next_page_number }}">{% translate "Next" %}</a>{% endif %}
+    </nav>
+  {% endif %}
+{% else %}
+  <div class="notice"><p>{% translate "No one matches these filters." %}</p></div>
+{% endif %}
+{% endblock %}

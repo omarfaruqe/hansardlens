@@ -1,0 +1,28 @@
+{% extends "base.html" %}{% load i18n humanize hansard %}
+{% block title %}{{ witness.name }} – {% translate "Witnesses" %} – HansardLens{% endblock %}
+{% block content %}{% field witness "title" lang as title %}{% field witness "affiliation" lang as aff %}
+<p class="small"><a href="{% url 'witnesses' %}">{% translate "All witnesses" %}</a></p>
+<h1>{{ witness.name }}</h1>
+<p class="lede" lang="{{ lang }}">{{ title }}{% if title and aff %}, {% endif %}{{ aff }}{% if witness.as_individual %}{% if title or aff %}, {% endif %}{% translate "as an individual" %}{% endif %}</p>
+{% if titles|length > 1 %}
+  <p class="small muted">{% translate "Also listed as:" %} <span lang="{{ lang }}">{% for t in titles|slice:"1:" %}{{ t }}{% if not forloop.last %}; {% endif %}{% endfor %}</span></p>
+{% endif %}
+
+<h2>{% blocktranslate count counter=appearances|length %}Heard at {{ counter }} meeting{% plural %}Heard at {{ counter }} meetings{% endblocktranslate %}</h2>
+<div class="table-wide">
+  <table class="data-table vote-table">
+    <thead><tr><th>{% translate "Date" %}</th><th class="text">{% translate "Committee" %}</th><th>{% translate "Meeting" %}</th><th>{% translate "Interventions" %}</th></tr></thead>
+    <tbody>
+      {% for m in appearances %}{% with committee=m.committee %}
+        <tr>
+          <td><a href="{{ m.get_absolute_url }}?text={{ lang }}#ci-{{ m.first }}">{{ m.date|ldate:"short" }}</a></td>
+          <td class="text question">{% include "_committee_name.html" %}</td>
+          <td>{{ m.number }}</td>
+          <td>{{ m.n }}</td>
+        </tr>
+      {% endwith %}{% endfor %}
+    </tbody>
+  </table>
+</div>
+<p class="small"><a href="{% url 'committee_search' %}?q=%22{{ witness.name|urlencode }}%22">{% translate "Search the transcripts for this name" %}</a></p>
+{% endblock %}
