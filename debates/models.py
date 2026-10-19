@@ -447,3 +447,175 @@ class Bill(models.Model):
     @property
     def legisinfo_url_fr(self) -> str:
         return self.legisinfo_url("fr")
+
+
+# ------------------------------------------------------------------------------------
+# Committees
+# ------------------------------------------------------------------------------------
+
+
+class Committee(models.Model):
+    acronym = models.CharField(max_length=8, unique=True)  # "FINA"
+    name_en = models.CharField(max_length=200, blank=True)
+    name_fr = models.CharField(max_length=200, blank=True)
+
+    class Meta:
+        ordering = ["acronym"]
+
+    def __str__(self):
+        return self.acronym
+
+    def get_absolute_url(self):
+        from django.urls import reverse
+
+        return reverse("committee_detail", args=[self.acronym])
+
+
+class Meeting(models.Model):
+    """One public committee meeting with published evidence (transcript)."""
+
+    committee = models.ForeignKey(Committee, on_delete=models.CASCADE, related_name="meetings")
+    parliament = models.PositiveSmallIntegerField()
+    session = models.PositiveSmallIntegerField()
+    number = models.PositiveIntegerField()
+    date = models.DateField(db_index=True)
+    house_doc_id = models.CharField(max_length=20, blank=True)
+    chair = models.CharField(max_length=160, blank=True)
+    source_url = models.URLField(max_length=300, blank=True)
+    checksum_en = models.CharField(max_length=64, blank=True)
+    checksum_fr = models.CharField(max_length=64, blank=True)
+    issues = models.JSONField(default=list, blank=True)
+    loaded_at = models.DateTimeField(auto_now=True)
+
+    class Meta:
+        ordering = ["date", "number"]
+        constraints = [
+            models.UniqueConstraint(
+                fields=["committee", "parliament", "session", "number"],
+                name="unique_meeting_number",
+            )
+        ]
+
+    def __str__(self):
+        return f"{self.committee} {self.parliament}-{self.session} No. {self.number}"
+
+    def get_absolute_url(self):
+        from django.urls import reverse
+
+        return reverse(
+            "meeting_detail",
+            args=[self.committee.acronym, (self.parliament, self.session), self.number],
+        )
+
+    def evidence_url(self, lang: str = "en") -> str:
+        lang = "fr" if lang == "fr" else "en"
+        return (
+            f"https://www.ourcommons.ca/DocumentViewer/{lang}/{self.parliament}-{self.session}/"
+            f"{self.committee.acronym}/meeting-{self.number}/evidence"
+        )
+
+    @property
+    def evidence_url_en(self) -> str:
+        return self.evidence_url("en")
+
+    @property
+    def evidence_url_fr(self) -> str:
+        return self.evidence_url("fr")
+
+
+class Witness(models.Model):
+    """Someone invited to give evidence, identified by the House's person id."""
+
+    house_db_id = models.CharField(max_length=20, unique=True)
+    name = models.CharField(max_length=200)
+    slug = models.SlugField(max_length=220, unique=True)
+    title_en = models.CharField(max_length=300, blank=True)  # latest, as printed
+    title_fr = models.CharField(max_length=300, blank=True)
+    affiliation_en = models.CharField(max_length=400, blank=True)
+    affiliation_fr = models.CharField(max_length=400, blank=True)
+    as_individual = models.BooleanField(default=False)
+    latest_date = models.DateField(null=True, blank=True)
+
+    class Meta:
+        ordering = ["name"]
+
+    def __str__(self):
+        return self.name
+
+    def save(self, *args, **kwargs):
+        if not self.slug:
+            others = Witness.objects.exclude(pk=self.pk)
+            self.slug = person_slug(self.name, lambda s: others.filter(slug=s).exists())
+        super().save(*args, **kwargs)
+
+    def get_absolute_url(self):
+        from django.urls import reverse
+
+        return reverse("witness_detail", args=[self.slug])
+
+
+class MeetingIntervention(models.Model):
+    class Role(models.TextChoices):
+        MEMBER = "member"
+        CHAIR = "chair"
+        MINISTER = "minister"
+        WITNESS = "witness"
+        CLERK = "clerk"
+        OTHER = "other"
+
+    meeting = models.ForeignKey(Meeting, on_delete=models.CASCADE, related_name="interventions")
+    sequence = models.PositiveIntegerField()
+    house_id = models.CharField(max_length=20, blank=True)
+    role = models.CharField(max_length=10, choices=Role.choices, db_index=True)
+    person = models.ForeignKey(
+        Person,
+        null=True,
+        blank=True,
+        on_delete=models.SET_NULL,
+        related_name="committee_interventions",
+    )
+    witness = models.ForeignKey(
+        Witness, null=True, blank=True, on_delete=models.SET_NULL, related_name="interventions"
+    )
+    name = models.CharField(max_length=200, blank=True)  # display name
+    detail_en = models.CharField(max_length=400, blank=True)  # riding, portfolio or title
+    detail_fr = models.CharField(max_length=400, blank=True)
+    party = models.CharField(max_length=20, blank=True)
+    time = models.TimeField(null=True, blank=True)
+    words_en = models.PositiveIntegerField(default=0)
+
+    class Meta:
+        ordering = ["meeting", "sequence"]
+        constraints = [
+            models.UniqueConstraint(
+                fields=["meeting", "sequence"], name="unique_meeting_intervention_seq"
+            )
+        ]
+
+
+class MeetingParagraph(models.Model):
+    intervention = models.ForeignKey(
+        MeetingIntervention, on_delete=models.CASCADE, related_name="paragraphs"
+    )
+    sequence = models.PositiveIntegerField()
+    kind = models.CharField(max_length=12)  # speech | procedural
+    floor_language = models.CharField(max_length=4, blank=True)
+    text_en = models.TextField(blank=True)
+    text_fr = models.TextField(blank=True)
+    search_en = models.GeneratedField(
+        expression=SearchVector("text_en", config=SEARCH_CONFIG["en"]),
+        output_field=SearchVectorField(),
+        db_persist=True,
+    )
+    search_fr = models.GeneratedField(
+        expression=SearchVector("text_fr", config=SEARCH_CONFIG["fr"]),
+        output_field=SearchVectorField(),
+        db_persist=True,
+    )
+
+    class Meta:
+        ordering = ["intervention", "sequence"]
+        indexes = [
+            GinIndex(fields=["search_en"], name="meetpara_search_en_gin"),
+            GinIndex(fields=["search_fr"], name="meetpara_search_fr_gin"),
+        ]

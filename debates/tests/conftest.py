@@ -34,3 +34,9 @@ def bill(db):
     iv.save()
     build_bills()
     return Bill.objects.get()
+
+
+@pytest.fixture(autouse=True)
+def no_committees_by_default(settings):
+    """Tests never reach ourcommons.ca: committee loading is off unless a test sets it."""
+    settings.HANSARD_COMMITTEES = []

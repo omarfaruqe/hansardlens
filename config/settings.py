@@ -198,3 +198,10 @@ SPECTACULAR_SETTINGS = {
 HANSARD_USER_AGENT = os.environ.get(
     "HANSARD_USER_AGENT", f"HansardLens/{__version__} (open-source portfolio project)"
 )
+
+# Committees whose public meetings are loaded (acronyms as used by the House).
+HANSARD_COMMITTEES = [
+    c.strip().upper()
+    for c in os.environ.get("HANSARD_COMMITTEES", "FINA,OGGO,ETHI").split(",")
+    if c.strip()
+]

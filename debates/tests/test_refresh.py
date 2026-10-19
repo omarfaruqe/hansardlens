@@ -91,3 +91,20 @@ def test_failed_load_exits_with_error(house, monkeypatch):
     monkeypatch.setattr("debates.loader.fetch", broken)
     with pytest.raises(CommandError):
         call_command("refresh_data", sleep=0, skip_analysis=True)
+
+
+def test_refresh_loads_committee_meetings_of_the_current_session(house, monkeypatch, settings):
+    settings.HANSARD_COMMITTEES = ["FINA"]
+    house({(44, 1): [1]})
+    seen = []
+    real = call_command
+
+    def spy(name, *args, **kwargs):
+        if name == "load_committees":
+            seen.append((kwargs["parliament"], kwargs["session"]))
+            return None
+        return real(name, *args, **kwargs)
+
+    monkeypatch.setattr("debates.management.commands.refresh_data.call_command", spy)
+    call_command("refresh_data", sleep=0, skip_analysis=True)
+    assert seen == [(44, 1)]

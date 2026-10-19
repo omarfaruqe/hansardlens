@@ -1,0 +1,74 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- Invented committee meeting. It copies the STRUCTURE of real House of Commons
+     committee evidence (FINA 44-1 No. 100, OGGO 44-1 No. 50) but every name,
+     organisation and sentence is made up. -->
+<Hansard xml:lang="EN" id="990100">
+  <DocumentTitle><DocumentName>EVIDENCE</DocumentName></DocumentTitle>
+  <ExtractedInformation>
+    <ExtractedItem Name="InstitutionDebate">Standing Committee on Example Affairs</ExtractedItem>
+    <ExtractedItem Name="Date">Monday, March 6, 2023</ExtractedItem>
+    <ExtractedItem Name="MetaNumberNumber">12</ExtractedItem>
+    <ExtractedItem Name="MetaDateNumDay">06</ExtractedItem>
+    <ExtractedItem Name="MetaDateNumMonth">03</ExtractedItem>
+    <ExtractedItem Name="MetaDateNumYear">2023</ExtractedItem>
+    <ExtractedItem Name="InstitutionDebateFr">Comité permanent des affaires exemples</ExtractedItem>
+    <ExtractedItem Name="InstitutionDebateEn">Standing Committee on Example Affairs</ExtractedItem>
+    <ExtractedItem Name="Acronyme">EXMP</ExtractedItem>
+    <ExtractedItem Name="SpeakerTitle">Chair</ExtractedItem>
+    <ExtractedItem Name="SpeakerName">Mr. Tom Reed</ExtractedItem>
+    <ExtractedItem Name="SessionNumber">1</ExtractedItem>
+    <ExtractedItem Name="ParliamentNumber">44</ExtractedItem>
+    <ExtractedItem Name="InCameraNote" />
+  </ExtractedInformation>
+  <HansardBody>
+    <OrderOfBusiness>
+      <CatchLine />
+      <SubjectOfBusiness>
+        <SubjectOfBusinessContent>
+          <Timestamp Hr="11" Mn="05">(1105)</Timestamp>
+          <FloorLanguage language="EN">[<I>English</I>]</FloorLanguage>
+          <Intervention Type="Interjection" id="5001">
+            <PersonSpeaking><Affiliation DbId="7001" Type="35">The Chair (Mr. Tom Reed (Westvale, Lib.))</Affiliation>: </PersonSpeaking>
+            <Content><ParaText id="6001">I call this meeting to order.</ParaText></Content>
+          </Intervention>
+          <Intervention Type="Interjection" id="5002">
+            <PersonSpeaking><Affiliation DbId="7002" Type="28">Dr. Lena Park (Chief Economist, Example Bank of Canada)</Affiliation>: </PersonSpeaking>
+            <Content><ParaText id="6002">Thank you for inviting me.</ParaText></Content>
+          </Intervention>
+          <Intervention Type="Interjection" id="5003">
+            <PersonSpeaking><Affiliation DbId="7003" Type="28">Mr. Sam Quill (Retired Teacher, As an Individual)</Affiliation>: </PersonSpeaking>
+            <Content>
+              <FloorLanguage language="FR">[<I>Translation</I>]</FloorLanguage>
+              <ParaText id="6003">I speak for myself.</ParaText>
+            </Content>
+          </Intervention>
+          <FloorLanguage language="EN">[<I>English</I>]</FloorLanguage>
+          <Intervention Type="" id="5004">
+            <PersonSpeaking><Affiliation DbId="7004" Type="47">Ms. Jane Alder (Riverbend—North Shore, CPC)</Affiliation>: </PersonSpeaking>
+            <Content><ParaText id="6004">Dr. Park, what about interest rates?</ParaText></Content>
+          </Intervention>
+          <Intervention Type="Interjection" id="5005">
+            <PersonSpeaking><Affiliation DbId="7002" Type="28">Dr. Lena Park</Affiliation>: </PersonSpeaking>
+            <Content><ParaText id="6005">Interest rates are high.</ParaText></Content>
+          </Intervention>
+          <Intervention Type="Interjection" id="5006">
+            <PersonSpeaking><Affiliation DbId="7001" Type="35">The Chair</Affiliation>: </PersonSpeaking>
+            <Content><ParaText id="6006">Minister, welcome.</ParaText></Content>
+          </Intervention>
+          <Intervention Type="Interjection" id="5007">
+            <PersonSpeaking><Affiliation DbId="7005" Type="4">Hon. Sam Okafor (Minister of Example Affairs)</Affiliation>: </PersonSpeaking>
+            <Content><ParaText id="6007">Thank you, Mr. Chair.</ParaText></Content>
+          </Intervention>
+          <Intervention Type="" id="5008">
+            <PersonSpeaking><Affiliation DbId="7004" Type="47">Ms. Jane Alder</Affiliation>: </PersonSpeaking>
+            <Content><ParaText id="6008">Minister, a question.</ParaText></Content>
+          </Intervention>
+          <Intervention Type="Interjection" id="5009">
+            <PersonSpeaking><Affiliation DbId="7006" Type="27">The Clerk of the Committee (Ms. Ada Byrne)</Affiliation>: </PersonSpeaking>
+            <Content><ParaText id="6009">The meeting is adjourned.</ParaText></Content>
+          </Intervention>
+        </SubjectOfBusinessContent>
+      </SubjectOfBusiness>
+    </OrderOfBusiness>
+  </HansardBody>
+</Hansard>

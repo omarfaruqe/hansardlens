@@ -6,7 +6,8 @@
 
 Continues the most recent session. When it has nothing new, it checks whether a new
 session (prorogation) or a new Parliament (election) has started, and follows it.
-Bills are relinked to their debates and votes whenever something new arrived.
+Bills are relinked to their debates and votes whenever something new arrived, and new
+public meetings of the committees in HANSARD_COMMITTEES are loaded.
 The topic model is refit when --topics is given or when it is more than 7 days old.
 Exits with an error status if any sitting failed to load, so a scheduler can alert.
 """
@@ -15,6 +16,7 @@ import datetime as dt
 import io
 
 import requests
+from django.conf import settings
 from django.core.management import call_command
 from django.core.management.base import BaseCommand, CommandError
 from django.db.models import Max
@@ -93,6 +95,21 @@ class Command(BaseCommand):
         self.stdout.write(
             f"{new} new sitting(s); latest is {Sitting.objects.aggregate(d=Max('date'))['d']}"
         )
+
+        # Committee meetings of the current session (configured in HANSARD_COMMITTEES).
+        if settings.HANSARD_COMMITTEES and Sitting.objects.exists():
+            p, s = (
+                Sitting.objects.order_by("-parliament", "-session")
+                .values_list("parliament", "session")
+                .first()
+            )
+            out = io.StringIO()
+            call_command(
+                "load_committees", parliament=p, session=s, sleep=o["sleep"], stdout=out, stderr=out
+            )
+            for line in out.getvalue().splitlines():
+                if "failed" in line or "Done" in line:
+                    self.stdout.write(f"  committees: {line.strip()}")
 
         if not o["skip_analysis"] and Sitting.objects.exists():
             if new:
