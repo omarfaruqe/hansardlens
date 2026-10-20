@@ -13,9 +13,24 @@ groups, professional bodies), which is what most of them are.
 from __future__ import annotations
 
 import re
+from functools import lru_cache
 
 from django.utils.translation import gettext_lazy as _
 
+# Short column headings for tables with every kind.
+SHORT = {
+    "federal": _("Federal"),
+    "officer": _("Oversight"),
+    "government": _("Other gov."),
+    "indigenous": _("Indigenous"),
+    "business": _("Business"),
+    "labour": _("Unions"),
+    "research": _("Academic"),
+    "civil": _("Civil society"),
+    "international": _("Intl."),
+    "individual": _("Individuals"),
+    "unknown": _("Not stated"),
+}
 KINDS = {
     "federal": _("Federal departments and agencies"),
     "officer": _("Officers of Parliament and oversight offices"),
@@ -66,6 +81,8 @@ RULES: list[tuple[str, re.Pattern]] = [
             r"credit union|union des producteurs|microdistilleries",
             r"institute of steel construction|animal health institute|appraisal institute",
             r"institut de développement urbain",
+            r"association of canadian port authorities|convenience stores|aéroports",
+            r"airport authority|ici t[eé]l[eé]vision",
         ),
     ),
     (
@@ -73,6 +90,8 @@ RULES: list[tuple[str, re.Pattern]] = [
         _rx(
             r"union des consommateurs|civil liberties union|relations institute",
             r"food bank|accountability group|screen fund|action bénévole",
+            r"hospital\b|hôpital|health care group|health centre|health network",
+            r"(?:medical|health|community) clinic",
         ),
     ),
     (
@@ -135,6 +154,7 @@ RULES: list[tuple[str, re.Pattern]] = [
             r"police service\b(?!s)|transit commission|sturgeon county",
             r"association of rural municipalities|municipalities (?:newfoundland|of)",
             r"municipalité|\bmrc\b|metro vancouver|translink|police services board",
+            r"\bmunicipalities\b",
             r"commissaire à l.éthique|commission d.accès à l.information",
             rf"registrar of lobbyists for (?:{PROVINCES})",
             r"ministère des finances du québec|finance québec",
@@ -181,7 +201,7 @@ RULES: list[tuple[str, re.Pattern]] = [
             r"correctional service of canada|transportation safety board|"
             r"transportation accident investigation|governor general|"
             r"canadian institutes of health research|sustainable development technology canada|"
-            r"port authority",
+            r"\bport authorit",
             r"veterans ombud|\bombudsman\b(?!.*(?:ontario|quebec|provincial))",
         ),
     ),
@@ -302,3 +322,8 @@ def classify_parts(title: str, organisation: str, as_individual: bool = False) -
         if rx.search(organisation):
             return kind
     return "civil"
+
+
+@lru_cache(maxsize=50_000)
+def classify_cached(detail: str, as_individual: bool = False) -> str:
+    return classify(detail, as_individual)

@@ -68,6 +68,13 @@ QUIET = {"log": lambda *_: None}
         ("Executive Director, Democracy Watch", "civil"),
         ("Executive Director, Daily Bread Food Bank", "civil"),
         ("Economist, Organisation for Economic Co-operation and Development", "international"),
+        ("Vice-President, Environment, Vancouver Fraser Port Authority", "federal"),
+        ("Manager, Government Relations, Vancouver Airport Authority", "business"),
+        ("Chair, Canadian Radio-television and Telecommunications Commission", "federal"),
+        ("National President, Alliance of Canadian Cinema, Television and Radio Artists", "labour"),
+        ("Social Worker, Women's Mental Health Program, Royal Ottawa Health Care Group", "civil"),
+        ("President, Oliver and Bonacini Hospitality", "business"),
+        ("President, Alberta Municipalities", "government"),
         ("Professor, Carleton University, As an Individual", "individual"),
         ("Tax Expert, As individual", "individual"),
         ("President", "unknown"),
@@ -200,8 +207,9 @@ def test_witness_kinds(meeting):
         ],
     }
     table = committee_analysis.witness_kinds_by_committee()
-    assert table["columns"] == ["EXMP", ""] and table["totals"] == [2, 2]
-    assert [r["kind"] for r in table["rows"]] == ["federal", "individual"]
+    assert table["kinds"] == ["federal", "individual"]
+    assert table["rows"] == [{"acronym": "EXMP", "total": 2, "cells": [50.0, 50.0]}]
+    assert table["all"] == {"acronym": "", "total": 2, "cells": [50.0, 50.0]}
     assert committee_analysis.witness_kinds(meeting.committee, (45, 1))["total"] == 0
 
 

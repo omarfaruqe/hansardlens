@@ -188,27 +188,27 @@ def member_committee_work(person) -> dict:
 
 def _appearances(committee=None, session: tuple[int, int] | None = None):
     """(committee acronym, kind) for each witness at each meeting, counted once."""
-    from .witness_kinds import classify
+    from .witness_kinds import classify_cached
 
     qs = MeetingIntervention.objects.filter(witness__isnull=False)
     if committee is not None:
         qs = qs.filter(meeting__committee=committee)
     if session:
         qs = qs.filter(meeting__parliament=session[0], meeting__session=session[1])
-    seen = set()
-    for meeting_id, witness_id, acronym, detail, individual in qs.order_by(
-        "meeting_id", "witness_id", "sequence"
-    ).values_list(
+    # One row per witness, meeting and label (a label rarely changes within a meeting).
+    rows = qs.values_list(
         "meeting_id",
         "witness_id",
         "meeting__committee__acronym",
         "detail_en",
         "witness__as_individual",
-    ):
+    ).distinct()
+    seen = set()
+    for meeting_id, witness_id, acronym, detail, individual in rows.iterator(chunk_size=5000):
         if (meeting_id, witness_id) in seen:
             continue
         seen.add((meeting_id, witness_id))
-        yield acronym, classify(detail, individual)
+        yield acronym, classify_cached(detail, individual)
 
 
 def _shares(counts: dict[str, int]) -> dict:
@@ -239,28 +239,30 @@ def witness_kinds(committee=None, session: tuple[int, int] | None = None) -> dic
 
 
 def witness_kinds_by_committee() -> dict:
-    """Shares of witness appearances by kind for every committee, plus all of them."""
+    """Shares of witness appearances by kind: one row per committee, then all of them.
+    Columns are the kinds that occur."""
     from .witness_kinds import ORDER
 
     def compute():
         counts: dict[str, dict[str, int]] = {}
         for acronym, kind in _appearances():
-            for col in (acronym, ""):
-                counts.setdefault(col, {}).setdefault(kind, 0)
-                counts[col][kind] += 1
-        columns = sorted(c for c in counts if c) + [""]
-        totals = {c: sum(counts[c].values()) for c in columns}
-        rows = [
-            {
-                "kind": k,
-                "cells": [
-                    round(100 * counts[c].get(k, 0) / totals[c], 1) if totals[c] else 0
-                    for c in columns
-                ],
+            for row in (acronym, ""):
+                counts.setdefault(row, {}).setdefault(kind, 0)
+                counts[row][kind] += 1
+        kinds = [k for k in ORDER if counts.get("", {}).get(k)]
+
+        def row(acronym):
+            total = sum(counts[acronym].values())
+            return {
+                "acronym": acronym,
+                "total": total,
+                "cells": [round(100 * counts[acronym].get(k, 0) / total, 1) for k in kinds],
             }
-            for k in ORDER
-            if counts.get("", {}).get(k)
-        ]
-        return {"columns": columns, "totals": [totals[c] for c in columns], "rows": rows}
+
+        return {
+            "kinds": kinds,
+            "rows": [row(a) for a in sorted(a for a in counts if a)],
+            "all": row("") if counts else None,
+        }
 
     return _cached("witness_kinds_all", {}, compute)

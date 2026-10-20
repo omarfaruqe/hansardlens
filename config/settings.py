@@ -204,9 +204,14 @@ HANSARD_USER_AGENT = os.environ.get(
     "HANSARD_USER_AGENT", f"HansardLens/{__version__} (open-source portfolio project)"
 )
 
-# Committees whose public meetings are loaded (acronyms as used by the House).
+# Committees whose public meetings are loaded (acronyms as used by the House): by
+# default the standing committees of the House.
+STANDING_COMMITTEES = (
+    "ACVA,AGRI,CHPC,CIIT,CIMM,ENVI,ETHI,FAAE,FEWO,FINA,FOPO,HESA,HUMA,INAN,INDU,JUST,LANG,"
+    "NDDN,OGGO,PACP,PROC,RNNR,SECU,SRSR,TRAN"
+)
 HANSARD_COMMITTEES = [
     c.strip().upper()
-    for c in os.environ.get("HANSARD_COMMITTEES", "FINA,OGGO,ETHI").split(",")
+    for c in os.environ.get("HANSARD_COMMITTEES", STANDING_COMMITTEES).split(",")
     if c.strip()
 ]

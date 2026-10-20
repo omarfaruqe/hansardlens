@@ -6,10 +6,14 @@
     python manage.py load_committees --committee ETHI --parliament 44 --session 1 --from 1 --to 20
     python manage.py load_committees --no-cache              # do not keep the XML
 
-Committees default to HANSARD_COMMITTEES (FINA, OGGO, ETHI). Without --from, each
-committee continues after its last loaded meeting. Meetings held in camera have no
-transcript and are skipped; the search for more stops after --max-misses meetings in a
-row without one.
+Committees default to HANSARD_COMMITTEES (the House's standing committees). Without
+--from, each committee continues after its last loaded meeting.
+
+The House site answers "not found" both for a meeting held in camera and for a number
+not used yet, and committees drafting a report often meet in camera many times in a
+row, so the search stops only after --max-misses (30) numbers in a row without a
+meeting. A meeting whose page exists but whose transcript is not published yet is
+skipped without counting (up to --max-in-camera in a row).
 """
 
 import time
@@ -32,7 +36,8 @@ class Command(BaseCommand):
         parser.add_argument("--session", type=int)
         parser.add_argument("--from", dest="start", type=int)
         parser.add_argument("--to", dest="end", type=int)
-        parser.add_argument("--max-misses", type=int, default=15)
+        parser.add_argument("--max-misses", type=int, default=30)
+        parser.add_argument("--max-in-camera", type=int, default=60)
         parser.add_argument("--sleep", type=float, default=1.0)
         parser.add_argument("--no-cache", action="store_true", help="Do not keep the XML.")
 
@@ -64,16 +69,20 @@ class Command(BaseCommand):
             ).aggregate(m=Max("number"))["m"]
             start = (last or 0) + 1
         self.stdout.write(f"{acronym} {parliament}-{session}: from meeting {start}")
-        loaded = errors = misses = 0
+        loaded = errors = misses = in_camera = 0
         number = start
         while o["end"] is None or number <= o["end"]:
             cached = raw_path(parliament, session, acronym, number, "en").exists()
             try:
                 result = load_meeting(parliament, session, acronym, number, keep=not o["no_cache"])
-            except (MeetingNotFound, NoEvidence) as exc:
+            except NoEvidence:
+                in_camera += 1
+                self.stdout.write(f"  {number:03d}: no transcript (in camera?)")
+                if o["end"] is None and in_camera >= o["max_in_camera"]:
+                    break
+            except MeetingNotFound:
                 misses += 1
-                why = "no transcript (in camera?)" if isinstance(exc, NoEvidence) else "no meeting"
-                self.stdout.write(f"  {number:03d}: {why}")
+                self.stdout.write(f"  {number:03d}: no meeting")
                 if o["end"] is None and misses >= o["max_misses"]:
                     break
             except (requests.RequestException, ValueError) as exc:
@@ -83,7 +92,7 @@ class Command(BaseCommand):
                 if o["end"] is None and misses >= o["max_misses"]:
                     break
             else:
-                misses = 0
+                misses = in_camera = 0
                 loaded += 1
                 m = result.meeting
                 self.stdout.write(

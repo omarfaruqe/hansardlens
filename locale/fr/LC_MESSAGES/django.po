@@ -1534,8 +1534,8 @@ msgid "Witness appearances"
 msgstr "Comparutions de témoins"
 
 #: templates/committees.html
-msgid "A witness heard at a meeting counts once for that meeting. Kinds are read from the title and organisation printed with each witness's name, with rules checked by hand against every label; see the methods note."
-msgstr "Un témoin entendu à une réunion compte une fois pour cette réunion. Le type est déduit du titre et de l'organisation imprimés avec le nom de chaque témoin, selon des règles vérifiées à la main sur chaque libellé; voir la note méthodologique."
+msgid "A witness heard at a meeting counts once for that meeting. Kinds are read from the title and organisation printed with each witness's name, with rules checked by hand against real labels; see the methods note. A dash means none."
+msgstr "Un témoin entendu à une réunion compte une fois pour cette réunion. Le type est déduit du titre et de l'organisation imprimés avec le nom de chaque témoin, selon des règles vérifiées à la main sur des libellés réels; voir la note méthodologique. Un tiret signifie aucun."
 
 #: templates/meeting_detail.html
 msgid "Main topics:"
@@ -1569,3 +1569,39 @@ msgstr "Type"
 #: templates/witnesses.html
 msgid "All kinds"
 msgstr "Tous les types"
+
+#: debates/witness_kinds.py
+msgid "Federal"
+msgstr "Fédéral"
+
+#: debates/witness_kinds.py
+msgid "Oversight"
+msgstr "Surveillance"
+
+#: debates/witness_kinds.py
+msgid "Other gov."
+msgstr "Autres gouv."
+
+#: debates/witness_kinds.py
+msgid "Indigenous"
+msgstr "Autochtones"
+
+#: debates/witness_kinds.py
+msgid "Business"
+msgstr "Entreprises"
+
+#: debates/witness_kinds.py
+msgid "Academic"
+msgstr "Universitaires"
+
+#: debates/witness_kinds.py
+msgid "Civil society"
+msgstr "Société civile"
+
+#: debates/witness_kinds.py
+msgid "Intl."
+msgstr "Intern."
+
+#: templates/committees.html
+msgid "Appearances"
+msgstr "Comparutions"

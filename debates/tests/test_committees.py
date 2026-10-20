@@ -197,3 +197,45 @@ def test_load_committees_command(site, tmp_path, capsys):
         "load_committees", committee=["EXMP"], parliament=44, session=1, max_misses=2, sleep=0
     )
     assert "EXMP 44-1: from meeting 13" in capsys.readouterr().out
+
+
+@pytest.mark.django_db
+def test_in_camera_meetings_do_not_end_the_search(monkeypatch, settings, tmp_path, capsys):
+    """Meetings 1-5 have a page but no transcript yet, 6 is public, then nothing: with
+    --max-misses 2 the search still reaches meeting 6, and stops after two numbers that
+    do not exist."""
+    settings.DATA_DIR = tmp_path
+    calls = []
+    pages = {page(n): f"<h1>Meeting {n}</h1> In camera" for n in range(1, 6)}
+    pages[page(6)] = '<a href="/Content/Committee/441/EXMP/Evidence/EV1/EXMPEV12-E.XML">XML</a>'
+    files = {XML + "-E.XML": EN, XML + "-F.XML": FR}
+    monkeypatch.setattr("debates.committees.fetch", fake_site(pages, files, calls))
+    call_command(
+        "load_committees",
+        committee=["EXMP"],
+        parliament=44,
+        session=1,
+        start=1,
+        max_misses=2,
+        sleep=0,
+        no_cache=True,
+    )
+    out = capsys.readouterr().out
+    assert "005: no transcript" in out and "Done: 1 meeting(s) loaded" in out
+    assert "008: no meeting" in out and "009" not in out
+    # but a very long run of meetings without transcripts does end it
+    Meeting.objects.all().delete()
+    call_command(
+        "load_committees",
+        committee=["EXMP"],
+        parliament=44,
+        session=1,
+        start=1,
+        max_misses=10,
+        max_in_camera=3,
+        sleep=0,
+        no_cache=True,
+    )
+    out = capsys.readouterr().out
+    assert "003: no transcript" in out and "004" not in out
+    assert "Done: 0 meeting(s) loaded" in out

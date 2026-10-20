@@ -31,16 +31,17 @@
   <div class="table-wide">
     <table class="data-table kinds-table">
       <caption class="sr-only">{% translate "Share of witness appearances by kind of organisation, for each committee" %}</caption>
-      <thead><tr><th class="text" scope="col">{% translate "Kind of witness" %}</th>{% for c in kinds.columns %}<th scope="col">{% if c %}<a href="{% url 'committee_detail' c %}">{{ c }}</a>{% else %}{% translate "All" %}{% endif %}</th>{% endfor %}</tr></thead>
+      <thead><tr><th class="text" scope="col">{% translate "Committee" %}</th>{% for k in kinds.kinds %}<th scope="col"><span aria-hidden="true">{{ k|kind_short }}</span><span class="sr-only">{{ k|kind_label }}</span></th>{% endfor %}<th scope="col">{% translate "Appearances" %}</th></tr></thead>
       <tbody>
         {% for row in kinds.rows %}
-          <tr><th class="text" scope="row">{{ row.kind|kind_label }}</th>{% for v in row.cells %}<td>{{ v }}%</td>{% endfor %}</tr>
+          <tr><th class="text" scope="row"><a href="{% url 'committee_detail' row.acronym %}">{{ row.acronym }}</a></th>{% for v in row.cells %}<td>{% if v %}{{ v }}%{% else %}–{% endif %}</td>{% endfor %}<td>{{ row.total|intcomma }}</td></tr>
         {% endfor %}
       </tbody>
-      <tfoot><tr><th class="text" scope="row">{% translate "Witness appearances" %}</th>{% for n in kinds.totals %}<td>{{ n|intcomma }}</td>{% endfor %}</tr></tfoot>
+      {% if kinds.all and kinds.rows|length > 1 %}<tfoot><tr><th class="text" scope="row">{% translate "All" %}</th>{% for v in kinds.all.cells %}<td>{% if v %}{{ v }}%{% else %}–{% endif %}</td>{% endfor %}<td>{{ kinds.all.total|intcomma }}</td></tr></tfoot>{% endif %}
     </table>
   </div>
-  <p class="small muted">{% translate "A witness heard at a meeting counts once for that meeting. Kinds are read from the title and organisation printed with each witness's name, with rules checked by hand against every label; see the methods note." %}</p>
+  <p class="small muted">{% for k in kinds.kinds %}<strong>{{ k|kind_short }}</strong>: {{ k|kind_label }}{% if not forloop.last %} · {% endif %}{% endfor %}.</p>
+  <p class="small muted">{% translate "A witness heard at a meeting counts once for that meeting. Kinds are read from the title and organisation printed with each witness's name, with rules checked by hand against real labels; see the methods note. A dash means none." %}</p>
 {% endif %}
 
 <h2>{% translate "About committee evidence" %}</h2>

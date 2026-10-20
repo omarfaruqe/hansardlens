@@ -320,3 +320,5 @@ h3 { font-size: 1.1rem; margin: 1.5rem 0 0.5rem; }
 .kinds-bars li { grid-template-columns: minmax(9rem, 18rem) 1fr 3.5rem; }
 .kinds-table th[scope="row"] { font-weight: 400; white-space: normal; }
 @media (max-width: 40rem) { .kinds-bars li { grid-template-columns: minmax(0, 1fr) 4.5rem 3.2rem; gap: 0.5rem; } }
+.kinds-table thead th { white-space: normal; vertical-align: bottom; font-size: 0.85rem; }
+.kinds-table tfoot th, .kinds-table tfoot td { font-weight: 600; border-top: 2px solid var(--rule); }
