@@ -52,7 +52,11 @@ sitting day). **API docs:** http://103.99.176.180/hansardlens/api/docs/
 - **Committees:** the public meetings of the finance (FINA), government operations
   (OGGO) and ethics (ETHI) committees in English and French, with the witnesses heard,
   their titles and organisations, a page for each witness, the committee work of each
-  member, and a search of what was said in committee.
+  member, and a search of what was said in committee. **Who is heard:** witness
+  appearances by kind (federal officials, oversight offices, business, unions,
+  academics, civil society, individuals and more), compared across committees; each
+  committee's main topics, measured with the House topics; and the members who spoke
+  most.
 - **Languages:** share of speech given in French, overall, by month, party and member,
   measured with one yardstick for both languages.
 - **Topics:** 30 topics from TF-IDF and NMF, with each topic's share over time and
@@ -141,9 +145,10 @@ schema at `/api/schema/`.
 | `GET /api/v1/votes/` | Recorded votes, newest first; filters `parliament`, `session`, `result`, `member` |
 | `GET /api/v1/votes/44-1/481/` | One vote with every member's vote, party and whether it differed from their party |
 | `GET /api/v1/committees/` | Loaded committees with their meeting counts and dates |
+| `GET /api/v1/committees/FINA/` | One committee: witness appearances by kind, main topics, members who spoke most; filter `session` |
 | `GET /api/v1/committees/FINA/meetings/` | One committee's public meetings, newest first, with the witnesses; filters `parliament`, `session` |
 | `GET /api/v1/committees/FINA/44-1/100/` | One meeting: every intervention with role, speaker and paragraphs in English and French |
-| `GET /api/v1/witnesses/` | Witnesses, most recently heard first; filters `q` (name, title or organisation), `committee` |
+| `GET /api/v1/witnesses/` | Witnesses, most recently heard first, with their kind; filters `q` (name, title or organisation), `committee`, `kind` |
 | `GET /api/v1/witnesses/{slug}/` | One witness and every meeting where they gave evidence |
 | `GET /api/v1/search/?q=…&text=en` | Paragraph search with highlighted snippets |
 | `GET /api/v1/trends/?term=a&term=b` | Mentions per 1,000 paragraphs by month |
@@ -172,7 +177,9 @@ earlier gets them once with `python manage.py load_divisions` (reads the cached 
 `data/raw`, downloading what is missing; speeches are left untouched). Bill pages are
 built with `python manage.py build_bills` (also run by `refresh_data`).
 
-Committee meetings of the current session are loaded by `refresh_data` too. The first
+Committee meetings of the current session are loaded by `refresh_data` too. Committee
+speeches get their topics when the topic model is fitted (`build_topics`, run weekly by
+`refresh_data`). The first
 load, for every session already in the database, is `python manage.py load_committees`;
 it carries on from the last meeting loaded, so it can be stopped and restarted. Use
 `--committee FINA --parliament 44 --session 1` to load one committee and session, and set
@@ -204,7 +211,7 @@ under a sub-path (`DJANGO_SCRIPT_NAME`) next to other apps on the same server: s
 ## Development
 
 ```bash
-docker compose run --rm web pytest -q            # 154 tests, against PostgreSQL
+docker compose run --rm web pytest -q            # 353 tests, against PostgreSQL
 docker compose run --rm web ruff check .
 docker compose run --rm web ruff format --check .
 ```

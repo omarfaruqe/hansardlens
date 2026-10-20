@@ -250,6 +250,35 @@ uses. Each term is shown with its rate per 10,000 words in both windows.
 - **Organisations heard most often:** the organisation printed with each witness, counted
   once per meeting. Names are not merged across spellings, translations or reorganised
   departments.
+- **Who is heard:** each witness appearance (a witness at a meeting, counted once) is
+  given a kind from the title and organisation printed with the name: federal
+  departments and agencies (including Crown corporations and House administration);
+  officers of Parliament and oversight offices (Auditor General, Parliamentary Budget
+  Officer, the information, privacy, ethics and lobbying commissioners, the procurement
+  ombud); provincial, territorial and municipal governments; Indigenous governments and
+  organisations; businesses and industry associations (including farm and producer
+  groups); unions; universities and think tanks; civil-society organisations;
+  international and foreign bodies; and individuals. A witness the House lists "as an
+  individual" is an individual, whatever their job. The rules are keyword rules checked
+  in order (`debates/witness_kinds.py`), written against every one of the 2,214 distinct
+  labels of the loaded committees. A fresh random sample of 120 labels, drawn after the
+  rules were final and checked by hand, had one clear error (a company read as civil
+  society) and two borderline cases (a young farmers' federation and a copyright
+  collective, both counted as civil society). Anything with an organisation that no rule
+  recognises counts as civil society, which is what most such names are; a label with
+  no organisation is "not stated". A witness page shows the kind of their latest label.
+- **Topics in committee:** committee speeches by members, ministers and witnesses of at
+  least 60 words (the chair, the clerk and procedural text left out) are scored with the
+  House topic model of section 6 each time it is fitted, and given the topic with the
+  largest weight, as House speeches are. A committee's topic shares are out of its
+  scored speeches and are shown from 30 of them, next to each topic's share of House
+  speeches. The topics were found in House debate, so committee talk with no House
+  counterpart (a committee's own procedure, technical testimony) goes to the nearest
+  House topic or to a general one. Meetings loaded after the last fit are scored at the
+  next weekly refit.
+- **Members in committee:** words in the English text of a member's or minister's
+  interventions at committee meetings (not as chair), next to their own speeches in
+  the House (section 8). The share is committee words out of both.
 - **Search:** paragraphs of committee transcripts, with the search rules of section 3,
   filtered by committee and by the speaker's role.
 - **Language:** each paragraph's floor language is read as in section 2. Committee
@@ -260,6 +289,10 @@ uses. Each term is shown with its rate per 10,000 words in both windows.
 
 - **Coverage:** three Parliaments from December 2019. Earlier Parliaments are not loaded
   or checked. Committees: three of the House's standing committees, public meetings only.
+- **Kinds of witnesses are read from labels:** the House prints a title and organisation,
+  not a category. The rules are a careful reading of those labels, not an official
+  classification, and a committee's mix of witnesses reflects its mandate (OGGO
+  examines departments, so most of its witnesses are officials) as much as any choice.
 - **Translation:** English and French are translations of each other, not independent
   corpora. A term trend in French text partly reflects translators' choices.
 - **Counting is not meaning:** a rising term means a subject took more of the

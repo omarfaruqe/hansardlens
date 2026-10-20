@@ -187,11 +187,16 @@ SPECTACULAR_SETTINGS = {
     "TITLE": "HansardLens API",
     "DESCRIPTION": (
         "Read-only access to House of Commons of Canada debates in English and French: "
-        "sittings, speeches, bilingual search, term trends, language on the floor, topics "
-        "and term shifts. Debate text is Parliament's copyright."
+        "sittings, speeches, bilingual search, term trends, language on the floor, topics, "
+        "term shifts, recorded votes, bills and committee evidence. Debate text is "
+        "Parliament's copyright."
     ),
     "VERSION": __version__,
     "SERVE_INCLUDE_SCHEMA": False,
+    "ENUM_NAME_OVERRIDES": {
+        "WitnessKindEnum": "debates.witness_kinds.KIND_CHOICES",
+        "InterventionKindEnum": "debates.models.Intervention.Kind",
+    },
 }
 
 # Polite identification for requests to ourcommons.ca

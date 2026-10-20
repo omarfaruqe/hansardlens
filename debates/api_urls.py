@@ -14,6 +14,7 @@ urlpatterns = [
     path("votes/", api.DivisionList.as_view(), name="api_votes"),
     path("votes/<session:ps>/<int:number>/", api.DivisionDetail.as_view(), name="api_vote"),
     path("committees/", api.CommitteeList.as_view(), name="api_committees"),
+    path("committees/<committee:acronym>/", api.CommitteeDetail.as_view(), name="api_committee"),
     path(
         "committees/<committee:acronym>/meetings/",
         api.MeetingList.as_view(),

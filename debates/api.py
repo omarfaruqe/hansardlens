@@ -10,6 +10,7 @@ from drf_spectacular.utils import (
     OpenApiParameter,
     extend_schema,
     extend_schema_field,
+    extend_schema_view,
     inline_serializer,
 )
 from rest_framework import generics, serializers
@@ -33,6 +34,7 @@ from .models import (
     Witness,
 )
 from .textmine import active_model
+from .witness_kinds import KINDS
 
 
 class Pagination(PageNumberPagination):
@@ -578,6 +580,7 @@ class MeetingDetailSerializer(MeetingSerializer):
 
 class WitnessSerializer(serializers.ModelSerializer):
     meetings = serializers.IntegerField(source="meetings_n", read_only=True)
+    kind = serializers.ChoiceField(choices=list(KINDS), read_only=True)
     url = serializers.SerializerMethodField()
 
     class Meta:
@@ -590,6 +593,7 @@ class WitnessSerializer(serializers.ModelSerializer):
             "affiliation_en",
             "affiliation_fr",
             "as_individual",
+            "kind",
             "latest_date",
             "meetings",
             "url",
@@ -646,6 +650,53 @@ class CommitteeList(generics.ListAPIView):
         ).order_by("acronym")
 
 
+class CommitteeDetail(APIView):
+    """One committee: who is heard (witness appearances by kind), its main topics measured
+    with the House topics, and the members who spoke most."""
+
+    @extend_schema(
+        tags=["Committees"],
+        operation_id="v1_committee",
+        parameters=[OpenApiParameter("session", str, description="Session, e.g. 44-1")],
+        responses=inline_serializer(
+            "CommitteeAnalysis",
+            {
+                "acronym": serializers.CharField(),
+                "name_en": serializers.CharField(),
+                "name_fr": serializers.CharField(),
+                "session": serializers.CharField(allow_null=True),
+                "witness_kinds": serializers.JSONField(),
+                "topics": serializers.JSONField(),
+                "members": serializers.JSONField(),
+            },
+        ),
+    )
+    def get(self, request, acronym: str):
+        from . import committee_analysis
+        from .committee_views import _topic_rows
+
+        committee = get_object_or_404(Committee, acronym=acronym.upper())
+        raw = request.query_params.get("session", "")
+        session = None
+        if raw.count("-") == 1 and raw.replace("-", "").isdigit():
+            session = tuple(int(x) for x in raw.split("-"))
+        model = active_model("en")
+        topics = committee_analysis.committee_topics(committee, model, session) if model else None
+        if topics:
+            topics = {**topics, "rows": _topic_rows(model, topics["rows"])}
+        return Response(
+            {
+                "acronym": committee.acronym,
+                "name_en": committee.name_en,
+                "name_fr": committee.name_fr,
+                "session": f"{session[0]}-{session[1]}" if session else None,
+                "witness_kinds": committee_analysis.witness_kinds(committee, session),
+                "topics": topics,
+                "members": committee_analysis.committee_members(committee, session),
+            }
+        )
+
+
 @extend_schema(
     tags=["Committees"],
     parameters=[OpenApiParameter("parliament", int), OpenApiParameter("session", int)],
@@ -668,7 +719,7 @@ class MeetingList(generics.ListAPIView):
         return qs.order_by("-date", "-number")
 
 
-@extend_schema(tags=["Committees"])
+@extend_schema_view(get=extend_schema(tags=["Committees"], operation_id="v1_committee_meeting"))
 class MeetingDetail(generics.RetrieveAPIView):
     """One meeting: who spoke, in order, with the English and French text of each paragraph."""
 
@@ -691,6 +742,7 @@ class MeetingDetail(generics.RetrieveAPIView):
     parameters=[
         OpenApiParameter("q", str, description="Part of a name, title or organisation"),
         OpenApiParameter("committee", str, description="Committee acronym, e.g. FINA"),
+        OpenApiParameter("kind", str, enum=list(KINDS), description="Kind of organisation"),
     ],
 )
 class WitnessList(generics.ListAPIView):
@@ -704,7 +756,7 @@ class WitnessList(generics.ListAPIView):
 
         p = self.request.query_params
         q = " ".join(p.get("q", "").split())[:100]
-        return find_witnesses(q, p.get("committee", "").upper()[:8]).order_by(
+        return find_witnesses(q, p.get("committee", "").upper()[:8], p.get("kind", "")).order_by(
             "-latest_date", "name"
         )
 

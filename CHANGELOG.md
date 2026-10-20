@@ -1,5 +1,28 @@
 # Changelog
 
+## 1.10.0 – 2026-10-19
+
+- **Who is heard:** every committee witness appearance is given a kind (federal
+  departments and agencies, officers of Parliament and oversight offices, other
+  governments, Indigenous governments and organisations, businesses and industry
+  associations, unions, universities and think tanks, civil society, international
+  bodies, individuals) from the title and organisation printed with the name. Rules
+  were written against all 2,214 distinct labels and checked on a fresh random sample.
+  The committees page compares committees; each committee page shows its own mix, by
+  session; the witness list filters by kind; each witness page shows it.
+- **Topics in committee:** committee speeches by members, ministers and witnesses are
+  scored with the House topic model each time it is fitted. Committee pages show their
+  main topics next to each topic's share in the House, topic pages show their share in
+  each committee, and meeting pages their main topics.
+- **Members:** each committee page lists the members who spoke most; member pages
+  compare words spoken in committee and in the House, and meetings chaired.
+- **API:** `/api/v1/committees/{acronym}/` (who is heard, topics, members; `session`
+  filter); witnesses carry their `kind` and can be filtered by it.
+- **French** text for every new label; accessibility audit extended to 31 pages with no
+  failures.
+- **Docs:** methods note section 11 (who is heard, topics in committee, members in
+  committee) and limits; README, architecture and case study.
+
 ## 1.9.0 – 2026-10-18
 
 - **Committees:** the public meetings of the Standing Committees on Finance (FINA),

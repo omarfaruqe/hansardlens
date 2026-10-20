@@ -30,6 +30,8 @@ flowchart LR
 | `debates/textmine.py` | TF-IDF + NMF topics; log-odds term shifts |
 | `debates/bills.py` | Find bills from the motions that move them; link debates, stages and votes |
 | `debates/committees.py` | Find a committee meeting's evidence XML, read speaker roles, store meetings and witnesses |
+| `debates/witness_kinds.py` | Kind of each witness (federal, business, union, …) from the printed title and organisation |
+| `debates/committee_analysis.py` | Who is heard, committee topics with the House model, members' committee work; cached |
 | `debates/committee_views.py` | Committee, meeting, witness and committee search pages |
 | `debates/votes.py` | Store recorded votes, match printed names to members, mark party lines |
 | `debates/api.py` | Read-only DRF endpoints and OpenAPI schema |
@@ -57,6 +59,8 @@ erDiagram
     MeetingIntervention ||--o{ MeetingParagraph : has
     Person |o--o{ MeetingIntervention : speaks
     Witness |o--o{ MeetingIntervention : "gives evidence"
+    Topic ||--o{ MeetingInterventionTopic : assigns
+    MeetingIntervention ||--o| MeetingInterventionTopic : "main topic"
 ```
 
 - `Paragraph.search_en`, `search_fr` and `words_en` are PostgreSQL generated columns,
@@ -84,10 +88,12 @@ erDiagram
 
 ## Testing
 
-- 307 tests with pytest against PostgreSQL (CI uses a PostgreSQL service).
+- 353 tests with pytest against PostgreSQL (CI uses a PostgreSQL service).
 - The parser is tested on invented XML with the real structure (real Hansard text is
   never committed), and on real sittings when they have been downloaded locally.
 - The ingestion commands are tested against a fake House website: missing sittings,
   network failures, missing French versions, new sessions and new Parliaments; the
   committee loader against meetings in camera and meeting numbers that do not exist.
-- The text-mining methods are tested on a synthetic corpus with two known subjects.
+- The text-mining methods are tested on a synthetic corpus with two known subjects,
+  including committee speeches scored with the House topics.
+- The witness classifier is tested on real committee labels of every kind.

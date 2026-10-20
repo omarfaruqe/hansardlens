@@ -1430,3 +1430,142 @@ msgid "Heard at %(counter)s meeting"
 msgid_plural "Heard at %(counter)s meetings"
 msgstr[0] "Entendu à %(counter)s réunion"
 msgstr[1] "Entendu à %(counter)s réunions"
+
+#: debates/witness_kinds.py
+msgid "Federal departments and agencies"
+msgstr "Ministères et organismes fédéraux"
+
+#: debates/witness_kinds.py
+msgid "Officers of Parliament and oversight offices"
+msgstr "Agents du Parlement et organismes de surveillance"
+
+#: debates/witness_kinds.py
+msgid "Provincial, territorial and municipal governments"
+msgstr "Gouvernements provinciaux, territoriaux et municipaux"
+
+#: debates/witness_kinds.py
+msgid "Indigenous governments and organisations"
+msgstr "Gouvernements et organisations autochtones"
+
+#: debates/witness_kinds.py
+msgid "Businesses and industry associations"
+msgstr "Entreprises et associations sectorielles"
+
+#: debates/witness_kinds.py
+msgid "Unions"
+msgstr "Syndicats"
+
+#: debates/witness_kinds.py
+msgid "Universities and think tanks"
+msgstr "Universités et groupes de réflexion"
+
+#: debates/witness_kinds.py
+msgid "Civil society organisations"
+msgstr "Organisations de la société civile"
+
+#: debates/witness_kinds.py
+msgid "International and foreign bodies"
+msgstr "Organismes internationaux et étrangers"
+
+#: debates/witness_kinds.py
+msgid "Individuals"
+msgstr "Particuliers"
+
+#: debates/witness_kinds.py
+msgid "Not stated"
+msgstr "Non précisé"
+
+#: templates/committee_detail.html
+msgid "All committees compared"
+msgstr "Tous les comités comparés"
+
+#: templates/committee_detail.html
+msgid "No topic model yet."
+msgstr "Pas encore de modèle thématique."
+
+#: templates/committee_detail.html
+msgid "Members who spoke most"
+msgstr "Députés qui ont le plus parlé"
+
+#: templates/committee_detail.html
+msgid "Words in the English text of their questions and remarks; the chair is not counted."
+msgstr "Mots dans le texte anglais de leurs questions et interventions; la présidence n'est pas comptée."
+
+#: templates/committee_detail.html
+msgid "No member interventions loaded."
+msgstr "Aucune intervention de député chargée."
+
+#: templates/committee_detail.html
+#, python-format
+msgid "Share of %(n)s witness appearances (a witness heard at a meeting counts once)."
+msgstr "Part de %(n)s comparutions de témoins (un témoin entendu à une réunion compte une fois)."
+
+#: templates/committee_detail.html
+#, python-format
+msgid "Share of the %(n)s committee speeches (members, ministers and witnesses) whose main topic it is, using the topics of the House debates."
+msgstr "Part des %(n)s interventions en comité (députés, ministres et témoins) dont c'est le thème principal, selon les thèmes des débats de la Chambre."
+
+#: templates/committee_detail.html
+#, python-format
+msgid "Main topics are shown from %(n)s analysed speeches. Speeches loaded since the topics were last fitted are analysed at the next weekly refit."
+msgstr "Les thèmes principaux sont affichés à partir de %(n)s interventions analysées. Les interventions chargées depuis le dernier calcul des thèmes sont analysées lors du recalcul hebdomadaire."
+
+#: templates/committee_detail.html
+#, python-format
+msgid "%(n)s speech; %(house)s%% of speeches in the House"
+msgid_plural "%(n)s speeches; %(house)s%% of speeches in the House"
+msgstr[0] "%(n)s intervention; %(house)s %% des interventions à la Chambre"
+msgstr[1] "%(n)s interventions; %(house)s %% des interventions à la Chambre"
+
+#: templates/committees.html templates/committee_detail.html
+msgid "Who is heard"
+msgstr "Qui est entendu"
+
+#: templates/committees.html
+msgid "Share of witness appearances by kind of organisation, for each committee"
+msgstr "Part des comparutions de témoins par type d'organisation, pour chaque comité"
+
+#: templates/committees.html
+msgid "Kind of witness"
+msgstr "Type de témoin"
+
+#: templates/committees.html
+msgid "Witness appearances"
+msgstr "Comparutions de témoins"
+
+#: templates/committees.html
+msgid "A witness heard at a meeting counts once for that meeting. Kinds are read from the title and organisation printed with each witness's name, with rules checked by hand against every label; see the methods note."
+msgstr "Un témoin entendu à une réunion compte une fois pour cette réunion. Le type est déduit du titre et de l'organisation imprimés avec le nom de chaque témoin, selon des règles vérifiées à la main sur chaque libellé; voir la note méthodologique."
+
+#: templates/meeting_detail.html
+msgid "Main topics:"
+msgstr "Thèmes principaux :"
+
+#: templates/member_detail.html
+#, python-format
+msgid "Chaired %(counter)s meeting."
+msgid_plural "Chaired %(counter)s meetings."
+msgstr[0] "A présidé %(counter)s réunion."
+msgstr[1] "A présidé %(counter)s réunions."
+
+#: templates/member_detail.html
+#, python-format
+msgid "%(c)s words in committee and %(h)s in the House: %(share)s%% of what this member said was said in committee."
+msgstr "%(c)s mots en comité et %(h)s à la Chambre : %(share)s %% de ce que ce député a dit l'a été en comité."
+
+#: templates/topic_detail.html
+#, python-format
+msgid "Share of each committee's analysed speeches (members, ministers and witnesses) whose main topic is this one; %(house)s%% in the House. Bars are scaled to the largest value."
+msgstr "Part des interventions analysées de chaque comité (députés, ministres et témoins) dont c'est le thème principal; %(house)s %% à la Chambre. Les barres sont proportionnelles à la plus grande valeur."
+
+#: templates/witness_detail.html
+msgid "Kind:"
+msgstr "Type :"
+
+#: templates/witnesses.html
+msgid "Kind"
+msgstr "Type"
+
+#: templates/witnesses.html
+msgid "All kinds"
+msgstr "Tous les types"

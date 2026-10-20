@@ -22,7 +22,7 @@ denominator; the site describes what was said and does not rate parties or membe
 | --- | --- |
 | Data | 709 sittings from December 2019 (43rd, 44th and 45th Parliaments): 237,383 interventions and 840,469 paragraphs, each in English and French; 1,317 recorded votes with 422,392 individual votes; 699 bills; 550 people; 773 public meetings of three committees with 185,697 interventions and 2,247 witnesses |
 | Stack | Python 3.12, Django 5.2 LTS, PostgreSQL 16, scikit-learn, Django REST Framework, Docker Compose, Caddy, GitHub Actions |
-| Quality | 308 automated tests on PostgreSQL in CI; data-quality report; checks against real sittings |
+| Quality | 353 automated tests on PostgreSQL in CI; data-quality report; checks against real sittings |
 | Operations | Daily automatic refresh, nightly verified backups, failure alerts, pinned and hashed dependencies, weekly update proposals |
 | Interface | Complete English and French interface; audited against WCAG 2.1 AA with a published accessibility statement; charts with table views and keyboard access |
 
@@ -62,6 +62,13 @@ denominator; the site describes what was said and does not rate parties or membe
   were checked on real meetings to read roles (chair, member, minister, witness, clerk)
   and to separate a witness's title from their organisation; witnesses are one record
   per House id, so a person heard under several titles is one witness.
+- **Who testifies:** the House prints each witness's title and organisation but no
+  category. Classifying them meant reading all 2,214 distinct labels from the loaded
+  committees, writing ordered keyword rules (a "National Bank of Canada" economist is
+  business, not the central bank; a farmers' "union" is a producer group), then checking
+  a fresh random sample of 120 by hand: one clear error, two borderline. Result: the finance committee hears the
+  widest range (about a quarter business, a fifth civil society), government operations
+  mostly federal officials and oversight offices, and ethics the most individuals.
 - **Data-quality report:** a command reports coverage, alignment issues, missing
   parties and unknown intervention types, so problems are visible rather than hidden.
 
@@ -114,7 +121,7 @@ and deployed before the next began.
 
 ## Quality
 
-- **Tests:** 308 tests with pytest against PostgreSQL, run in GitHub Actions with
+- **Tests:** 353 tests with pytest against PostgreSQL, run in GitHub Actions with
   linting, formatting and migration checks. They cover the parser, alignment, speaker
   parsing, ingestion against a fake House website (missing sittings, network failures,
   new sessions and Parliaments, meetings in camera), search, analysis, topics on a
@@ -156,4 +163,4 @@ and deployed before the next began.
 | Official languages | Complete French interface, French data side by side, language actually spoken recorded |
 | Accessibility | WCAG 2.1 AA audit and fixes, accessibility statement, automated structural tests, keyboard-usable charts with live values |
 | Security and operations | Production settings, non-root containers, pinned dependencies, backups, alerts, health checks, side-by-side deployment |
-| Testing and documentation | 308 tests in CI; README, architecture, methods note, deployment runbook |
+| Testing and documentation | 353 tests in CI; README, architecture, methods note, deployment runbook |

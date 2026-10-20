@@ -14,7 +14,7 @@
 
 | Check | How |
 | ----- | --- |
-| Automated rules | axe-core 4.10.2 in Chromium, WCAG 2.0/2.1 A and AA rules and best practices, 28 pages × 2 widths (`tools/a11y_audit.js`) |
+| Automated rules | axe-core 4.10.2 in Chromium, WCAG 2.0/2.1 A and AA rules and best practices, 31 pages × 2 widths (`tools/a11y_audit.js`) |
 | Structure on every release | `debates/tests/test_accessibility.py`: page language, title, one level-one heading, main landmark, skip link first, labelled form fields, text alternatives, language of parts; 23 pages × 2 languages |
 | Keyboard | Tabbing through every page type: order, visible focus, no traps; chart keys |
 | Reflow | Every page at 320 CSS px: no horizontal scrolling outside data tables |
