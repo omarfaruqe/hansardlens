@@ -166,6 +166,8 @@ def member_committee_work(person) -> dict:
             person=person, role=MeetingIntervention.Role.CHAIR
         ).aggregate(meetings=Count("meeting", distinct=True))["meetings"]
         house = member_speeches(person).aggregate(n=Count("id"), words=Sum("word_count_en"))
+        spoken = _committee_spoken().filter(intervention__person=person)
+        lang = spoken.aggregate(fr=_FR, total=Sum("words_en"))
         c_words, h_words = c["words"] or 0, house["words"] or 0
         both = c_words + h_words
         return {
@@ -176,6 +178,9 @@ def member_committee_work(person) -> dict:
             "house_speeches": house["n"],
             "house_words": h_words,
             "committee_share": round(100 * c_words / both, 1) if both else None,
+            "committee_french": _lang(lang["fr"], lang["total"])["share"]
+            if (lang["total"] or 0) >= 1000
+            else None,
         }
 
     return _cached("member_committee", {"p": person.id}, compute)
@@ -266,3 +271,119 @@ def witness_kinds_by_committee() -> dict:
         }
 
     return _cached("witness_kinds_all", {}, compute)
+
+
+# ------------------------------------------------------------------------------------
+# Language spoken in committee
+# ------------------------------------------------------------------------------------
+
+LANGUAGE_ROLES = [
+    MeetingIntervention.Role.MEMBER,
+    MeetingIntervention.Role.MINISTER,
+    MeetingIntervention.Role.WITNESS,
+]
+MIN_COMMITTEE_WORDS = 20_000  # a committee row in the language table needs this many
+
+
+def _committee_spoken(committee=None, session=None, parliament=None):
+    """Speech paragraphs of members, ministers and witnesses (not the chair or clerk)
+    whose floor language is known: the committee counterpart of analysis._spoken."""
+    from .models import MeetingParagraph
+
+    qs = MeetingParagraph.objects.filter(
+        kind="speech",
+        floor_language__in=["en", "fr"],
+        intervention__role__in=LANGUAGE_ROLES,
+    )
+    if committee is not None:
+        qs = qs.filter(intervention__meeting__committee=committee)
+    if session:
+        qs = qs.filter(
+            intervention__meeting__parliament=session[0],
+            intervention__meeting__session=session[1],
+        )
+    if parliament:
+        qs = qs.filter(intervention__meeting__parliament=parliament)
+    return qs
+
+
+_FR = Sum("words_en", filter=Q(floor_language="fr"))
+
+
+def _lang(fr, total) -> dict:
+    fr, total = fr or 0, total or 0
+    return {"fr": fr, "total": total, "share": round(100 * fr / total, 1) if total else None}
+
+
+def committee_language(committee=None, session: tuple[int, int] | None = None) -> dict:
+    """Share of words spoken in French at a committee's meetings, overall and by role."""
+
+    def compute():
+        rows = {
+            r["intervention__role"]: r
+            for r in _committee_spoken(committee, session)
+            .values("intervention__role")
+            .annotate(fr=_FR, total=Sum("words_en"))
+        }
+        fr = sum((r["fr"] or 0) for r in rows.values())
+        total = sum((r["total"] or 0) for r in rows.values())
+        return {
+            **_lang(fr, total),
+            "roles": {
+                str(role.value): _lang(rows[role]["fr"], rows[role]["total"])
+                for role in LANGUAGE_ROLES
+                if role in rows and rows[role]["total"]
+            },
+        }
+
+    key = {"c": committee.id if committee else None, "s": session}
+    return _cached("committee_language", key, compute)
+
+
+def language_by_committee(parliament: int | None = None) -> list[dict]:
+    """French share of each committee, with members' and witnesses' shares."""
+
+    def compute():
+        rows = (
+            _committee_spoken(parliament=parliament)
+            .values(
+                "intervention__meeting__committee__acronym",
+                "intervention__meeting__committee__name_en",
+                "intervention__meeting__committee__name_fr",
+                "intervention__role",
+            )
+            .annotate(fr=_FR, total=Sum("words_en"))
+        )
+        by: dict[str, dict] = {}
+        for r in rows:
+            acr = r["intervention__meeting__committee__acronym"]
+            c = by.setdefault(
+                acr,
+                {
+                    "acronym": acr,
+                    "name_en": r["intervention__meeting__committee__name_en"],
+                    "name_fr": r["intervention__meeting__committee__name_fr"],
+                    "parts": {},
+                },
+            )
+            c["parts"][r["intervention__role"]] = (r["fr"] or 0, r["total"] or 0)
+        out = []
+        for c in by.values():
+            parts = c.pop("parts")
+            fr = sum(p[0] for p in parts.values())
+            total = sum(p[1] for p in parts.values())
+            if total < MIN_COMMITTEE_WORDS:
+                continue
+            members = parts.get("member", (0, 0))
+            witnesses = parts.get("witness", (0, 0))
+            out.append(
+                {
+                    **c,
+                    **_lang(fr, total),
+                    "members": _lang(*members)["share"],
+                    "witnesses": _lang(*witnesses)["share"],
+                }
+            )
+        return sorted(out, key=lambda r: -r["share"])
+
+    return _cached("language_committees", {"p": parliament}, compute)

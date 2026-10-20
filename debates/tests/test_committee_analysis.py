@@ -280,3 +280,44 @@ def test_committee_api(client, meeting):
     assert client.get("/api/v1/committees/ZZZZ/").status_code == 404
     rows = client.get("/api/v1/witnesses/", {"kind": "individual"}).json()["results"]
     assert [(w["slug"], w["kind"]) for w in rows] == [("sam-quill", "individual")]
+
+
+# -- language spoken in committee ---------------------------------------------------------
+
+
+def test_committee_language(meeting, monkeypatch):
+    # Words of the English text: Lena Park 9, Sam Quill 4 (spoken in French), Jane Alder 9,
+    # Sam Okafor 4; the chair (8) and the clerk (4) are left out.
+    lang = committee_analysis.committee_language(meeting.committee)
+    assert (lang["fr"], lang["total"], lang["share"]) == (4, 26, 15.4)
+    assert lang["roles"] == {
+        "member": {"fr": 0, "total": 9, "share": 0.0},
+        "minister": {"fr": 0, "total": 4, "share": 0.0},
+        "witness": {"fr": 4, "total": 13, "share": 30.8},
+    }
+    assert committee_analysis.language_by_committee() == []  # under 20,000 words
+    monkeypatch.setattr(committee_analysis, "MIN_COMMITTEE_WORDS", 1)
+    assert committee_analysis.language_by_committee(parliament=45) == []
+    row = committee_analysis.language_by_committee(parliament=44)[0]
+    assert (row["acronym"], row["share"], row["members"], row["witnesses"]) == (
+        "EXMP",
+        15.4,
+        0.0,
+        30.8,
+    )
+
+
+def test_language_on_pages_and_api(client, meeting, monkeypatch):
+    monkeypatch.setattr(committee_analysis, "MIN_COMMITTEE_WORDS", 1)
+    html = client.get("/committees/EXMP/").content.decode()
+    assert "<strong>15.4%</strong> of what was said at these meetings" in html
+    assert "Witnesses: 30.8%." in html
+    html = client.get("/language/").content.decode()
+    assert 'id="in-committee"' in html and 'href="/committees/EXMP/"' in html
+    html = client.get("/members/jane-alder/").content.decode()
+    assert "In committee, 0.0% of it was in French." not in html  # under 1,000 words
+    data = client.get("/api/v1/committees/EXMP/").json()
+    assert data["language"]["share"] == 15.4
+    assert client.get("/api/v1/language/").json()["by_committee"][0]["acronym"] == "EXMP"
+    html = client.get("/committees/EXMP/", {"lang": "fr"}).content.decode()
+    assert "Témoins : 30,8 %." in html or "Témoins : 30.8 %." in html

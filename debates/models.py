@@ -612,6 +612,25 @@ class MeetingParagraph(models.Model):
     floor_language = models.CharField(max_length=4, blank=True)
     text_en = models.TextField(blank=True)
     text_fr = models.TextField(blank=True)
+    # Words of the English text: the same yardstick as Paragraph.words_en.
+    words_en = models.GeneratedField(
+        expression=Coalesce(
+            Func(
+                Func(
+                    NullIf(Trim("text_en"), Value("")),
+                    Value(r"\s+"),
+                    function="regexp_split_to_array",
+                    output_field=ArrayField(TextField()),
+                ),
+                Value(1),
+                function="array_length",
+                output_field=IntegerField(),
+            ),
+            Value(0),
+        ),
+        output_field=IntegerField(),
+        db_persist=True,
+    )
     search_en = models.GeneratedField(
         expression=SearchVector("text_en", config=SEARCH_CONFIG["en"]),
         output_field=SearchVectorField(),
