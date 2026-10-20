@@ -30,10 +30,28 @@ def content_lang(request) -> str:
 
 
 def home(request):
+    from . import analysis, committee_analysis
+    from .models import Division, Meeting
+
     stats = Sitting.objects.aggregate(n=Count("id"), first=Min("date"), last=Max("date"))
+
+    def figures():
+        return {
+            "speeches": Intervention.objects.filter(
+                kind__in=analysis.SPEECH_KINDS, is_chair=False
+            ).count(),
+            "members": Person.objects.filter(interventions__isnull=False).distinct().count(),
+            "votes": Division.objects.count(),
+            "meetings": Meeting.objects.count(),
+        }
+
     context = {
         "stats": stats,
-        "interventions": Intervention.objects.count() if stats["n"] else 0,
+        "figures": analysis.cached(
+            "home_figures", {"cv": committee_analysis.committee_version()}, figures
+        )
+        if stats["n"]
+        else None,
         "latest": Sitting.objects.order_by("-date")[:6],
         "lang": content_lang(request),
     }

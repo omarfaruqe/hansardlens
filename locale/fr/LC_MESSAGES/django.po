@@ -1660,3 +1660,72 @@ msgstr "Utiliser le thème clair"
 #: templates/base.html
 msgid "Dark theme"
 msgstr "Thème sombre"
+
+#: templates/home.html
+msgid "The record in figures"
+msgstr "Le compte rendu en chiffres"
+
+#: templates/home.html
+msgid "sittings of the House"
+msgstr "séances de la Chambre"
+
+#: templates/home.html
+msgid "speeches, questions and answers"
+msgstr "interventions, questions et réponses"
+
+#: templates/home.html
+msgid "recorded votes"
+msgstr "votes par appel nominal"
+
+#: templates/home.html
+msgid "people who spoke"
+msgstr "personnes qui ont pris la parole"
+
+#: templates/home.html
+msgid "committee meetings"
+msgstr "réunions de comités"
+
+#: templates/home.html
+msgid "Explore"
+msgstr "Explorer"
+
+#: templates/home.html
+msgid "What each member said, how often, on which topics and in which language."
+msgstr "Ce que chaque député a dit, à quelle fréquence, sur quels thèmes et dans quelle langue."
+
+#: templates/home.html
+msgid "Every division, with results by party and each member's vote."
+msgstr "Chaque vote par appel nominal, avec les résultats par parti et le vote de chaque député."
+
+#: templates/home.html
+msgid "Each bill's stages in the House, debates and votes."
+msgstr "Les étapes de chaque projet de loi à la Chambre, ses débats et ses votes."
+
+#: templates/home.html
+msgid "Committee transcripts, the witnesses heard and who they represent."
+msgstr "Les témoignages en comité, les témoins entendus et ce qu'ils représentent."
+
+#: templates/home.html
+msgid "How often a subject comes up, month by month."
+msgstr "La fréquence d'un sujet, mois par mois."
+
+#: templates/home.html
+msgid "The main subjects of debate, found in the speeches themselves."
+msgstr "Les principaux sujets de débat, dégagés des interventions elles-mêmes."
+
+#: templates/home.html
+msgid "How much of the debate is held in French, by party, member and committee."
+msgstr "La part des débats tenue en français, par parti, député et comité."
+
+#: templates/home.html
+msgid "Words and phrases rising or fading in recent debate."
+msgstr "Les mots et expressions en hausse ou en baisse dans les débats récents."
+
+#: templates/home.html
+#, python-format
+msgid "No. %(n)s"
+msgstr "Nº %(n)s"
+
+#: templates/base.html
+msgid "Debates of the House of Commons of Canada, in English and French"
+msgstr "Débats de la Chambre des communes du Canada, en français et en anglais"

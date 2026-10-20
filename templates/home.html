@@ -1,31 +1,64 @@
 {% extends "base.html" %}{% load i18n hansard humanize %}
+{% block header_search %}{% endblock %}
 {% block content %}
-<h1>{% translate "What was said in the House of Commons" %}</h1>
-<p class="lede">
-  {% if stats.n %}
-    {% blocktranslate with first=stats.first|ldate:"month" last=stats.last|ldate:"date" n=stats.n|intcomma %}Search every debate from {{ first }} to {{ last }}, in English or French: {{ n }} sittings so far.{% endblocktranslate %}
-  {% else %}
-    {% translate "No debates are loaded yet. Run load_hansard to add sittings." %}
-  {% endif %}
-</p>
-<form class="search-form" action="{% url 'search' %}" method="get" role="search">
-  <div class="searchbar">
-    <input id="q" type="search" name="q" aria-label="{% translate 'Search debates' %}" placeholder="{% translate 'housing, “carbon tax”, souveraineté…' %}">
-    <button class="button" type="submit">{% translate "Search" %}</button>
-  </div>
-  <div class="lang-choice" role="radiogroup" aria-label="{% translate 'Search in' %}">
-    <label><input type="radio" name="text" value="en" {% if lang == "en" %}checked{% endif %}> {% translate "English text" %}</label>
-    <label><input type="radio" name="text" value="fr" {% if lang == "fr" %}checked{% endif %}> {% translate "French text" %}</label>
-  </div>
-  <p class="hint">{% blocktranslate %}Use quotes for an exact phrase, <code>OR</code> for either word, and a minus sign to leave a word out: <code>"dental care" -provinces</code>. Accents are optional.{% endblocktranslate %}</p>
-</form>
+<section class="panel hero" aria-labelledby="home-title">
+  <h1 id="home-title">{% translate "What was said in the House of Commons" %}</h1>
+  <p class="lede">
+    {% if stats.n %}
+      {% blocktranslate with first=stats.first|ldate:"month" last=stats.last|ldate:"date" n=stats.n|intcomma %}Search every debate from {{ first }} to {{ last }}, in English or French: {{ n }} sittings so far.{% endblocktranslate %}
+    {% else %}
+      {% translate "No debates are loaded yet. Run load_hansard to add sittings." %}
+    {% endif %}
+  </p>
+  <form class="search-form" action="{% url 'search' %}" method="get" role="search">
+    <div class="searchbar">
+      <input id="q" type="search" name="q" aria-label="{% translate 'Search debates' %}" placeholder="{% translate 'housing, “carbon tax”, souveraineté…' %}">
+      <button class="button" type="submit">{% translate "Search" %}</button>
+    </div>
+    <div class="search-tools">
+      <div class="lang-choice" role="radiogroup" aria-label="{% translate 'Search in' %}">
+        <label><input type="radio" name="text" value="en" {% if lang == "en" %}checked{% endif %}> {% translate "English text" %}</label>
+        <label><input type="radio" name="text" value="fr" {% if lang == "fr" %}checked{% endif %}> {% translate "French text" %}</label>
+      </div>
+      <p class="hint">{% blocktranslate %}Use quotes for an exact phrase, <code>OR</code> for either word, and a minus sign to leave a word out: <code>"dental care" -provinces</code>. Accents are optional.{% endblocktranslate %}</p>
+    </div>
+  </form>
+</section>
 
-{% if latest %}
-<h2>{% translate "Latest sittings" %}</h2>
-<ul class="latest">
-  {% for s in latest %}
-    <li><a href="{{ s.get_absolute_url }}">{{ s.date|ldate:"long" }}</a><span class="muted">{% blocktranslate with n=s.number parl=s.parliament|ordinal_parliament %}Sitting {{ n }}, {{ parl }}{% endblocktranslate %}</span></li>
-  {% endfor %}
+{% if figures %}
+<h2 class="sr-only">{% translate "The record in figures" %}</h2>
+<ul class="figures">
+  <li><span class="n">{{ stats.n|intcomma }}</span><span class="what">{% translate "sittings of the House" %}</span></li>
+  <li><span class="n">{{ figures.speeches|intcomma }}</span><span class="what">{% translate "speeches, questions and answers" %}</span></li>
+  <li><span class="n">{{ figures.votes|intcomma }}</span><span class="what">{% translate "recorded votes" %}</span></li>
+  <li><span class="n">{{ figures.members|intcomma }}</span><span class="what">{% translate "people who spoke" %}</span></li>
+  {% if figures.meetings %}<li><span class="n">{{ figures.meetings|intcomma }}</span><span class="what">{% translate "committee meetings" %}</span></li>{% endif %}
 </ul>
 {% endif %}
+
+<div class="home-columns">
+  <section aria-labelledby="explore-title">
+    <h2 id="explore-title">{% translate "Explore" %}</h2>
+    <ul class="explore">
+      <li><a href="{% url 'members' %}"><span class="title">{% translate "Members" %}</span><span class="desc">{% translate "What each member said, how often, on which topics and in which language." %}</span></a></li>
+      <li><a href="{% url 'votes' %}"><span class="title">{% translate "Recorded votes" %}</span><span class="desc">{% translate "Every division, with results by party and each member's vote." %}</span></a></li>
+      <li><a href="{% url 'bills' %}"><span class="title">{% translate "Bills" %}</span><span class="desc">{% translate "Each bill's stages in the House, debates and votes." %}</span></a></li>
+      <li><a href="{% url 'committees' %}"><span class="title">{% translate "Committees" %}</span><span class="desc">{% translate "Committee transcripts, the witnesses heard and who they represent." %}</span></a></li>
+      <li><a href="{% url 'trends' %}"><span class="title">{% translate "Trends" %}</span><span class="desc">{% translate "How often a subject comes up, month by month." %}</span></a></li>
+      <li><a href="{% url 'topics' %}"><span class="title">{% translate "Topics" %}</span><span class="desc">{% translate "The main subjects of debate, found in the speeches themselves." %}</span></a></li>
+      <li><a href="{% url 'language' %}"><span class="title">{% translate "Languages" %}</span><span class="desc">{% translate "How much of the debate is held in French, by party, member and committee." %}</span></a></li>
+      <li><a href="{% url 'whats_new' %}"><span class="title">{% translate "What's new" %}</span><span class="desc">{% translate "Words and phrases rising or fading in recent debate." %}</span></a></li>
+    </ul>
+  </section>
+  {% if latest %}
+  <section aria-labelledby="latest-title">
+    <h2 id="latest-title">{% translate "Latest sittings" %}</h2>
+    <ul class="latest panel">
+      {% for s in latest %}
+        <li><a href="{{ s.get_absolute_url }}">{{ s.date|ldate:"date" }}</a><span class="muted small">{{ s.parliament }}-{{ s.session }} · {% blocktranslate with n=s.number %}No. {{ n }}{% endblocktranslate %}</span></li>
+      {% endfor %}
+    </ul>
+  </section>
+  {% endif %}
+</div>
 {% endblock %}
