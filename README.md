@@ -7,7 +7,7 @@ its translation, and records which language was actually spoken on the floor. On
 that record it offers bilingual full-text search, a side-by-side reading view, term
 trends, the share of debate held in French, topics found by NMF, and the words rising
 or fading in recent debate, bills, recorded votes, a page for every member, and the
-transcripts of three committees with the witnesses they heard. Everything is available
+transcripts of the standing committees with the witnesses they heard. Everything is available
 through a documented REST API.
 Every figure is a descriptive share with a stated denominator.
 
@@ -49,8 +49,8 @@ sitting day). **API docs:** http://103.99.176.180/hansardlens/api/docs/
 - **Bills:** each bill debated in the House, found from the motions that move it, with
   its titles in both languages, stages moved and completed, recorded votes, debate days
   and who spoke most, linked to LEGISinfo for status and text.
-- **Committees:** the public meetings of the finance (FINA), government operations
-  (OGGO) and ethics (ETHI) committees in English and French, with the witnesses heard,
+- **Committees:** the public meetings of the House's 25 standing committees in English
+  and French, with the witnesses heard,
   their titles and organisations, a page for each witness, the committee work of each
   member, and a search of what was said in committee. **Who is heard:** witness
   appearances by kind (federal officials, oversight offices, business, unions,
@@ -84,15 +84,16 @@ Docker Compose · pytest · Ruff · GitHub Actions
 cp .env.example .env
 docker compose up -d --build
 
-# Load the 43rd, 44th and 45th Parliaments (about 90 minutes; downloads are cached in
+# Load the 42nd to 45th Parliaments (about two hours; downloads are cached in
 # data/raw unless you add --no-cache)
+docker compose run --rm web python manage.py load_hansard --parliament 42 --session 1
 docker compose run --rm web python manage.py load_hansard --parliament 43 --session 1
 docker compose run --rm web python manage.py load_hansard --parliament 43 --session 2
 docker compose run --rm web python manage.py load_hansard --parliament 44 --session 1
 docker compose run --rm web python manage.py load_hansard --parliament 45 --session 1
 
-# Committee transcripts for the same sessions (about two hours; HANSARD_COMMITTEES
-# chooses the committees, FINA,OGGO,ETHI by default)
+# Committee transcripts for the same sessions (several hours for all 25 standing
+# committees; HANSARD_COMMITTEES in .env chooses fewer, e.g. FINA,OGGO,ETHI)
 docker compose run --rm web python manage.py load_committees
 
 # Build the analysis (a few minutes)
@@ -211,7 +212,7 @@ under a sub-path (`DJANGO_SCRIPT_NAME`) next to other apps on the same server: s
 ## Development
 
 ```bash
-docker compose run --rm web pytest -q            # 353 tests, against PostgreSQL
+docker compose run --rm web pytest -q            # 366 tests, against PostgreSQL
 docker compose run --rm web ruff check .
 docker compose run --rm web ruff format --check .
 ```

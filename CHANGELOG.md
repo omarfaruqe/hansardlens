@@ -1,5 +1,26 @@
 # Changelog
 
+## 1.11.0 – 2026-10-19
+
+- **42nd Parliament (2015–2019):** the parser handles its sittings (checked on 11, from
+  the first to the last, including recorded votes and bills); load with
+  `load_hansard --parliament 42 --session 1`.
+- **Statements, questions and answers:** the House types most members' statements and
+  many Question Period exchanges "Debate" (in the 42nd Parliament, all of them). They
+  are now recognised from the part of the sitting day: statements during Statements by
+  Members; in Question Period, answers from speakers who answer as ministers or
+  parliamentary secretaries and questions from everyone else. Member pages count them
+  correctly; the House's own type is kept in `house_type`. Migration 0012 applies this
+  to everything already loaded.
+- **All 25 standing committees** are loaded by default (`HANSARD_COMMITTEES` chooses
+  fewer). The House site answers "not found" for meetings held in camera as for numbers
+  not yet used, so the committee loader searches 30 numbers ahead instead of 15.
+- **Who is heard:** one row per committee with short column headings; a dash for none.
+  Witness kinds cover hospital and health networks (civil society), airport
+  authorities (business), associations of municipalities and a few more names seen in
+  the other committees.
+- **French** abbreviation for the CCF (FCC).
+
 ## 1.10.0 – 2026-10-19
 
 - **Who is heard:** every committee witness appearance is given a kind (federal

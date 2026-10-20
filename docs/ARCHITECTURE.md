@@ -33,6 +33,7 @@ flowchart LR
 | `debates/witness_kinds.py` | Kind of each witness (federal, business, union, …) from the printed title and organisation |
 | `debates/committee_analysis.py` | Who is heard, committee topics with the House model, members' committee work; cached |
 | `debates/committee_views.py` | Committee, meeting, witness and committee search pages |
+| `debates/kinds.py` | Statements, questions and answers the House typed "Debate", from the part of the sitting day |
 | `debates/votes.py` | Store recorded votes, match printed names to members, mark party lines |
 | `debates/api.py` | Read-only DRF endpoints and OpenAPI schema |
 | `debates/middleware.py` | Interface language from `?lang=`, remembered in a cookie |
@@ -88,7 +89,7 @@ erDiagram
 
 ## Testing
 
-- 353 tests with pytest against PostgreSQL (CI uses a PostgreSQL service).
+- 366 tests with pytest against PostgreSQL (CI uses a PostgreSQL service).
 - The parser is tested on invented XML with the real structure (real Hansard text is
   never committed), and on real sittings when they have been downloaded locally.
 - The ingestion commands are tested against a fake House website: missing sittings,

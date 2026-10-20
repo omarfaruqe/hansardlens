@@ -10,8 +10,9 @@ a party or a member.
 - **Data:** the official Hansard (Debates) of the House of Commons of Canada, published as
   XML on ourcommons.ca, one file per sitting and language:
   `https://www.ourcommons.ca/Content/House/{parliament}{session}/Debates/{nnn}/HAN{nnn}-{E|F}.XML`.
-- **Coverage:** the 43rd Parliament, 1st and 2nd sessions (December 2019 to August
-  2021, added in version 1.7), the 44th Parliament, 1st session (November 2021 to
+- **Coverage:** the 42nd Parliament, 1st session (December 2015 to June 2019, 435
+  sittings, added in version 1.11), the 43rd Parliament, 1st and 2nd sessions (December
+  2019 to August 2021, added in version 1.7), the 44th Parliament, 1st session (November 2021 to
   December 2024, 391 sittings) and the 45th Parliament, 1st session (from May 2025),
   updated daily.
 - **The 43rd Parliament** uses the same XML structure, checked on 19 sittings across
@@ -19,6 +20,10 @@ a party or a member.
   reduced-attendance and hybrid sittings of 2020 and 2021. Those sittings had far fewer
   members in the chamber at first, so some 2020 recorded votes have about 50 names
   rather than 330, and one (23 to 23) was decided by the Speaker's casting vote.
+- **The 42nd Parliament** uses the same XML structure, checked on 11 sittings from the
+  first (December 2015) to the last (June 2019), including recorded votes and bills.
+  One difference: its files type every intervention "Debate" or "Interjection", with no
+  questions, answers or members' statements (see "Kinds of speech" below).
 - **Terms:** reproduced under the Speaker's permission, which allows reproduction
   provided it is accurate, is not presented as official, and is not for commercial use.
   Text is stored as published, with whitespace normalized and recorded-vote name lists
@@ -47,6 +52,17 @@ whole, and in 43-2 No. 49 the two versions number one speech's paragraphs differ
 Those paragraphs are paired by id. The intervention type is taken from
 the English file, because the French file sometimes types the same intervention
 differently.
+
+**Kinds of speech.** The House types most interventions "Debate", including most
+members' statements and many questions and answers in Question Period (in the 42nd
+Parliament, all of them). The part of the sitting day is reliable, so an intervention
+typed "Debate" during Statements by Members counts as a statement, and one during Oral
+Questions as an answer when its speaker answers in that Question Period (the House
+typed one of their interventions "Answer", or their label gives a ministerial role:
+minister, parliamentary secretary, Government House Leader, Prime Minister) and as a
+question otherwise. Checked on the 42nd Parliament sample: 408 questions and 410
+answers, every one read in sequence for one sitting. Other types, and anything said from
+the chair, are kept as the House typed them; the House's own type is stored as well.
 
 **Floor language.** `[English]`, `[Translation]` (French spoken) and `[Text]` (written
 answers) markers act as switches: each applies to every following paragraph, across
@@ -150,7 +166,9 @@ uses. Each term is shown with its rate per 10,000 words in both windows.
 - **Who is listed:** every person who has spoken, matched across sittings by name
   without honorific (section 2). People who have presided over the House are marked.
 - **Speeches:** a member's own interventions of type debate, question, answer or
-  members' statement. Interjections, procedural text and anything said while presiding
+  members' statement (kinds as in section 2; version 1.11 recognises statements,
+  questions and answers the House typed "Debate", which moved many speeches from
+  "debate" to those kinds; the totals did not change). Interjections, procedural text and anything said while presiding
   are not counted.
 - **Party, riding and roles over time:** each value printed with the member's label,
   with the first and last sitting it appears on. Roles (minister, parliamentary
@@ -230,10 +248,14 @@ uses. Each term is shown with its rate per 10,000 words in both windows.
 - **Source:** the evidence (transcript) of each public meeting, published by the House
   in the same XML format as Hansard, in English and French. Each meeting's page on
   ourcommons.ca links to its XML. Meetings are numbered within a session; HansardLens
-  tries each number in turn and stops after 15 numbers in a row without a meeting.
-- **Which committees:** the Standing Committees on Finance (FINA), on Government
-  Operations and Estimates (OGGO) and on Access to Information, Privacy and Ethics
-  (ETHI), in every session loaded for the House. `HANSARD_COMMITTEES` sets others.
+  tries each number in turn. The House site answers "not found" both for a meeting
+  held in camera and for a number not used yet, and committees drafting a report often
+  meet in camera several times in a row, so the search stops only after 30 numbers in a
+  row without a public meeting.
+- **Which committees:** the House's 25 standing committees, in every session loaded
+  for the House (`HANSARD_COMMITTEES` chooses others). Version 1.9 loaded three of
+  them (FINA, OGGO, ETHI); the rules for kinds of witnesses (below) were written on
+  those three and re-checked on the others.
 - **Meetings without a transcript:** meetings held in camera (in private), and parts of
   meetings that move in camera, have no evidence and are not shown. A committee's
   meeting count is its public meetings with a transcript.
@@ -287,8 +309,8 @@ uses. Each term is shown with its rate per 10,000 words in both windows.
 
 ## 12. Limits
 
-- **Coverage:** three Parliaments from December 2019. Earlier Parliaments are not loaded
-  or checked. Committees: three of the House's standing committees, public meetings only.
+- **Coverage:** four Parliaments from December 2015. Earlier Parliaments are not loaded
+  or checked. Committees: the House's 25 standing committees, public meetings only.
 - **Kinds of witnesses are read from labels:** the House prints a title and organisation,
   not a category. The rules are a careful reading of those labels, not an official
   classification, and a committee's mix of witnesses reflects its mandate (OGGO
