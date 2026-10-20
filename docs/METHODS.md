@@ -304,6 +304,12 @@ uses. Each term is shown with its rate per 10,000 words in both windows.
 - **Members in committee:** words in the English text of a member's or minister's
   interventions at committee meetings (not as chair), next to their own speeches in
   the House (section 8). The share is committee words out of both.
+- **Language in committee:** the share of words spoken in French, measured as in
+  section 5 (each speech paragraph by the length of its English text, using the floor
+  language the transcript marks), for members, ministers and witnesses together and
+  for each; the chair and the clerk are left out. The Languages page compares
+  committees with at least 20,000 words; a member's page gives their committee share
+  from 1,000 words.
 - **Search:** paragraphs of committee transcripts, with the search rules of section 3,
   filtered by committee and by the speaker's role.
 - **Language:** each paragraph's floor language is read as in section 2. Committee

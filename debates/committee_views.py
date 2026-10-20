@@ -122,6 +122,7 @@ def _committee_overview(committee, session) -> dict:
         topics = {**topics, "rows": _topic_rows(model, topics["rows"])}
     return {
         "kinds": committee_analysis.witness_kinds(committee, session),
+        "language": committee_analysis.committee_language(committee, session),
         "model": model,
         "topics": topics,
         "min_topic_speeches": committee_analysis.TOPIC_MIN_SPEECHES,

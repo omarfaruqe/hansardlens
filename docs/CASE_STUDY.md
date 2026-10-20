@@ -22,7 +22,7 @@ denominator; the site describes what was said and does not rate parties or membe
 | --- | --- |
 | Data | 709 sittings from December 2019 (43rd, 44th and 45th Parliaments): 237,383 interventions and 840,469 paragraphs, each in English and French; 1,317 recorded votes with 422,392 individual votes; 699 bills; 550 people; 773 public meetings of three committees with 185,697 interventions and 2,247 witnesses |
 | Stack | Python 3.12, Django 5.2 LTS, PostgreSQL 16, scikit-learn, Django REST Framework, Docker Compose, Caddy, GitHub Actions |
-| Quality | 366 automated tests on PostgreSQL in CI; data-quality report; checks against real sittings |
+| Quality | 370 automated tests on PostgreSQL in CI; data-quality report; checks against real sittings |
 | Operations | Daily automatic refresh, nightly verified backups, failure alerts, pinned and hashed dependencies, weekly update proposals |
 | Interface | Complete English and French interface; audited against WCAG 2.1 AA with a published accessibility statement; charts with table views and keyboard access |
 
@@ -121,7 +121,7 @@ and deployed before the next began.
 
 ## Quality
 
-- **Tests:** 366 tests with pytest against PostgreSQL, run in GitHub Actions with
+- **Tests:** 370 tests with pytest against PostgreSQL, run in GitHub Actions with
   linting, formatting and migration checks. They cover the parser, alignment, speaker
   parsing, ingestion against a fake House website (missing sittings, network failures,
   new sessions and Parliaments, meetings in camera), search, analysis, topics on a
@@ -163,4 +163,4 @@ and deployed before the next began.
 | Official languages | Complete French interface, French data side by side, language actually spoken recorded |
 | Accessibility | WCAG 2.1 AA audit and fixes, accessibility statement, automated structural tests, keyboard-usable charts with live values |
 | Security and operations | Production settings, non-root containers, pinned dependencies, backups, alerts, health checks, side-by-side deployment |
-| Testing and documentation | 366 tests in CI; README, architecture, methods note, deployment runbook |
+| Testing and documentation | 370 tests in CI; README, architecture, methods note, deployment runbook |

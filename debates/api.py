@@ -666,6 +666,7 @@ class CommitteeDetail(APIView):
                 "name_fr": serializers.CharField(),
                 "session": serializers.CharField(allow_null=True),
                 "witness_kinds": serializers.JSONField(),
+                "language": serializers.JSONField(),
                 "topics": serializers.JSONField(),
                 "members": serializers.JSONField(),
             },
@@ -691,6 +692,7 @@ class CommitteeDetail(APIView):
                 "name_fr": committee.name_fr,
                 "session": f"{session[0]}-{session[1]}" if session else None,
                 "witness_kinds": committee_analysis.witness_kinds(committee, session),
+                "language": committee_analysis.committee_language(committee, session),
                 "topics": topics,
                 "members": committee_analysis.committee_members(committee, session),
             }
@@ -884,9 +886,12 @@ class TrendsView(APIView):
     responses=OpenApiTypes.OBJECT,
 )
 class LanguageView(APIView):
-    """Share of speech given in French: overall, by month, by party and by member."""
+    """Share of speech given in French: overall, by month, by party, by member and in
+    each committee (members, ministers and witnesses)."""
 
     def get(self, request):
+        from . import committee_analysis
+
         p = request.query_params
         parliament = int(p["parliament"]) if p.get("parliament", "").isdigit() else None
         return Response(
@@ -899,6 +904,7 @@ class LanguageView(APIView):
                 "by_month": analysis.language_by_month(parliament),
                 "by_party": analysis.language_by_party(parliament),
                 "by_member": analysis.language_by_member(parliament),
+                "by_committee": committee_analysis.language_by_committee(parliament),
             }
         )
 

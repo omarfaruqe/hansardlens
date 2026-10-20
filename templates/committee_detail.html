@@ -26,6 +26,15 @@
   {% url 'committees' as committees_url %}<p class="small muted">{% blocktranslate with n=kinds.total|intcomma %}Share of {{ n }} witness appearances (a witness heard at a meeting counts once).{% endblocktranslate %} <a href="{{ committees_url }}#who-is-heard">{% translate "All committees compared" %}</a></p>
 {% endif %}
 
+{% if language.share is not None %}
+  <h2 id="c-language">{% translate "English and French" %}</h2>
+  <p>{% blocktranslate with share=language.share %}<strong>{{ share }}%</strong> of what was said at these meetings was spoken in French.{% endblocktranslate %}
+  {% if language.roles.member %}{% blocktranslate with share=language.roles.member.share %}Members: {{ share }}%.{% endblocktranslate %}{% endif %}
+  {% if language.roles.minister %}{% blocktranslate with share=language.roles.minister.share %}Ministers: {{ share }}%.{% endblocktranslate %}{% endif %}
+  {% if language.roles.witness %}{% blocktranslate with share=language.roles.witness.share %}Witnesses: {{ share }}%.{% endblocktranslate %}{% endif %}</p>
+  {% url 'language' as language_url %}<p class="small muted">{% blocktranslate with n=language.total|intcomma %}Of {{ n }} words measured, the chair and clerk left out; each paragraph is measured by the length of its English text, as on the Languages page.{% endblocktranslate %} <a href="{{ language_url }}#in-committee">{% translate "All committees compared" %}</a></p>
+{% endif %}
+
 <div class="shift-columns">
   <section aria-labelledby="c-topics">
     <h2 id="c-topics">{% translate "Main topics" %}</h2>

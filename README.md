@@ -55,8 +55,9 @@ sitting day). **API docs:** http://103.99.176.180/hansardlens/api/docs/
   member, and a search of what was said in committee. **Who is heard:** witness
   appearances by kind (federal officials, oversight offices, business, unions,
   academics, civil society, individuals and more), compared across committees; each
-  committee's main topics, measured with the House topics; and the members who spoke
-  most.
+  committee's main topics, measured with the House topics; the members who spoke
+  most; and how much of each committee's evidence was given in French, by members,
+  ministers and witnesses.
 - **Languages:** share of speech given in French, overall, by month, party and member,
   measured with one yardstick for both languages.
 - **Topics:** 30 topics from TF-IDF and NMF, with each topic's share over time and
@@ -146,14 +147,14 @@ schema at `/api/schema/`.
 | `GET /api/v1/votes/` | Recorded votes, newest first; filters `parliament`, `session`, `result`, `member` |
 | `GET /api/v1/votes/44-1/481/` | One vote with every member's vote, party and whether it differed from their party |
 | `GET /api/v1/committees/` | Loaded committees with their meeting counts and dates |
-| `GET /api/v1/committees/FINA/` | One committee: witness appearances by kind, main topics, members who spoke most; filter `session` |
+| `GET /api/v1/committees/FINA/` | One committee: witness appearances by kind, French share by role, main topics, members who spoke most; filter `session` |
 | `GET /api/v1/committees/FINA/meetings/` | One committee's public meetings, newest first, with the witnesses; filters `parliament`, `session` |
 | `GET /api/v1/committees/FINA/44-1/100/` | One meeting: every intervention with role, speaker and paragraphs in English and French |
 | `GET /api/v1/witnesses/` | Witnesses, most recently heard first, with their kind; filters `q` (name, title or organisation), `committee`, `kind` |
 | `GET /api/v1/witnesses/{slug}/` | One witness and every meeting where they gave evidence |
 | `GET /api/v1/search/?q=…&text=en` | Paragraph search with highlighted snippets |
 | `GET /api/v1/trends/?term=a&term=b` | Mentions per 1,000 paragraphs by month |
-| `GET /api/v1/language/` | French share overall, by month, party and member |
+| `GET /api/v1/language/` | French share overall, by month, party, member and committee |
 | `GET /api/v1/topics/`, `/api/v1/topics/{n}/` | Topic model; one topic's shares over time and by party |
 | `GET /api/v1/term-shifts/` | Latest rising and fading terms |
 
@@ -212,7 +213,7 @@ under a sub-path (`DJANGO_SCRIPT_NAME`) next to other apps on the same server: s
 ## Development
 
 ```bash
-docker compose run --rm web pytest -q            # 366 tests, against PostgreSQL
+docker compose run --rm web pytest -q            # 370 tests, against PostgreSQL
 docker compose run --rm web ruff check .
 docker compose run --rm web ruff format --check .
 ```

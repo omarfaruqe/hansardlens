@@ -1605,3 +1605,42 @@ msgstr "Intern."
 #: templates/committees.html
 msgid "Appearances"
 msgstr "Comparutions"
+
+#: templates/committee_detail.html
+msgid "English and French"
+msgstr "Anglais et français"
+
+#: templates/committee_detail.html
+#, python-format
+msgid "<strong>%(share)s%%</strong> of what was said at these meetings was spoken in French."
+msgstr "<strong>%(share)s %%</strong> de ce qui a été dit à ces réunions l'a été en français."
+
+#: templates/committee_detail.html
+#, python-format
+msgid "Members: %(share)s%%."
+msgstr "Députés : %(share)s %%."
+
+#: templates/committee_detail.html
+#, python-format
+msgid "Ministers: %(share)s%%."
+msgstr "Ministres : %(share)s %%."
+
+#: templates/committee_detail.html
+#, python-format
+msgid "Witnesses: %(share)s%%."
+msgstr "Témoins : %(share)s %%."
+
+#: templates/committee_detail.html
+#, python-format
+msgid "Of %(n)s words measured, the chair and clerk left out; each paragraph is measured by the length of its English text, as on the Languages page."
+msgstr "Sur %(n)s mots mesurés, sans la présidence ni la greffe; chaque paragraphe est mesuré par la longueur de son texte anglais, comme sur la page Langues."
+
+#: templates/language.html
+#, python-format
+msgid "What members, ministers and witnesses said at public committee meetings, measured the same way; %(share)s%% of House debate was in French. Committees with at least 20,000 words."
+msgstr "Ce que les députés, les ministres et les témoins ont dit aux réunions publiques des comités, mesuré de la même façon; %(share)s %% des débats de la Chambre ont eu lieu en français. Comités d'au moins 20 000 mots."
+
+#: templates/member_detail.html
+#, python-format
+msgid "In committee, %(fr)s%% of it was in French."
+msgstr "En comité, %(fr)s %% l'a été en français."

@@ -249,7 +249,7 @@ def trends_view(request):
 
 
 def language_view(request):
-    from . import analysis
+    from . import analysis, committee_analysis
 
     parliament = _parliament(request)
     sort = request.GET.get("sort", "french")
@@ -265,6 +265,7 @@ def language_view(request):
         "by_month": analysis.language_by_month(parliament),
         "by_party": analysis.language_by_party(parliament),
         "members": analysis.language_by_member(parliament, sort=sort),
+        "committees": committee_analysis.language_by_committee(parliament),
         "sort": sort,
         "member_sorts": [
             ("french", _("French share")),

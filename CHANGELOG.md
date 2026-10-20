@@ -1,5 +1,16 @@
 # Changelog
 
+## 1.12.0 – 2026-10-20
+
+- **French in committee:** each committee page shows the share of what was said in
+  French, overall and for members, ministers and witnesses (by session); the Languages
+  page compares committees, next to the House; member pages give the share of their
+  committee speech in French. Measured as for the House: each paragraph by the length
+  of its English text, using the floor language the transcript marks.
+- **API:** `/api/v1/committees/{acronym}/` and `/api/v1/language/` include these figures.
+- Migration 0013 adds the word count to committee paragraphs (it rewrites that table,
+  so it takes a few minutes on a full database).
+
 ## 1.11.1 – 2026-10-19
 
 - **Votes:** a division number printed twice in one sitting (42-1 No. 194 prints

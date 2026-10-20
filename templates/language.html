@@ -63,6 +63,21 @@
   <div class="notice"><p>{% translate "No debates are loaded yet." %}</p></div>
 {% endif %}
 
+{% if committees %}
+  <h2 id="in-committee">{% translate "In committee" %}</h2>
+  <p class="small muted">{% blocktranslate with share=overall.share %}What members, ministers and witnesses said at public committee meetings, measured the same way; {{ share }}% of House debate was in French. Committees with at least 20,000 words.{% endblocktranslate %}</p>
+  <div class="table-wide">
+    <table class="data-table">
+      <thead><tr><th class="text" scope="col">{% translate "Committee" %}</th><th scope="col">{% translate "French" %}</th><th scope="col">{% translate "Members" %}</th><th scope="col">{% translate "Witnesses" %}</th><th scope="col">{% translate "Words measured" %}</th></tr></thead>
+      <tbody>
+        {% for row in committees %}
+          <tr><th class="text" scope="row"><a href="{% url 'committee_detail' row.acronym %}" title="{% if LANGUAGE_CODE == 'fr' %}{{ row.name_fr }}{% else %}{{ row.name_en }}{% endif %}">{{ row.acronym }}</a></th><td>{{ row.share }}%</td><td>{% if row.members is not None %}{{ row.members }}%{% else %}–{% endif %}</td><td>{% if row.witnesses is not None %}{{ row.witnesses }}%{% else %}–{% endif %}</td><td>{{ row.total|intcomma }}</td></tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+{% endif %}
+
 <h2>{% translate "How this is measured" %}</h2>
 <p class="method">{% translate "Hansard marks each passage as spoken in English or French. Every paragraph is measured by the length of its English text, whichever language was spoken, so both languages are counted with the same yardstick (French usually takes more words to say the same thing). Chair occupants, procedural text and written answers are left out." %}</p>
 {% endblock %}
