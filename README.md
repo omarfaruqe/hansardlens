@@ -251,6 +251,10 @@ docker run --rm -v "$PWD":/app -w /app node:22-alpine sh -c "npm ci && npm run b
 Colours are tokens with a light and a dark value; any new pair needs at least 4.5:1 for
 text and 3:1 for borders and chart marks, in both themes.
 
+Fonts: Source Serif 4 and Work Sans from Google Fonts; Poppins (the section menu) is
+served with the site from `static/fonts/`, under the SIL Open Font License
+(`static/fonts/Poppins-OFL.txt`).
+
 ### Translations
 
 Interface translations live in `locale/fr/LC_MESSAGES/`. After changing interface text:

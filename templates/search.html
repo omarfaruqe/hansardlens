@@ -1,5 +1,6 @@
 {% extends "base.html" %}{% load i18n hansard humanize %}
 {% block title %}{% if params.q %}{{ params.q }} – {% endif %}{% translate "Search" %} – HansardLens{% endblock %}
+{% block header_search %}{% endblock %}
 {% block content %}
 <h1 class="sr-only">{% translate "Search the debates" %}</h1>
 <form action="{% url 'search' %}" method="get" role="search">

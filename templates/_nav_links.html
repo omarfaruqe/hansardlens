@@ -9,5 +9,4 @@
 <li><a href="{% url 'whats_new' %}" {% if name == 'whats_new' %}aria-current="page"{% endif %}>{% translate "What's new" %}</a></li>
 <li><a href="{% url 'language' %}" {% if name == 'language' %}aria-current="page"{% endif %}>{% translate "Languages" %}</a></li>
 <li><a href="{% url 'sitting_list' %}" {% if name == 'sitting_list' or name == 'sitting_detail' %}aria-current="page"{% endif %}>{% translate "Sittings" %}</a></li>
-<li>{% if LANGUAGE_CODE == "fr" %}<a href="{% switch_language_url %}" lang="en" hreflang="en">English</a>{% else %}<a href="{% switch_language_url %}" lang="fr" hreflang="fr">Français</a>{% endif %}</li>
 {% endwith %}
