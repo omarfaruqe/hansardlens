@@ -536,15 +536,25 @@ def merge(en: Document, fr: Document | None) -> MergedSitting:
         has_french=fr is not None,
         interventions=merged,
         issues=issues,
-        divisions=_merge_divisions(en, fr),
+        divisions=_merge_divisions(en, fr, issues),
     )
 
 
-def _merge_divisions(en: Document, fr: Document | None) -> list[MergedDivision]:
-    """Vote lists and structure come from English; French adds titles and the object."""
+def _merge_divisions(
+    en: Document, fr: Document | None, issues: list[str] | None = None
+) -> list[MergedDivision]:
+    """Vote lists and structure come from English; French adds titles and the object.
+    A division number printed twice in one sitting keeps its first list: a repeat with
+    the same names is dropped silently, a different one is recorded as an issue."""
     fr_by_number = {d.number: d for d in fr.divisions} if fr else {}
     out = []
+    seen: dict[int, dict] = {}
     for d in en.divisions:
+        if d.number in seen:
+            if seen[d.number] != d.votes and issues is not None:
+                issues.append(f"division {d.number} printed twice with different lists; first kept")
+            continue
+        seen[d.number] = d.votes
         other = fr_by_number.get(d.number)
         object_en, result = read_heading(d.heading, "en")
         object_fr, result_fr = read_heading(other.heading, "fr") if other else ("", "")

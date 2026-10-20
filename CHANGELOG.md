@@ -1,5 +1,11 @@
 # Changelog
 
+## 1.11.1 – 2026-10-19
+
+- **Votes:** a division number printed twice in one sitting (42-1 No. 194 prints
+  division 334 twice) no longer stops the load. The first list is kept, and a repeat
+  with different names is recorded as an issue on the sitting.
+
 ## 1.11.0 – 2026-10-19
 
 - **42nd Parliament (2015–2019):** the parser handles its sittings (checked on 11, from

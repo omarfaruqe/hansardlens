@@ -257,3 +257,27 @@ def test_outcome_announced_after_the_vote_is_used():
     assert last.number == 56 and (len(last.votes["yea"]), len(last.votes["nay"])) == (1, 0)
     # the counts alone would say "agreed"; the announcement decides
     assert (last.object_en, last.object_fr, last.result) == ("The motion", "La motion", "negatived")
+
+
+def _with_repeated_division(change: bool) -> bytes:
+    """votes_en.xml with its first division printed a second time (42-1 No. 194 prints
+    division 334 twice)."""
+    xml = (FIXTURES / "votes_en.xml").read_text()
+    start = xml.index("<Division ")
+    end = xml.index("</Division>", start) + len("</Division>")
+    block = xml[start:end]
+    if change:
+        block = block.replace('DbId="', 'DbId="9', 1)
+    return (xml[:end] + block + xml[end:]).encode()
+
+
+@pytest.mark.parametrize("change", [False, True])
+def test_division_printed_twice(db, change):
+    en = parse_document(_with_repeated_division(change))
+    fr = parse_document((FIXTURES / "votes_fr.xml").read_bytes())
+    merged = merge(en, fr)
+    numbers = [d.number for d in merged.divisions]
+    assert len(numbers) == len(set(numbers)) == 3
+    assert any("printed twice" in i for i in merged.issues) == change
+    store(merged)  # no duplicate key
+    assert Division.objects.count() == 3

@@ -199,6 +199,9 @@ uses. Each term is shown with its rate per 10,000 words in both windows.
   full text and sponsor are on the House of Commons page linked from each vote.
 - **Result:** as stated in that sentence (*agreed to* / *negatived*); otherwise from
   the counts.
+- **A division printed twice:** at least one sitting (42-1 No. 194) prints the same
+  division number twice. The first list is kept; when the two lists differ, the sitting
+  records it and the data-quality report shows it.
 - **Matching names:** each printed name carries the House's member id, which is also on
   the member's speeches. Ministers and parliamentary secretaries speak under a role id,
   so names that do not match by id are matched by surname, and by riding where the list
