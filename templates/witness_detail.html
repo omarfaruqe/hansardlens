@@ -4,6 +4,7 @@
 <p class="small"><a href="{% url 'witnesses' %}">{% translate "All witnesses" %}</a></p>
 <h1>{{ witness.name }}</h1>
 <p class="lede" lang="{{ lang }}">{{ title }}{% if title and aff %}, {% endif %}{{ aff }}{% if witness.as_individual %}{% if title or aff %}, {% endif %}{% translate "as an individual" %}{% endif %}</p>
+<p class="small"><span class="muted">{% translate "Kind:" %}</span> <a href="{% url 'witnesses' %}?kind={{ witness.kind }}">{{ witness.kind|kind_label }}</a></p>
 {% if titles|length > 1 %}
   <p class="small muted">{% translate "Also listed as:" %} <span lang="{{ lang }}">{% for t in titles|slice:"1:" %}{{ t }}{% if not forloop.last %}; {% endif %}{% endfor %}</span></p>
 {% endif %}

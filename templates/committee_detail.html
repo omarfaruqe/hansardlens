@@ -16,6 +16,57 @@
   <button class="button" type="submit">{% translate "Show" %}</button>
 </form>
 
+{% if kinds.rows %}
+  <h2 id="c-kinds">{% translate "Who is heard" %}</h2>
+  <ul class="hbars kinds-bars">
+    {% for row in kinds.rows %}
+      <li><span>{{ row.kind|kind_label }}</span><span class="track" aria-hidden="true"><span class="fill" style="width: {% widthratio row.share 100 100 %}%"></span></span><span class="val">{{ row.share }}%</span></li>
+    {% endfor %}
+  </ul>
+  {% url 'committees' as committees_url %}<p class="small muted">{% blocktranslate with n=kinds.total|intcomma %}Share of {{ n }} witness appearances (a witness heard at a meeting counts once).{% endblocktranslate %} <a href="{{ committees_url }}#who-is-heard">{% translate "All committees compared" %}</a></p>
+{% endif %}
+
+<div class="shift-columns">
+  <section aria-labelledby="c-topics">
+    <h2 id="c-topics">{% translate "Main topics" %}</h2>
+    {% if topics.rows %}
+      <ol class="topic-list compact">
+        {% for t in topics.rows %}
+          <li>
+            <a class="topic-name" href="{% url 'topic_detail' t.number %}" lang="{{ model.lang }}">{{ t.label }}</a>
+            <span class="track" aria-hidden="true"><span class="fill" style="width: {% widthratio t.share topics.rows.0.share 100 %}%"></span></span>
+            <span class="val">{{ t.share }}%</span>
+            <span class="topic-words">{% blocktranslate count counter=t.n with n=t.n|intcomma house=t.house_share %}{{ n }} speech; {{ house }}% of speeches in the House{% plural %}{{ n }} speeches; {{ house }}% of speeches in the House{% endblocktranslate %}</span>
+          </li>
+        {% endfor %}
+      </ol>
+      <p class="small muted">{% blocktranslate with n=topics.total|intcomma %}Share of the {{ n }} committee speeches (members, ministers and witnesses) whose main topic it is, using the topics of the House debates.{% endblocktranslate %}</p>
+    {% elif model %}
+      <p class="small muted">{% blocktranslate with n=min_topic_speeches %}Main topics are shown from {{ n }} analysed speeches. Speeches loaded since the topics were last fitted are analysed at the next weekly refit.{% endblocktranslate %}</p>
+    {% else %}
+      <p class="small muted">{% translate "No topic model yet." %}</p>
+    {% endif %}
+  </section>
+  <section aria-labelledby="c-members">
+    <h2 id="c-members">{% translate "Members who spoke most" %}</h2>
+    {% if members %}
+      <table class="data-table committee-members">
+        <caption class="sr-only">{% translate "Members who spoke most" %}</caption>
+        <thead><tr><th scope="col">{% translate "Member" %}</th><th scope="col">{% translate "Meetings" %}</th><th scope="col">{% translate "Words" %}</th></tr></thead>
+        <tbody>
+          {% for m in members %}
+            <tr><td><a href="{% url 'member_detail' m.slug %}">{{ m.name }}</a> <span class="muted small">{{ m.party|party }}</span></td><td>{{ m.meetings|intcomma }}</td><td>{{ m.words|intcomma }}</td></tr>
+          {% endfor %}
+        </tbody>
+      </table>
+      <p class="small muted">{% translate "Words in the English text of their questions and remarks; the chair is not counted." %}</p>
+    {% else %}
+      <p class="small muted">{% translate "No member interventions loaded." %}</p>
+    {% endif %}
+  </section>
+</div>
+
+<h2>{% translate "Meetings" %}</h2>
 <p class="result-count" aria-live="polite">{% blocktranslate count counter=total with n=total|intcomma %}{{ n }} public meeting{% plural %}{{ n }} public meetings{% endblocktranslate %}</p>
 <ol class="results">
   {% for m in page.object_list %}

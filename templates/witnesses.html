@@ -15,6 +15,12 @@
       {% for c in committees %}<option value="{{ c.acronym }}" {% if committee == c.acronym %}selected{% endif %}>{{ c.acronym }}</option>{% endfor %}
     </select>
   </label>
+  <label>{% translate "Kind" %}
+    <select name="kind">
+      <option value="">{% translate "All kinds" %}</option>
+      {% for key, label in kinds.items %}<option value="{{ key }}" {% if kind == key %}selected{% endif %}>{{ label }}</option>{% endfor %}
+    </select>
+  </label>
   <input type="hidden" name="sort" value="{{ sort }}">
   <button class="button" type="submit">{% translate "Show" %}</button>
 </form>

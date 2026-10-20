@@ -7,9 +7,11 @@ from django.core.paginator import Paginator
 from django.db.models import Count, F, Max, Min, Q
 from django.shortcuts import get_object_or_404, redirect, render
 
-from . import search
+from . import committee_analysis, search
 from .models import Committee, Meeting, MeetingIntervention, MeetingParagraph, Witness
+from .textmine import active_model
 from .views import _fold, content_lang
+from .witness_kinds import KINDS
 
 PAGE_SIZE = 50
 SPOKEN = ("member", "chair", "minister", "witness")
@@ -36,6 +38,7 @@ def committees_view(request):
             "lang": content_lang(request),
             "committees": committees,
             "witnesses_total": Witness.objects.count(),
+            "kinds": committee_analysis.witness_kinds_by_committee(),
         },
     )
 
@@ -60,6 +63,8 @@ def committee_detail(request, acronym: str):
     if session in sessions:
         p, s = session.split("-")
         meetings = meetings.filter(parliament=int(p), session=int(s))
+    else:
+        p = s = None
     page = Paginator(meetings, PAGE_SIZE).get_page(request.GET.get("page"))
     # Witnesses of the meetings on this page, in order of appearance.
     rows = (
@@ -99,8 +104,29 @@ def committee_detail(request, acronym: str):
             "session": session if session in sessions else "",
             "sessions": sessions,
             "top_affiliations": [(r[f"witness__affiliation_{lang}"], r["n"]) for r in top],
+            **_committee_overview(committee, (int(p), int(s)) if p else None),
         },
     )
+
+
+def _topic_rows(model, rows: list[dict]) -> list[dict]:
+    """Attach each topic's label to rows that carry a topic `number`."""
+    labels = {t.number: t.label for t in model.topics.all()} if model else {}
+    return [{**r, "label": labels.get(r["number"], "")} for r in rows]
+
+
+def _committee_overview(committee, session) -> dict:
+    model = active_model("en")
+    topics = committee_analysis.committee_topics(committee, model, session) if model else None
+    if topics:
+        topics = {**topics, "rows": _topic_rows(model, topics["rows"])}
+    return {
+        "kinds": committee_analysis.witness_kinds(committee, session),
+        "model": model,
+        "topics": topics,
+        "min_topic_speeches": committee_analysis.TOPIC_MIN_SPEECHES,
+        "members": committee_analysis.committee_members(committee, session),
+    }
 
 
 def meeting_detail(request, acronym: str, parliament: int, session: int, number: int):
@@ -138,11 +164,21 @@ def meeting_detail(request, acronym: str, parliament: int, session: int, number:
             "witnesses": witnesses,
             "previous": neighbours.filter(number__lt=number).order_by("-number").first(),
             "next": neighbours.filter(number__gt=number).order_by("number").first(),
+            **_meeting_topics(meeting),
         },
     )
 
 
-def find_witnesses(q: str = "", committee: str = ""):
+def _meeting_topics(meeting) -> dict:
+    model = active_model("en")
+    if not model:
+        return {"model": None, "meeting_topics": []}
+    numbers = committee_analysis.meeting_topics(meeting, model)
+    topics = {t.number: t for t in model.topics.filter(number__in=numbers)}
+    return {"model": model, "meeting_topics": [topics[n] for n in numbers if n in topics]}
+
+
+def find_witnesses(q: str = "", committee: str = "", kind: str = ""):
     """Witnesses with their meeting count, optionally filtered by a folded name, title or
     organisation search and by committee. Shared by the page and the API."""
     qs = Witness.objects.annotate(meetings_n=Count("interventions__meeting", distinct=True))
@@ -159,6 +195,13 @@ def find_witnesses(q: str = "", committee: str = ""):
             in _fold(f"{w.name} {w.title_en} {w.affiliation_en} {w.title_fr} {w.affiliation_fr}")
         ]
         qs = qs.filter(id__in=ids)
+    if kind in KINDS:
+        ids = [
+            w.id
+            for w in Witness.objects.only("id", "title_en", "affiliation_en", "as_individual")
+            if w.kind == kind
+        ]
+        qs = qs.filter(id__in=ids)
     return qs
 
 
@@ -166,7 +209,9 @@ def witnesses_view(request):
     lang = content_lang(request)
     q = " ".join(request.GET.get("q", "").split())[:100]
     committee = request.GET.get("committee", "").upper()[:8]
-    qs = find_witnesses(q, committee)
+    kind = request.GET.get("kind", "")
+    kind = kind if kind in KINDS else ""
+    qs = find_witnesses(q, committee, kind)
     sort = request.GET.get("sort", "recent")
     qs = qs.order_by({"name": "name", "meetings": "-meetings_n"}.get(sort, "-latest_date"), "name")
     page = Paginator(qs, PAGE_SIZE).get_page(request.GET.get("page"))
@@ -183,6 +228,8 @@ def witnesses_view(request):
             "q": q,
             "committee": committee,
             "committees": Committee.objects.order_by("acronym"),
+            "kind": kind,
+            "kinds": KINDS,
             "sort": sort if sort in ("name", "meetings") else "recent",
             "querystring": query.urlencode(),
         },

@@ -26,6 +26,23 @@
   <div class="notice"><p>{% translate "No committee meetings are loaded yet. Run the load_committees command." %}</p></div>
 {% endif %}
 
+{% if kinds.rows %}
+  <h2 id="who-is-heard">{% translate "Who is heard" %}</h2>
+  <div class="table-wide">
+    <table class="data-table kinds-table">
+      <caption class="sr-only">{% translate "Share of witness appearances by kind of organisation, for each committee" %}</caption>
+      <thead><tr><th class="text" scope="col">{% translate "Kind of witness" %}</th>{% for c in kinds.columns %}<th scope="col">{% if c %}<a href="{% url 'committee_detail' c %}">{{ c }}</a>{% else %}{% translate "All" %}{% endif %}</th>{% endfor %}</tr></thead>
+      <tbody>
+        {% for row in kinds.rows %}
+          <tr><th class="text" scope="row">{{ row.kind|kind_label }}</th>{% for v in row.cells %}<td>{{ v }}%</td>{% endfor %}</tr>
+        {% endfor %}
+      </tbody>
+      <tfoot><tr><th class="text" scope="row">{% translate "Witness appearances" %}</th>{% for n in kinds.totals %}<td>{{ n|intcomma }}</td>{% endfor %}</tr></tfoot>
+    </table>
+  </div>
+  <p class="small muted">{% translate "A witness heard at a meeting counts once for that meeting. Kinds are read from the title and organisation printed with each witness's name, with rules checked by hand against every label; see the methods note." %}</p>
+{% endif %}
+
 <h2>{% translate "About committee evidence" %}</h2>
 <p class="method">{% translate "Only public meetings have a transcript; meetings held in camera (in private) do not. Witnesses are listed with the title and organisation printed in the transcript at the time. HansardLens loads a selection of committees; the House of Commons website has all of them." %}</p>
 {% endblock %}

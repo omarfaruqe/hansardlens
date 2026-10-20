@@ -310,7 +310,7 @@ def topics_view(request):
 
 
 def topic_detail(request, number: int):
-    from . import analysis
+    from . import analysis, committee_analysis
 
     lang, model = _model_for(request)
     if model is None:
@@ -330,6 +330,7 @@ def topic_detail(request, number: int):
         "terms": [(t, round(100 * w)) for t, w in topic.terms],
         "by_month": by_month,
         "by_party": analysis.topic_by_party(topic),
+        "by_committee": committee_analysis.topic_by_committee(topic),
         "examples": examples,
         "month_table": list(
             zip(
@@ -450,6 +451,7 @@ def member_detail(request, slug: str):
     recent_votes = member_votes.select_related("division__sitting").order_by(
         "-division__sitting__date", "-division__number"
     )[:8]
+    from . import committee_analysis
     from .models import Meeting
 
     committee_meetings = (
@@ -484,6 +486,9 @@ def member_detail(request, slug: str):
         "committee_meetings": committee_meetings[:8],
         "committee_total": committee_total,
         "committee_by": committee_by,
+        "committee_work": committee_analysis.member_committee_work(person)
+        if committee_total
+        else None,
         "recent_votes": recent_votes,
         "model": model,
         "page": page,

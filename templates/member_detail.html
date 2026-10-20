@@ -97,6 +97,7 @@
 {% if committee_total %}
   <h2>{% translate "In committee" %}</h2>
   <p>{% blocktranslate count counter=committee_total %}Spoke at {{ counter }} public meeting of the loaded committees{% plural %}Spoke at {{ counter }} public meetings of the loaded committees{% endblocktranslate %}{% if committee_by %} ({% for c in committee_by %}{{ c.committee__acronym }} {{ c.meetings }}{% if not forloop.last %}, {% endif %}{% endfor %}){% endif %}.</p>
+  {% if committee_work.committee_share is not None %}<p>{% blocktranslate with c=committee_work.committee_words|intcomma h=committee_work.house_words|intcomma share=committee_work.committee_share %}{{ c }} words in committee and {{ h }} in the House: {{ share }}% of what this member said was said in committee.{% endblocktranslate %}{% if committee_work.chaired_meetings %} {% blocktranslate count counter=committee_work.chaired_meetings %}Chaired {{ counter }} meeting.{% plural %}Chaired {{ counter }} meetings.{% endblocktranslate %}{% endif %}</p>{% endif %}
   <ul class="sitting-votes">
     {% for m in committee_meetings %}{% with committee=m.committee %}
       <li><a href="{{ m.get_absolute_url }}?text={{ lang }}#ci-{{ m.first }}">{{ m.date|ldate:"date" }}</a> · {% include "_committee_name.html" %} <span class="muted small">{% blocktranslate count counter=m.n %}{{ counter }} intervention{% plural %}{{ counter }} interventions{% endblocktranslate %}</span></li>

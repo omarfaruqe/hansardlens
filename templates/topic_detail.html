@@ -39,6 +39,16 @@
   <p class="small muted">{% translate "Out of each party's own speeches, so large and small parties compare fairly. Parties with at least 200 speeches. Bars are scaled to the largest value." %}</p>
 {% endif %}
 
+{% if by_committee %}
+  <h2>{% translate "In committee" %}</h2>
+  <ul class="hbars">
+    {% for row in by_committee %}
+      <li><span><a href="{% url 'committee_detail' row.acronym %}" title="{% if LANGUAGE_CODE == 'fr' %}{{ row.name_fr }}{% else %}{{ row.name_en }}{% endif %}">{{ row.acronym }}</a></span><span class="track" aria-hidden="true"><span class="fill" style="width: {% widthratio row.share by_committee.0.share 100 %}%"></span></span><span class="val">{{ row.share }}%</span></li>
+    {% endfor %}
+  </ul>
+  <p class="small muted">{% blocktranslate with house=topic_percent %}Share of each committee's analysed speeches (members, ministers and witnesses) whose main topic is this one; {{ house }}% in the House. Bars are scaled to the largest value.{% endblocktranslate %}</p>
+{% endif %}
+
 {% if examples %}
   <h2>{% translate "Speeches most clearly about this topic" %}</h2>
   <ol class="results">

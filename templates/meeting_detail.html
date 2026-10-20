@@ -7,6 +7,13 @@
 <p class="lede">{% if meeting.chair %}{% blocktranslate with name=meeting.chair %}Chair: {{ name }}{% endblocktranslate %}{% endif %}</p>
 <p class="small"><a href="{% with_text other_lang %}">{% if other_lang == "fr" %}{% translate "Show the French text first" %}{% else %}{% translate "Show the English text first" %}{% endif %}</a> · <a href="{% if LANGUAGE_CODE == 'fr' %}{{ meeting.evidence_url_fr }}{% else %}{{ meeting.evidence_url_en }}{% endif %}" rel="external">{% translate "Official transcript on the House of Commons website" %}</a></p>
 
+{% if meeting_topics %}
+  <p class="small"><span class="muted">{% translate "Main topics:" %}</span></p>
+  <ul class="topic-chips">
+    {% for t in meeting_topics %}<li><a href="{% url 'topic_detail' t.number %}" lang="{{ model.lang }}">{{ t.label }}</a></li>{% endfor %}
+  </ul>
+{% endif %}
+
 {% if witnesses %}
   <h2>{% translate "Witnesses" %}</h2>
   <ul class="role-list">

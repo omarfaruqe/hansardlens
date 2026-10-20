@@ -16,7 +16,8 @@ const pages = [
   "/sittings/", "/members/", "/votes/", "/bills/", "/trends/?t1=housing&t2=inflation",
   "/language/", "/topics/", "/new/", "/accessibility/", "/accessibility/?lang=fr",
   "/committees/", "/committees/FINA/", "/committees/witnesses/", "/committees/search/?q=housing",
-  "/committees/search/?q=logement&text=fr&lang=fr",
+  "/committees/search/?q=logement&text=fr&lang=fr", "/committees/?lang=fr",
+  "/committees/FINA/?lang=fr", "/committees/witnesses/?kind=business",
   "/api/docs/", "/no-such-page/",
 ];
 

@@ -105,3 +105,11 @@ def pct_of(value, total):
         return round(100 * value / total)
     except (TypeError, ZeroDivisionError):
         return 0
+
+
+@register.filter
+def kind_label(kind):
+    """Label of a kind of witness ("federal" -> "Federal departments and agencies")."""
+    from debates.witness_kinds import KINDS
+
+    return KINDS.get(kind, kind)
