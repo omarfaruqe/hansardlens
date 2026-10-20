@@ -64,8 +64,9 @@ sitting day). **API docs:** http://103.99.176.180/hansardlens/api/docs/
   within each party's own speeches.
 - **What's new:** terms rising or fading in the last 60 days of sittings compared with the
   year before (log-odds ratio with an informative prior).
-- **Accessible:** audited against WCAG 2.1 AA, keyboard-usable charts whose values are
-  read out, and an accessibility statement at `/accessibility/`.
+- **Accessible:** audited against WCAG 2.1 AA in light and dark themes, keyboard-usable
+  charts whose values are read out, and an accessibility statement at `/accessibility/`.
+- **Light and dark themes**, following the system setting or the header switch.
 - **Bilingual interface** throughout, with House terminology, French dates and ordinals.
 - **REST API** under `/api/v1/` with interactive OpenAPI docs.
 
@@ -233,6 +234,23 @@ pip-compile --generate-hashes --strip-extras --allow-unsafe -o requirements.txt 
 pip-compile --generate-hashes --strip-extras --allow-unsafe -o requirements-dev.txt requirements-dev.in
 ```
 
+### Styles
+
+The pages use Tailwind CSS 4 with daisyUI 5, in a light and a dark theme (the site
+follows the system setting; the moon button in the header switches and remembers the
+choice). The source is `assets/css/app.css`; the site loads the built
+`static/css/app.css`, which is committed, so running or deploying HansardLens needs no
+Node.js. After changing the styles or adding classes to templates, rebuild it (CI checks
+that the committed file matches):
+
+```bash
+docker run --rm -v "$PWD":/app -w /app node:22-alpine sh -c "npm ci && npm run build"
+# or, with Node.js installed: npm ci && npm run build   (npm run watch while editing)
+```
+
+Colours are tokens with a light and a dark value; any new pair needs at least 4.5:1 for
+text and 3:1 for borders and chart marks, in both themes.
+
 ### Translations
 
 Interface translations live in `locale/fr/LC_MESSAGES/`. After changing interface text:
@@ -256,7 +274,8 @@ debates/
   api.py                REST API
   management/commands/  load_hansard, refresh_data, build_topics, ...
   tests/                pytest suite and invented fixtures
-templates/, static/     pages, CSS, chart script
+templates/, static/     pages, built CSS, chart and theme scripts
+assets/css/app.css      style source (Tailwind CSS and daisyUI themes)
 locale/fr/              French interface
 docs/                   methods, architecture, screenshots
 ```

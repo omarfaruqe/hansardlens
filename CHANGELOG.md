@@ -1,5 +1,17 @@
 # Changelog
 
+## 1.13.0 – 2026-10-20 (branch `tailwind`)
+
+- **Styles rebuilt on Tailwind CSS 4.3 and daisyUI 5.7**, keeping the same look: the
+  page components are themed Tailwind components, the header, buttons and menus use
+  daisyUI. The built stylesheet (45 KB) is committed, so running and deploying need no
+  Node.js; CI checks it matches its source.
+- **Dark theme:** follows the system setting; the moon button in the header switches and
+  remembers the choice in the browser. Every colour pair checked for WCAG 2.1 AA in both
+  themes; the axe-core audit now runs every page in both.
+- **Navigation:** fits on one line on desktop; on phones it folds into a "Menu" that
+  opens and closes with the keyboard.
+
 ## 1.12.0 – 2026-10-20
 
 - **French in committee:** each committee page shows the share of what was said in

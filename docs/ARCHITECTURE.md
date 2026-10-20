@@ -39,6 +39,8 @@ flowchart LR
 | `debates/middleware.py` | Interface language from `?lang=`, remembered in a cookie |
 | `debates/templatetags/hansard.py` | Locale-aware dates, ordinals, party abbreviations |
 | `static/js/linechart.js` | Dependency-free SVG line chart with keyboard crosshair |
+| `assets/css/app.css` | Styles: Tailwind CSS 4 and daisyUI 5, light and dark themes as colour tokens; built to `static/css/app.css` |
+| `static/js/theme.js` | Light or dark theme: system setting, or the header switch remembered in the browser |
 
 ## Data model
 
