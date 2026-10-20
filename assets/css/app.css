@@ -1,8 +1,98 @@
-:root {
-  /* Canadian red for the frame (header, links, buttons, the spoken-text marker).
-     Data stays neutral: red is also a party colour. Contrast: white on --red 6.9:1,
-     --red text on --paper 6.4:1. */
-  --red: #b5121b;
+/* HansardLens styles: Tailwind CSS 4 with daisyUI 5. Source file; the site loads the
+   built static/css/app.css (npm run build). Colours are tokens with a light and a dark
+   value, each pair checked for WCAG 2.1 AA contrast (docs/ACCESSIBILITY.md). Data marks
+   stay neutral: red is the frame colour, and also a party colour. */
+
+@import "tailwindcss";
+@source "../../templates";
+@source "../../static/js";
+
+@plugin "daisyui" {
+  themes: false;
+  logs: false;
+  include: button, menu, dropdown, input, select, table, badge, alert, join, stat, tab, swap;
+}
+
+@plugin "daisyui/theme" {
+  name: "hansard";
+  default: true;
+  color-scheme: light;
+  --color-base-100: #ffffff;
+  --color-base-200: #f7f7f8;
+  --color-base-300: #dcdde0;
+  --color-base-content: #1e1f23;
+  --color-primary: #b5121b;
+  --color-primary-content: #ffffff;
+  --color-secondary: #4f565c;
+  --color-secondary-content: #ffffff;
+  --color-accent: #8a0d14;
+  --color-accent-content: #ffffff;
+  --color-neutral: #1e1f23;
+  --color-neutral-content: #f7f7f8;
+  --color-info: #1f62b3;
+  --color-info-content: #ffffff;
+  --color-success: #0f6e4c;
+  --color-success-content: #ffffff;
+  --color-warning: #f1de96;
+  --color-warning-content: #1e1f23;
+  --color-error: #8a1c1c;
+  --color-error-content: #ffffff;
+  --radius-selector: 0.25rem;
+  --radius-field: 0.25rem;
+  --radius-box: 0.375rem;
+  --size-selector: 0.25rem;
+  --size-field: 0.25rem;
+  --border: 1px;
+  --depth: 0;
+  --noise: 0;
+}
+
+@plugin "daisyui/theme" {
+  name: "hansard-dark";
+  prefersdark: true;
+  color-scheme: dark;
+  --color-base-100: #1c1e22;
+  --color-base-200: #141518;
+  --color-base-300: #34373d;
+  --color-base-content: #e9eaec;
+  --color-primary: #b5121b;
+  --color-primary-content: #ffffff;
+  --color-secondary: #b7bdc3;
+  --color-secondary-content: #141518;
+  --color-accent: #ff8a91;
+  --color-accent-content: #141518;
+  --color-neutral: #e9eaec;
+  --color-neutral-content: #141518;
+  --color-info: #5fa3f0;
+  --color-info-content: #141518;
+  --color-success: #3fbf8a;
+  --color-success-content: #141518;
+  --color-warning: #5c4c10;
+  --color-warning-content: #e9eaec;
+  --color-error: #ff9a9a;
+  --color-error-content: #141518;
+  --radius-selector: 0.25rem;
+  --radius-field: 0.25rem;
+  --radius-box: 0.375rem;
+  --size-selector: 0.25rem;
+  --size-field: 0.25rem;
+  --border: 1px;
+  --depth: 0;
+  --noise: 0;
+}
+
+@theme {
+  --font-serif: "Source Serif 4", Georgia, serif;
+  --font-sans: "Work Sans", system-ui, sans-serif;
+}
+
+/* -- tokens ------------------------------------------------------------------------- */
+
+:root,
+[data-theme="hansard"] {
+  --brand: #b5121b;          /* header and buttons: white on it 6.9:1 */
+  --brand-dark: #8a0d14;
+  --red: #b5121b;            /* links, focus, the spoken-text marker: 6.4:1 on the page */
   --red-dark: #8a0d14;
   --red-soft: #fbeaeb;
   --paper: #f7f7f8;
@@ -10,47 +100,141 @@
   --ink: #1e1f23;
   --muted: #5e6268;
   --rule: #dcdde0;
-  /* Form fields: border at least 3:1 against the page (WCAG 1.4.11) */
-  --control: #8a8f96;
+  --control: #8a8f96;        /* form field borders, at least 3:1 (WCAG 1.4.11) */
   --data: #4f565c;
-  --data-light: #7c8189;  /* 3.9:1 on white, still lighter than --data */
+  --on-data: #ffffff;
+  --data-light: #7c8189;
+  --track: #ececee;
   --mark: #f1de96;
-  --serif: "Source Serif 4", Georgia, serif;
-  --sans: "Work Sans", system-ui, sans-serif;
+  --code-bg: #eeeff1;
+  --error-text: #8a1c1c;
+  --grid: #ececee;
+  --baseline: #a9b2ae;
+  --shadow: rgb(30 31 35 / 0.12);
+  /* chart lines, each at least 3:1 against the chart background */
+  --series-1: #2a78d6;
+  --series-2: #c75a28;
+  --series-3: #13865d;
+  --series-4: #a87200;
+  --serif: var(--font-serif);
+  --sans: var(--font-sans);
   --measure: 68ch;
 }
 
-* { box-sizing: border-box; }
-html { -webkit-text-size-adjust: 100%; }
-body {
-  margin: 0;
-  background: var(--paper);
-  color: var(--ink);
-  font: 400 1rem/1.55 var(--sans);
+[data-theme="hansard-dark"] {
+  --brand: #a3121a;          /* white on it 7.9:1 */
+  --brand-dark: #7d0d13;
+  --red: #ff8a91;            /* 8.1:1 on the page */
+  --red-dark: #ffa8ad;
+  --red-soft: #3a1d20;
+  --paper: #141518;
+  --surface: #1c1e22;
+  --ink: #e9eaec;
+  --muted: #a5a9b0;          /* 7.7:1 */
+  --rule: #34373d;
+  --control: #7d828a;        /* 4.7:1 */
+  --data: #b7bdc3;
+  --on-data: #141518;
+  --data-light: #8a9097;
+  --track: #2c2f34;
+  --mark: #5c4c10;
+  --code-bg: #2a2d32;
+  --error-text: #ff9a9a;
+  --grid: #2a2d32;
+  --baseline: #4a4f55;
+  --shadow: rgb(0 0 0 / 0.5);
+  --series-1: #5fa3f0;
+  --series-2: #f08a5b;
+  --series-3: #3fbf8a;
+  --series-4: #e0b03a;
 }
-a { color: var(--red); text-underline-offset: 0.18em; }
-a:hover { text-decoration-thickness: 2px; }
-:focus-visible { outline: 3px solid var(--red); outline-offset: 2px; }
-.site-header :focus-visible { outline-color: #fff; }  /* red on red would not show */
-input:focus, select:focus, textarea:focus { outline: 3px solid var(--red); outline-offset: 1px; }
-mark { background: var(--mark); color: inherit; padding: 0 0.1em; border-radius: 2px; }
 
-.wrap { max-width: 72rem; margin: 0 auto; padding: 0 1rem; }
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme]) {
+  --brand: #a3121a;          /* white on it 7.9:1 */
+  --brand-dark: #7d0d13;
+  --red: #ff8a91;            /* 8.1:1 on the page */
+  --red-dark: #ffa8ad;
+  --red-soft: #3a1d20;
+  --paper: #141518;
+  --surface: #1c1e22;
+  --ink: #e9eaec;
+  --muted: #a5a9b0;          /* 7.7:1 */
+  --rule: #34373d;
+  --control: #7d828a;        /* 4.7:1 */
+  --data: #b7bdc3;
+  --on-data: #141518;
+  --data-light: #8a9097;
+  --track: #2c2f34;
+  --mark: #5c4c10;
+  --code-bg: #2a2d32;
+  --error-text: #ff9a9a;
+  --grid: #2a2d32;
+  --baseline: #4a4f55;
+  --shadow: rgb(0 0 0 / 0.5);
+  --series-1: #5fa3f0;
+  --series-2: #f08a5b;
+  --series-3: #3fbf8a;
+  --series-4: #e0b03a;
+  }
+}
 
-/* Header */
-.site-header { background: var(--red); color: #fff; border-bottom: 3px solid var(--red-dark); }
-.site-header .wrap {
-  display: flex; align-items: center; justify-content: space-between;
-  gap: 1rem; flex-wrap: wrap; padding-top: 0.8rem; padding-bottom: 0.8rem;
+/* -- elements: what the templates expect from a browser, on top of Tailwind's reset --- */
+
+@layer base {
+  html { -webkit-text-size-adjust: 100%; }
+  body { background: var(--paper); color: var(--ink); font: 400 1rem/1.55 var(--sans); }
+  p, ul, ol, dl, figure, details, table, fieldset, pre { margin-block: 1rem; }
+  ul { list-style: disc; padding-left: 1.5rem; }
+  ol { list-style: decimal; padding-left: 1.5rem; }
+  a { color: var(--red); text-decoration: underline; text-underline-offset: 0.18em; }
+  a:hover { text-decoration-thickness: 2px; }
+  strong, b { font-weight: 600; }
+  h1, h2, h3 { font-family: var(--serif); font-weight: 600; line-height: 1.2; letter-spacing: -0.01em; }
+  h1 { font-size: 2rem; margin: 0 0 0.5rem; }
+  h2 { font-size: 1.4rem; margin: 2rem 0 0.75rem; }
+  h3 { font-size: 1.1rem; margin: 1.5rem 0 0.5rem; }
+  summary { cursor: pointer; }
+  :focus-visible { outline: 3px solid var(--red); outline-offset: 2px; }
+  input:focus, select:focus, textarea:focus { outline: 3px solid var(--red); outline-offset: 1px; }
+  mark { background: var(--mark); color: inherit; padding: 0 0.1em; border-radius: 2px; }
+  ::placeholder { color: var(--muted); opacity: 1; }
+  svg { display: inline; }
+  .chart-svg { display: block; }
 }
-.wordmark {
-  display: inline-flex; align-items: center; gap: 0.45rem;
-  font: 600 1.35rem/1 var(--serif); color: #fff; text-decoration: none; letter-spacing: -0.01em;
+
+/* -- frame ---------------------------------------------------------------------------- */
+
+@layer components {
+  .wrap { max-width: 72rem; margin: 0 auto; padding: 0 1rem; }
+
+  .site-header { background: var(--brand); color: #fff; border-bottom: 3px solid var(--brand-dark); }
+  .site-header :focus-visible { outline-color: #fff; }  /* red on red would not show */
+  .site-header .bar-row { display: flex; align-items: center; gap: 1rem; padding-block: 0.8rem; }
+  .wordmark {
+    display: inline-flex; align-items: center; gap: 0.45rem; margin-right: auto;
+    font: 600 1.35rem/1 var(--serif); color: #fff; text-decoration: none; letter-spacing: -0.01em;
+  }
+  .wordmark .leaf { width: 1.3rem; height: 1.3rem; fill: #fff; flex: none; }
+  .site-nav ul { display: flex; flex-wrap: wrap; gap: 0.35rem 1.25rem; font-size: 0.95rem; list-style: none; margin: 0; padding: 0; }
+  .site-nav a { color: #fff; text-decoration: none; }
+  .site-nav a:hover, .site-nav a[aria-current="page"] { text-decoration: underline; }
+  .nav-narrow > summary { color: #fff; list-style: none; }
+  .nav-narrow > summary::-webkit-details-marker { display: none; }
+  .nav-narrow .menu { background: var(--surface); color: var(--ink); width: 15rem; box-shadow: 0 6px 20px var(--shadow); }
+  .nav-narrow .menu a { color: var(--ink); }
+  .nav-narrow .menu a[aria-current="page"] { font-weight: 600; text-decoration: underline; }
+  .theme-toggle { color: #fff; }
+  .theme-toggle svg { width: 1.15rem; height: 1.15rem; }
+
+
+  /* daisyUI fields and buttons, in the site's sizes */
+  .button { font: 600 1rem var(--sans); }
 }
-.wordmark .leaf { width: 1.3rem; height: 1.3rem; fill: #fff; flex: none; }
-.site-nav { display: flex; flex-wrap: wrap; gap: 0.35rem 1.25rem; font-size: 0.95rem; }
-.site-nav a { color: #fff; text-decoration: none; }
-.site-nav a:hover, .site-nav a[aria-current="page"] { text-decoration: underline; }
+
+/* -- page components (ported from the 1.x stylesheet; colours are tokens) ------------ */
+
+@layer components {
 
 main { padding: 2rem 0 4rem; }
 h1, h2, h3 { font-family: var(--serif); font-weight: 600; line-height: 1.2; letter-spacing: -0.01em; }
@@ -69,12 +253,12 @@ h3 { font-size: 1.1rem; margin: 1.5rem 0 0.5rem; }
 }
 .button {
   font: 600 1rem var(--sans); padding: 0.7rem 1.2rem; border: 0; border-radius: 4px;
-  background: var(--red); color: #fff; cursor: pointer;
+  background: var(--brand); color: #fff; cursor: pointer;
 }
-.button:hover { background: var(--red-dark); }
+.button:hover { background: var(--brand-dark); }
 .lang-choice { display: flex; gap: 1rem; margin: 0.75rem 0 0; font-size: 0.95rem; }
 .hint { font-size: 0.875rem; color: var(--muted); margin: 0.6rem 0 0; max-width: 46rem; }
-.hint code { font-size: 0.85em; background: #eeeff1; padding: 0.05em 0.3em; border-radius: 3px; }
+.hint code { font-size: 0.85em; background: var(--code-bg); padding: 0.05em 0.3em; border-radius: 3px; }
 
 /* Search layout */
 .search-layout { display: grid; gap: 2rem; grid-template-columns: 1fr; margin-top: 1.5rem; }
@@ -105,13 +289,13 @@ h3 { font-size: 1.1rem; margin: 1.5rem 0 0.5rem; }
 /* Party breakdown: neutral bars, no party colours on purpose */
 .breakdown { list-style: none; padding: 0; margin: 0; font-size: 0.875rem; }
 .breakdown li { display: grid; grid-template-columns: 3.2rem 1fr 3.5rem; gap: 0.5rem; align-items: center; margin: 0.3rem 0; }
-.bar { height: 0.55rem; background: var(--rule); border-radius: 2px; overflow: hidden; }
+.bar { height: 0.55rem; background: var(--track); border-radius: 2px; overflow: hidden; }
 .bar span { display: block; height: 100%; background: var(--data); }
 .breakdown .n { text-align: right; font-variant-numeric: tabular-nums; }
 
 .pager { display: flex; gap: 1rem; align-items: center; margin: 2rem 0 0; }
 .notice { background: var(--surface); border-left: 4px solid var(--red); padding: 1rem 1.2rem; max-width: var(--measure); }
-.errorlist { color: #8a1c1c; }
+.errorlist { color: var(--error-text); }
 
 /* Speech page: the bilingual record side by side */
 .speech-meta { color: var(--muted); max-width: var(--measure); }
@@ -158,21 +342,14 @@ h3 { font-size: 1.1rem; margin: 1.5rem 0 0.5rem; }
 
 /* Charts (palette validated: adjacent CVD and normal-vision checks pass; slots 3-4 are
    below 3:1 on white, so every chart has visible end labels and a table view) */
-:root {
-  --series-1: #2a78d6;
-  /* Each line at least 3:1 against the chart background (WCAG 1.4.11) */
-  --series-2: #c75a28;
-  --series-3: #13865d;
-  --series-4: #a87200;
-}
 .chart { margin: 1rem 0 0.5rem; background: var(--surface); border: 1px solid var(--rule); border-radius: 6px; padding: 1rem 1rem 0.5rem; }
 .chart figcaption { font: 600 1.05rem var(--serif); margin: 0 0 0.25rem; }
 .chart .chart-sub { font-size: 0.875rem; color: var(--muted); margin: 0 0 0.75rem; max-width: var(--measure); }
 .chart-plot { position: relative; }
 .chart-svg { display: block; max-width: 100%; height: auto; touch-action: pan-y; }
 .chart-svg:focus-visible { outline: 3px solid var(--red); outline-offset: 2px; }
-.chart-svg .grid { stroke: #ececee; stroke-width: 1; }
-.chart-svg .baseline { stroke: #a9b2ae; stroke-width: 1; }
+.chart-svg .grid { stroke: var(--grid); stroke-width: 1; }
+.chart-svg .baseline { stroke: var(--baseline); stroke-width: 1; }
 .chart-svg .tick { fill: var(--muted); font: 400 12px var(--sans); font-variant-numeric: tabular-nums; }
 .chart-svg .end-label { fill: var(--ink); font: 500 12.5px var(--sans); }
 .chart-svg .hairline { stroke: var(--ink); stroke-width: 1; opacity: 0.5; }
@@ -180,7 +357,7 @@ h3 { font-size: 1.1rem; margin: 1.5rem 0 0.5rem; }
 .chart-tip {
   position: absolute; z-index: 2; pointer-events: none; min-width: 11rem; max-width: 17rem;
   background: var(--surface); border: 1px solid var(--rule); border-radius: 4px;
-  box-shadow: 0 2px 8px rgb(30 31 35 / 0.12); padding: 0.5rem 0.65rem; font-size: 0.85rem;
+  box-shadow: 0 2px 8px var(--shadow); padding: 0.5rem 0.65rem; font-size: 0.85rem;
 }
 .tip-head { color: var(--muted); margin-bottom: 0.25rem; }
 .tip-row { margin: 0.2rem 0; }
@@ -213,7 +390,7 @@ h3 { font-size: 1.1rem; margin: 1.5rem 0 0.5rem; }
 .stat-line strong { font-size: 1.6rem; font-weight: 600; }
 .hbars { list-style: none; padding: 0; margin: 0.5rem 0; max-width: 44rem; }
 .hbars li { display: grid; grid-template-columns: 4rem 1fr 4rem; gap: 0.75rem; align-items: center; padding: 0.3rem 0; font-size: 0.95rem; }
-.hbars .track { height: 0.8rem; background: #ececee; border-radius: 2px; overflow: hidden; }
+.hbars .track { height: 0.8rem; background: var(--track); border-radius: 2px; overflow: hidden; }
 .hbars .fill { display: block; height: 100%; background: var(--data); border-radius: 0 2px 2px 0; }
 .hbars .val { text-align: right; font-variant-numeric: tabular-nums; }
 .method { font-size: 0.9rem; color: var(--muted); max-width: var(--measure); }
@@ -227,7 +404,7 @@ h3 { font-size: 1.1rem; margin: 1.5rem 0 0.5rem; }
   align-items: center; padding: 0.6rem 0; border-bottom: 1px solid var(--rule);
 }
 .topic-list .topic-name { font: 600 1.05rem var(--serif); }
-.topic-list .track { height: 0.6rem; background: #ececee; border-radius: 2px; overflow: hidden; }
+.topic-list .track { height: 0.6rem; background: var(--track); border-radius: 2px; overflow: hidden; }
 .topic-list .fill { display: block; height: 100%; background: var(--data); }
 .topic-list .val { text-align: right; font-variant-numeric: tabular-nums; font-size: 0.9rem; }
 .topic-list .topic-words { grid-column: 1 / -1; font-size: 0.85rem; color: var(--muted); }
@@ -272,7 +449,7 @@ h3 { font-size: 1.1rem; margin: 1.5rem 0 0.5rem; }
 /* Recorded votes: results and choices stay neutral (no party or traffic-light colours) */
 .kicker { font-size: 0.85rem; color: var(--muted); margin: 0 0 0.25rem; text-transform: uppercase; letter-spacing: 0.04em; }
 .vote-result { display: inline-block; font-size: 0.8rem; font-weight: 600; padding: 0.05rem 0.5rem; border-radius: 3px; white-space: nowrap; }
-.vote-result.agreed { background: var(--data); color: #fff; }
+.vote-result.agreed { background: var(--data); color: var(--on-data); }
 .vote-result.negatived { background: transparent; color: var(--ink); box-shadow: inset 0 0 0 1px var(--data); }
 .facts .result-cell { font-size: 1.1rem; padding-top: 0.35rem; }
 .vote-table .question { white-space: normal; min-width: 16rem; }
@@ -322,3 +499,18 @@ h3 { font-size: 1.1rem; margin: 1.5rem 0 0.5rem; }
 @media (max-width: 40rem) { .kinds-bars li { grid-template-columns: minmax(0, 1fr) 4.5rem 3.2rem; gap: 0.5rem; } }
 .kinds-table thead th { white-space: normal; vertical-align: bottom; font-size: 0.85rem; }
 .kinds-table tfoot th, .kinds-table tfoot td { font-weight: 600; border-top: 2px solid var(--rule); }
+
+}
+
+/* -- overrides of daisyUI component states (they live in the utilities layer) -------- */
+
+@layer utilities {
+  .nav-narrow[open] > summary,
+  .nav-narrow > summary:focus-visible,
+  .theme-toggle:focus-visible {
+    background: rgb(255 255 255 / 0.15);
+    color: #fff;
+    outline: 3px solid #fff;
+    outline-offset: 2px;
+  }
+}

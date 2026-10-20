@@ -44,7 +44,7 @@ def sitting():
 @subpath
 def test_links_and_static_files_carry_the_prefix(client, sitting):
     html = client.get("/search/", {"q": "bridge"}).content.decode()
-    assert f'href="{PREFIX}/static/css/site' in html
+    assert f'href="{PREFIX}/static/css/app' in html
     assert f'href="{PREFIX}/trends/"' in html
     assert f"{PREFIX}/speeches/1001/?text=en#p-1" in html
     assert f'href="{PREFIX}/search/?q=bridge&amp;lang=fr"' in html  # language switch

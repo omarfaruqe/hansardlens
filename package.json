@@ -1,0 +1,14 @@
+{
+  "name": "hansardlens-css",
+  "private": true,
+  "description": "Builds static/css/app.css from assets/css/app.css with Tailwind CSS and daisyUI. Only needed when the styles change; the built file is committed.",
+  "scripts": {
+    "build": "tailwindcss -i assets/css/app.css -o static/css/app.css --minify",
+    "watch": "tailwindcss -i assets/css/app.css -o static/css/app.css --watch"
+  },
+  "devDependencies": {
+    "@tailwindcss/cli": "4.3.3",
+    "daisyui": "5.7.43",
+    "tailwindcss": "4.3.3"
+  }
+}
