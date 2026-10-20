@@ -18,7 +18,15 @@ import numpy as np
 from django.db import transaction
 from sklearn.feature_extraction.text import ENGLISH_STOP_WORDS, CountVectorizer, TfidfVectorizer
 
-from .models import Intervention, InterventionTopic, TermShift, Topic, TopicModel
+from .models import (
+    Intervention,
+    InterventionTopic,
+    MeetingIntervention,
+    MeetingInterventionTopic,
+    TermShift,
+    Topic,
+    TopicModel,
+)
 
 SPEECH_KINDS = [
     Intervention.Kind.DEBATE,
@@ -94,6 +102,74 @@ def documents(
         "id", f"text_{lang}", "sitting__date", f"word_count_{lang}"
     )
     yield from rows.iterator(chunk_size=2000)
+
+
+COMMITTEE_ROLES = [
+    MeetingIntervention.Role.MEMBER,
+    MeetingIntervention.Role.MINISTER,
+    MeetingIntervention.Role.WITNESS,
+]
+
+
+def committee_documents(min_words: int = 60) -> Iterator[tuple[int, str]]:
+    """Yield (meeting intervention id, English text) for committee speeches by members,
+    ministers and witnesses (not the chair or clerk), procedural text left out."""
+    from django.contrib.postgres.aggregates import StringAgg
+    from django.db.models import Q
+
+    rows = (
+        MeetingIntervention.objects.filter(role__in=COMMITTEE_ROLES, words_en__gte=min_words)
+        .annotate(
+            text=StringAgg(
+                "paragraphs__text_en",
+                "\n",
+                filter=Q(paragraphs__kind="speech"),
+                order_by="paragraphs__sequence",
+            )
+        )
+        .order_by("id")
+        .values_list("id", "text")
+    )
+    for pk, text in rows.iterator(chunk_size=2000):
+        if text:
+            yield pk, text
+
+
+def score_committees(vectorizer, nmf, topics: list, min_words: int, log=print) -> int:
+    """Give each committee speech its main topic under a fitted House model."""
+    MeetingInterventionTopic.objects.filter(topic__model__lang="en").delete()
+    stored = 0
+    batch_ids, batch_texts = [], []
+
+    def flush():
+        nonlocal stored
+        W = nmf.transform(vectorizer.transform(batch_texts))
+        totals = W.sum(axis=1)
+        main = W.argmax(axis=1)
+        rows = [
+            MeetingInterventionTopic(
+                topic=topics[int(main[i])],
+                intervention_id=batch_ids[i],
+                weight=round(float(W[i, main[i]] / totals[i]), 4),
+            )
+            for i in range(len(batch_ids))
+            if totals[i] > 0
+        ]
+        MeetingInterventionTopic.objects.bulk_create(rows, batch_size=5000)
+        stored += len(rows)
+        batch_ids.clear()
+        batch_texts.clear()
+
+    for pk, text in committee_documents(min_words):
+        batch_ids.append(pk)
+        batch_texts.append(text)
+        if len(batch_ids) >= 5000:
+            flush()
+    if batch_ids:
+        flush()
+    if stored:
+        log(f"{stored:,} committee speeches scored with the same topics")
+    return stored
 
 
 # ------------------------------------------------------------------------------------
@@ -192,6 +268,8 @@ def fit_topics(p: TopicParams, log=print) -> TopicModel:
             if totals[i] > 0
         ]
         InterventionTopic.objects.bulk_create(rows, batch_size=5000)
+        if p.lang == "en":
+            score_committees(vectorizer, nmf, topics, p.min_words, log)
         old = TopicModel.objects.filter(lang=p.lang).exclude(pk=model.pk)
         old.delete()  # cascades to their topics and assignments
         model.is_active = True

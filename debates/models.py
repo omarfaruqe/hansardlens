@@ -553,6 +553,13 @@ class Witness(models.Model):
 
         return reverse("witness_detail", args=[self.slug])
 
+    @property
+    def kind(self) -> str:
+        """Kind of organisation from the latest title and organisation (witness_kinds)."""
+        from .witness_kinds import classify_parts
+
+        return classify_parts(self.title_en, self.affiliation_en, self.as_individual)
+
 
 class MeetingIntervention(models.Model):
     class Role(models.TextChoices):
@@ -619,3 +626,17 @@ class MeetingParagraph(models.Model):
             GinIndex(fields=["search_en"], name="meetpara_search_en_gin"),
             GinIndex(fields=["search_fr"], name="meetpara_search_fr_gin"),
         ]
+
+
+class MeetingInterventionTopic(models.Model):
+    """The main House topic of one committee speech, scored with the House topic model
+    when it is fitted, so committee and House shares use the same topics."""
+
+    topic = models.ForeignKey(Topic, on_delete=models.CASCADE, related_name="committee_assignments")
+    intervention = models.OneToOneField(
+        MeetingIntervention, on_delete=models.CASCADE, related_name="topic_assignment"
+    )
+    weight = models.FloatField()
+
+    class Meta:
+        indexes = [models.Index(fields=["topic", "-weight"], name="meet_topic_weight_idx")]
