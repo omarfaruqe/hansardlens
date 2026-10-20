@@ -1644,3 +1644,19 @@ msgstr "Ce que les députés, les ministres et les témoins ont dit aux réunion
 #, python-format
 msgid "In committee, %(fr)s%% of it was in French."
 msgstr "En comité, %(fr)s %% l'a été en français."
+
+#: templates/base.html
+msgid "Menu"
+msgstr "Menu"
+
+#: templates/base.html
+msgid "Use the dark theme"
+msgstr "Utiliser le thème sombre"
+
+#: templates/base.html
+msgid "Use the light theme"
+msgstr "Utiliser le thème clair"
+
+#: templates/base.html
+msgid "Dark theme"
+msgstr "Thème sombre"

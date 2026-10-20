@@ -1,5 +1,6 @@
 // Accessibility audit: runs axe-core (WCAG 2.0/2.1 A and AA rules plus best practices)
-// on every type of page at desktop and phone widths, and prints each rule that fails.
+// on every type of page at desktop and phone widths, in the light and dark themes, and
+// prints each rule that fails.
 //
 //   npm install --no-save playwright@1.48 axe-core@4.10.2 && npx playwright install chromium
 //   node tools/a11y_audit.js http://localhost:8000
@@ -39,9 +40,10 @@ const pages = [
   await probe.close();
 
   const failures = {};
-  for (const width of [1280, 375]) {
+  for (const scheme of ["light", "dark"]) for (const width of [1280, 375]) {
     for (const path of pages) {
-      const page = await browser.newPage({ viewport: { width, height: 900 } });
+      const context = await browser.newContext({ viewport: { width, height: 900 }, colorScheme: scheme });
+      const page = await context.newPage();
       await page.goto(base + path, { waitUntil: "load" });
       await page.addScriptTag({ content: axe });
       const result = await page.evaluate(() => axe.run(document, {
@@ -49,13 +51,13 @@ const pages = [
       }));
       for (const v of result.violations) {
         failures[v.id] = failures[v.id] || { help: v.help, impact: v.impact, where: new Set() };
-        failures[v.id].where.add(`${path} @${width}px`);
+        failures[v.id].where.add(`${path} @${width}px ${scheme}`);
       }
-      await page.close();
+      await context.close();
     }
   }
   await browser.close();
-  console.log(`${pages.length} pages × 2 widths checked.`);
+  console.log(`${pages.length} pages × 2 widths × light and dark themes checked.`);
   for (const [id, f] of Object.entries(failures)) {
     console.log(`\n${id} (${f.impact}): ${f.help}\n  ${[...f.where].join("\n  ")}`);
   }
