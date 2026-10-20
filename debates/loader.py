@@ -123,6 +123,7 @@ def store(merged: MergedSitting) -> LoadResult:
             sequence=seq,
             house_id=iv.house_id,
             kind=(iv.kind or Intervention.Kind.OTHER)[:20],
+            house_type=(iv.kind or "")[:20],
             rubric=iv.rubric,
             order_title_en=iv.order_title_en[:300],
             order_title_fr=iv.order_title_fr[:300],
@@ -165,6 +166,9 @@ def store(merged: MergedSitting) -> LoadResult:
     from .votes import store_divisions
 
     store_divisions(sitting, merged)
+    from . import kinds
+
+    kinds.apply(Intervention, [sitting.id])
     return LoadResult(
         sitting=sitting, interventions=len(rows), paragraphs=len(paragraphs), created=created
     )

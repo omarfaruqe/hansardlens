@@ -29,7 +29,7 @@ FR_MONTHS_SHORT = (
     "nov.",
     "déc.",
 )
-PARTY_FR = {"CPC": "PCC", "NDP": "NPD", "GP": "PV"}
+PARTY_FR = {"CPC": "PCC", "NDP": "NPD", "GP": "PV", "CCF": "FCC"}
 
 
 def _is_fr() -> bool:
@@ -113,3 +113,11 @@ def kind_label(kind):
     from debates.witness_kinds import KINDS
 
     return KINDS.get(kind, kind)
+
+
+@register.filter
+def kind_short(kind):
+    """Short column heading for a kind of witness ("federal" -> "Federal")."""
+    from debates.witness_kinds import SHORT
+
+    return SHORT.get(kind, kind)

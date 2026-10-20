@@ -87,8 +87,10 @@ class Person(models.Model):
 class Intervention(models.Model):
     """One speech, question, answer or interjection, or a block of procedural text.
 
-    `kind` keeps the House's own Type value; a type not listed in Kind is stored as is
-    and shows up in the quality report rather than being hidden as "Other"."""
+    `house_type` keeps the House's own Type value; a type not listed in Kind is stored as
+    is and shows up in the quality report rather than being hidden as "Other". `kind` is
+    the same, except that statements, questions and answers the House typed "Debate"
+    are recognised from the part of the sitting day (debates/kinds.py)."""
 
     class Kind(models.TextChoices):
         DEBATE = "Debate"
@@ -107,6 +109,7 @@ class Intervention(models.Model):
     sequence = models.PositiveIntegerField()
     house_id = models.CharField(max_length=20, blank=True, db_index=True)
     kind = models.CharField(max_length=20, choices=Kind.choices, db_index=True)
+    house_type = models.CharField(max_length=20, blank=True)
     rubric = models.CharField(max_length=40, blank=True, db_index=True)
     order_title_en = models.CharField(max_length=300, blank=True)
     order_title_fr = models.CharField(max_length=300, blank=True)
