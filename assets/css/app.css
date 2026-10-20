@@ -610,6 +610,43 @@ h3 { font-size: 1.1rem; margin: 1.5rem 0 0.5rem; }
 }
 @media (prefers-reduced-motion: reduce) { .explore a { transition: none; } .explore a:hover { transform: none; } }
 
+/* -- inner pages: data blocks in cards (headings stay above them) --------------------- */
+
+@layer components {
+  .hbars, .topic-list, .sitting-votes, .agenda, .role-list, .breakdown, .timeline, .parallel,
+  .vote-columns > section, .stat-line {
+    background: var(--surface); border: 1px solid var(--rule); border-radius: 0.75rem;
+  }
+  .hbars { padding: 0.6rem 1rem; }
+  .topic-list { padding: 0.15rem 1.1rem; }
+  .topic-list li:last-child, .sitting-votes li:last-child, .agenda li:last-child { border-bottom: 0; }
+  .sitting-votes { padding: 0.35rem 1.1rem; }
+  .agenda { padding: 0.25rem 1.1rem; }
+  .role-list { padding: 0.6rem 1.1rem 0.6rem 2.2rem; }
+  .breakdown { padding: 0.6rem 0.9rem; }
+  .filters .breakdown { padding: 0.5rem 0.6rem; }
+  .timeline { padding: 0.6rem 1.1rem 0.6rem 1.6rem; border-left-width: 1px; }
+  .timeline li::before { left: -0.85rem; }
+  .parallel { padding: 0.5rem 1.25rem 0.25rem; }
+  .parallel-head { padding-top: 0.6rem; }
+  .para-row:last-child { border-bottom: 0; }
+  .vote-columns > section { padding: 0.25rem 1rem 0.75rem; }
+  .vote-columns h2, .vote-columns h3 { margin-top: 0.75rem; }
+  .stat-line { padding: 0.9rem 1.2rem; border-left: 4px solid var(--brand); }
+  .agenda-order { border-top: 0; padding-top: 0; }
+  .shift-columns > section, .shift-columns > div { min-width: 0; }
+  .kicker { letter-spacing: 0.06em; }
+  .topic-chips { gap: 0.4rem 0.5rem; }
+  .topic-chips a {
+    display: inline-block; padding: 0.2rem 0.75rem; border-radius: 999px; text-decoration: none;
+    background: var(--red-soft); color: var(--red-dark); font-weight: 500;
+  }
+  .topic-chips a:hover { text-decoration: underline; }
+  .table-wide > .sitting-table th { border-bottom: 1px solid var(--rule); }
+  /* small tables keep a card the size of the table */
+  .table-wide:has(> .party-votes), .table-wide:has(> .committee-members) { width: fit-content; max-width: 100%; }
+}
+
 /* -- overrides of daisyUI component states (they live in the utilities layer) -------- */
 
 @layer utilities {

@@ -4,7 +4,7 @@
 <h1>{% translate "Sittings" %}</h1>
 {% for key, rows in groups %}
   <h2>{% blocktranslate with parl=key.0|ordinal_parliament s=key.1 %}{{ parl }}, session {{ s }}{% endblocktranslate %}</h2>
-  <table class="sitting-table">
+  <div class="table-wide"><table class="sitting-table">
     <thead><tr><th>{% translate "Date" %}</th><th class="num">{% translate "Sitting" %}</th><th class="num">{% translate "Interventions" %}</th></tr></thead>
     <tbody>
       {% for s in rows %}
@@ -15,7 +15,7 @@
         </tr>
       {% endfor %}
     </tbody>
-  </table>
+  </table></div>
 {% empty %}
   <p class="notice">{% translate "No sittings are loaded yet." %}</p>
 {% endfor %}

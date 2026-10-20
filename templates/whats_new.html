@@ -9,7 +9,7 @@
     {% for title, rows, direction in shift_lists %}
       <section>
         <h2>{{ title }}</h2>
-        <table class="data-table shift-table">
+        <div class="table-wide"><table class="data-table shift-table">
           <thead><tr><th>{% translate "Term" %}</th><th>{% translate "Before" %}</th><th>{% translate "Recent" %}</th><th>{% translate "Strength" %}</th></tr></thead>
           <tbody lang="{{ shift.lang }}">
             {% for r in rows %}
@@ -21,7 +21,7 @@
               </tr>
             {% endfor %}
           </tbody>
-        </table>
+        </table></div>
       </section>
     {% endfor %}
   </div>

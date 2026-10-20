@@ -59,7 +59,7 @@
   <section aria-labelledby="c-members">
     <h2 id="c-members">{% translate "Members who spoke most" %}</h2>
     {% if members %}
-      <table class="data-table committee-members">
+      <div class="table-wide"><table class="data-table committee-members">
         <caption class="sr-only">{% translate "Members who spoke most" %}</caption>
         <thead><tr><th scope="col">{% translate "Member" %}</th><th scope="col">{% translate "Meetings" %}</th><th scope="col">{% translate "Words" %}</th></tr></thead>
         <tbody>
@@ -67,7 +67,7 @@
             <tr><td><a href="{% url 'member_detail' m.slug %}">{{ m.name }}</a> <span class="muted small">{{ m.party|party }}</span></td><td>{{ m.meetings|intcomma }}</td><td>{{ m.words|intcomma }}</td></tr>
           {% endfor %}
         </tbody>
-      </table>
+      </table></div>
       <p class="small muted">{% translate "Words in the English text of their questions and remarks; the chair is not counted." %}</p>
     {% else %}
       <p class="small muted">{% translate "No member interventions loaded." %}</p>
