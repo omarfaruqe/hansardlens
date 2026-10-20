@@ -2,15 +2,23 @@
 
 ## 1.13.0 – 2026-10-20 (branch `tailwind`)
 
-- **Styles rebuilt on Tailwind CSS 4.3 and daisyUI 5.7**, keeping the same look: the
-  page components are themed Tailwind components, the header, buttons and menus use
-  daisyUI. The built stylesheet (45 KB) is committed, so running and deploying need no
-  Node.js; CI checks it matches its source.
-- **Dark theme:** follows the system setting; the moon button in the header switches and
-  remembers the choice in the browser. Every colour pair checked for WCAG 2.1 AA in both
-  themes; the axe-core audit now runs every page in both.
-- **Navigation:** fits on one line on desktop; on phones it folds into a "Menu" that
-  opens and closes with the keyboard.
+- **New look on Tailwind CSS 4.3 and daisyUI 5.7.** A two-level header: a white top row
+  with the maple leaf in the flag's red, the name and a tagline, a search box on every
+  page, and the language and theme switches; below it the sections as tabs on a dark red
+  band, in Poppins (served with the site, SIL Open Font License). Content sits in
+  rounded cards: search results and filters, tables, charts, figures, bar charts,
+  agendas, the side-by-side text of speeches and transcripts.
+- **Home page:** a large search panel with an English/French switch, headline figures
+  (sittings, speeches, recorded votes, people, committee meetings), an "Explore" grid
+  describing each section, and the latest sittings.
+- **Dark theme:** follows the system setting; the moon button switches and remembers
+  the choice in the browser.
+- **Phones and tablets:** below 1,200 px the sections fold into a "Menu" that opens
+  and closes with the keyboard.
+- **Accessibility:** every colour pair checked for WCAG 2.1 AA in both themes; the
+  axe-core audit runs all 31 pages at two widths in both themes, with no failures.
+- The built stylesheet is committed, so running and deploying need no Node.js; CI
+  checks it matches its source. README screenshots retaken.
 
 ## 1.12.0 – 2026-10-20
 

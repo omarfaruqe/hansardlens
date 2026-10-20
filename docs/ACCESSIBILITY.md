@@ -44,7 +44,9 @@ After the fixes, axe-core reports no failures on any page at either width, in ei
 theme. The theme switch is a button with a constant name ("Dark theme") whose pressed
 state says which theme is on; without JavaScript it is hidden and the site follows the
 system setting. On phones the navigation folds into a "Menu" disclosure that opens and
-closes with the keyboard. The
+closes with the keyboard. The 1.13 redesign (white header with the maple leaf, section tabs on dark red, content in
+cards) was checked the same way: white tab labels on the dark red band are 9.8:1, the
+current tab 7.2:1, the tagline 5.6:1 or more, and the leaf (a graphic, 3:1 needed) 5.0:1. The
 committee pages added in version 1.9.0 use the same components and also report none. It flags
 the small axis numbers in charts for review because it cannot read the SVG background;
 they are dark grey on white, 6.1:1.
